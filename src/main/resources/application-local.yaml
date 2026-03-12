@@ -1,0 +1,41 @@
+# application-local.yml
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/springboot_jpa_db
+    username: postgres
+    password: password
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
+      file-size-threshold: 0
+      enabled: true
+      location: ${java.io.tmpdir}
+
+server:
+  tomcat:
+    max-http-form-post-size: 20MB
+    max-swallow-size: 20MB
+    max-connections: 200
+    threads:
+      max: 200
+    max-parameter-count: 10000
+    max-part-count: 50
+  max-http-request-header-size: 20MB
+  compression:
+    enabled: false
+
+cloudinary:
+  cloud-name: dic7vvuah
+  api-key: 851326586715864
+  api-secret: f_vB3O_nAMZKW9sYBAV-8IYga-A
