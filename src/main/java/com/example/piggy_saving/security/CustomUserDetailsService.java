@@ -1,7 +1,6 @@
 package com.example.piggy_saving.security;
 
 import com.example.piggy_saving.models.UserModel;
-import com.example.piggy_saving.repository.RoleRepository;
 import com.example.piggy_saving.repository.UserRepository;
 import com.example.piggy_saving.repository.UserRoleRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,15 +15,19 @@ import org.springframework.stereotype.Service;
 public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
+
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         UserModel user = userRepository.findByEmail(email)
-                .orElseThrow(()-> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         return User.builder()
-                .username(user.getName())
+                .username(user.getEmail())
                 .password(user.getPasswordHash())
-                .roles(userRoleRepository.findUserRoleModelByUserModel(user))
+                .roles(
+                        userRoleRepository.findByUserModel(user).stream().map(r -> r.getRoleModel().getName()).toArray(String[]::new)
+                )
                 .build();
     }
 }

@@ -3,6 +3,7 @@ package com.example.piggy_saving.controllers;
 import com.example.piggy_saving.dto.request.RegisterRequestDto;
 import com.example.piggy_saving.dto.response.RegisterResponseDto;
 import com.example.piggy_saving.services.AuthService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,10 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
-    public static final String BASE_ROUTE = "/auth/v1"; // made public for reuse
+    public static final String BASE_ROUTE = "/api/auth/v1"; // made public for reuse
 
     @PostMapping("/register")
-    public ResponseEntity<RegisterResponseDto> register(@RequestBody RegisterRequestDto request) {
+    public ResponseEntity<RegisterResponseDto> register(@Valid @RequestBody RegisterRequestDto request) {
         RegisterResponseDto response = authService.register(request);
         return ResponseEntity.ok(response);
     }
