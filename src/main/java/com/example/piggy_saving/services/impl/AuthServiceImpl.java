@@ -2,15 +2,120 @@ package com.example.piggy_saving.services.impl;
 
 import com.example.piggy_saving.dto.request.RegisterRequestDto;
 import com.example.piggy_saving.dto.response.RegisterResponseDto;
+import com.example.piggy_saving.exception.RoleNotFoundExceptionHandler;
+import com.example.piggy_saving.exception.UserAlreadyExistsException;
+import com.example.piggy_saving.models.RoleModel;
+import com.example.piggy_saving.models.UserModel;
+import com.example.piggy_saving.models.UserRoleModel;
+import com.example.piggy_saving.repository.RoleRepository;
+import com.example.piggy_saving.repository.UserRepository;
+import com.example.piggy_saving.repository.UserRoleRepository;
+import com.example.piggy_saving.security.CustomUserDetailsService;
+import com.example.piggy_saving.security.JwtService;
 import com.example.piggy_saving.services.AuthService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Slf4j
 @Service
 @AllArgsConstructor
 public class AuthServiceImpl implements AuthService {
+
+    private final JwtService jwtService;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;  // Inject PasswordEncoder directly
+    private final CustomUserDetailsService customUserDetailsService;
+    private final RoleRepository roleRepository;
+    private final UserRoleRepository userRoleRepository;
+
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public RegisterResponseDto register(RegisterRequestDto registerRequestDto) {
-        return null;
+
+        log.info("Attempting to register user with email: {}", registerRequestDto.getEmail());
+
+        // Check if email exists
+        if (userRepository.existsUserModelByEmail(registerRequestDto.getEmail())) {
+            log.warn("Email already exists: {}", registerRequestDto.getEmail());
+            throw new UserAlreadyExistsException(
+                    HttpStatus.BAD_REQUEST,
+                    "User with email " + registerRequestDto.getEmail() + " already exists"
+            );
+        }
+
+        // Check if phone exists
+        if (userRepository.existsUserModelByPhone(registerRequestDto.getPhone_number())) {
+            log.warn("Phone already exists: {}", registerRequestDto.getPhone_number());
+            throw new UserAlreadyExistsException(
+                    HttpStatus.BAD_REQUEST,
+                    "Phone number " + registerRequestDto.getPhone_number() + " already exists"
+            );
+        }
+
+        RoleModel defaultRole = roleRepository.findByName("USER")
+                .orElseThrow(()-> new RuntimeException("Default Role not found"));
+
+
+
+        // Create and save user
+        UserModel userModel = UserModel.builder()  // Use builder pattern
+                .name(registerRequestDto.getFull_name())
+                .email(registerRequestDto.getEmail())
+                .passwordHash(passwordEncoder.encode(registerRequestDto.getPassword()))
+                .phone(registerRequestDto.getPhone_number())
+                .phoneVerified(false)
+                .build();
+
+
+        UserModel savedUser = userRepository.save(userModel);
+        log.info("User saved successfully with ID: {}", savedUser.getId());
+
+
+        UserRoleModel userRole = UserRoleModel.builder()
+                .userId(savedUser.getId())
+                .roleId(defaultRole.getId())
+                .userModel(savedUser)
+                .roleModel(defaultRole)
+                .assignedAt(LocalDateTime.now())
+                .build();
+
+        userRoleRepository.save(userRole);
+
+//        savedUser.getUserRoleModels().add(userRole);
+
+        // Load user details for token generation
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(savedUser.getEmail());
+
+        // Generate tokens
+        String accessToken = jwtService.generateAccessToken(userDetails);
+        String refreshToken = jwtService.generateRefreshToken(userDetails);
+
+        // Get expiration from JwtService
+        int expiresIn = jwtService.getAccessTokenExpirationSeconds(); // You need to add this method
+
+        // Build response with ACTUAL user data
+        RegisterResponseDto.UserData userData = RegisterResponseDto.UserData.builder()
+                .userId(savedUser.getId())
+                .email(savedUser.getEmail())
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .expiresIn(expiresIn)
+                .build();
+
+        log.info("Registration successful for user: {}", savedUser.getEmail());
+
+        return RegisterResponseDto.builder()
+                .status(201)  // String, not integer
+                .message("Registration successful")
+                .data(userData)
+                .build();
     }
 }

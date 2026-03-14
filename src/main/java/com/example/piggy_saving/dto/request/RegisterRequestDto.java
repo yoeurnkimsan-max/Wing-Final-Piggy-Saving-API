@@ -1,5 +1,6 @@
 package com.example.piggy_saving.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -17,8 +18,8 @@ public class RegisterRequestDto {
     private String password;
 
     @NotBlank(message = "Full name is required")
-    private String fullName;
+    private String full_name;
 
     @NotBlank(message = "Phone number is required")
-    private String phoneNumber;
+    private String phone_number;
 }

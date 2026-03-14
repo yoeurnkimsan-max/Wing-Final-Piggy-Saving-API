@@ -24,6 +24,4 @@ public class AuthController {
         RegisterResponseDto response = authService.register(request);
         return ResponseEntity.ok(response);
     }
-
-    // You can add other auth endpoints like login, refresh, etc.
 }

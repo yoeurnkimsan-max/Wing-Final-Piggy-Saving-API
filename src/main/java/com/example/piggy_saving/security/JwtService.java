@@ -23,6 +23,8 @@ public class JwtService {
     @Value("${jwt.expiration}")
     private long jwtExpiration;
 
+    @Value("${jwt.refresh-expiration}")
+    private long jwtRefreshExpiration;
     // Extract username from token
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -34,10 +36,20 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    // Generate token for a user
-    public String generateToken(UserDetails userDetails) {
+    // Generate access token for a user
+    public String generateAccessToken(UserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails);
     }
+
+
+    public String generateRefreshToken(UserDetails userDetails){
+        return buildToken(new HashMap<>(),userDetails,jwtRefreshExpiration);
+    }
+
+    public int getAccessTokenExpirationSeconds() {
+        return (int) (jwtExpiration / 1000);
+    }
+
 
     // Generate token with extra claims
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {

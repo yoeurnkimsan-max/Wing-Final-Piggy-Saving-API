@@ -14,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class RegisterResponseDto {
 
-    private String status;
+    private Integer status;
 
     private UserData data;
 
