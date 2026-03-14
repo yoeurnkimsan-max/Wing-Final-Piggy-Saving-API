@@ -29,8 +29,8 @@ public class OtpVerificationModel {
     @Column(name = "phone", nullable = false)
     private String phone;
 
-    @Column(name = "code_hash", nullable = false)
-    private String codeHash;
+    @Column(name = "otp_code", nullable = false)
+    private String optCode;
 
     @Column(name = "attempts", nullable = false)
     private Integer attempts;

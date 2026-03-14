@@ -4,9 +4,11 @@ import com.example.piggy_saving.dto.request.RegisterRequestDto;
 import com.example.piggy_saving.dto.response.RegisterResponseDto;
 import com.example.piggy_saving.exception.RoleNotFoundExceptionHandler;
 import com.example.piggy_saving.exception.UserAlreadyExistsException;
+import com.example.piggy_saving.models.OtpVerificationModel;
 import com.example.piggy_saving.models.RoleModel;
 import com.example.piggy_saving.models.UserModel;
 import com.example.piggy_saving.models.UserRoleModel;
+import com.example.piggy_saving.repository.OtpVerificationRepository;
 import com.example.piggy_saving.repository.RoleRepository;
 import com.example.piggy_saving.repository.UserRepository;
 import com.example.piggy_saving.repository.UserRoleRepository;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 @Service
@@ -35,6 +38,7 @@ public class AuthServiceImpl implements AuthService {
     private final CustomUserDetailsService customUserDetailsService;
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
+    private final OtpVerificationRepository otpVerificationRepository;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -88,34 +92,24 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         userRoleRepository.save(userRole);
-
-//        savedUser.getUserRoleModels().add(userRole);
-
-        // Load user details for token generation
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(savedUser.getEmail());
-
-        // Generate tokens
-        String accessToken = jwtService.generateAccessToken(userDetails);
-        String refreshToken = jwtService.generateRefreshToken(userDetails);
-
-        // Get expiration from JwtService
-        int expiresIn = jwtService.getAccessTokenExpirationSeconds(); // You need to add this method
-
-        // Build response with ACTUAL user data
-        RegisterResponseDto.UserData userData = RegisterResponseDto.UserData.builder()
-                .userId(savedUser.getId())
-                .email(savedUser.getEmail())
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .expiresIn(expiresIn)
-                .build();
-
         log.info("Registration successful for user: {}", savedUser.getEmail());
 
+        String OptCode = String.format("%06d", ThreadLocalRandom.current().nextInt(0,999999));
+        OtpVerificationModel otpVerificationModel = OtpVerificationModel.builder()
+                .phone(savedUser.getPhone())
+                .userModel(savedUser)
+                .attempts(3)
+                .optCode(OptCode)
+                .verified(false)
+                .expiresAt(LocalDateTime.now().plusMinutes(5))
+                .build();
+
+        otpVerificationRepository.save(otpVerificationModel);
+
         return RegisterResponseDto.builder()
-                .status(201)  // String, not integer
-                .message("Registration successful")
-                .data(userData)
+                .status("PENDING")  // String, not integer
+                .data(new RegisterResponseDto.UserData(savedUser.getId(), savedUser.getEmail(), null, null,0, 3000))
+                .message("Registration successful. Please verify your phone via OTP sent to "+registerRequestDto.getPhone_number())
                 .build();
     }
 }

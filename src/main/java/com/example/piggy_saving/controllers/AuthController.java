@@ -1,6 +1,7 @@
 package com.example.piggy_saving.controllers;
 
 import com.example.piggy_saving.dto.request.RegisterRequestDto;
+import com.example.piggy_saving.dto.request.VerifyOtpRequestDto;
 import com.example.piggy_saving.dto.response.RegisterResponseDto;
 import com.example.piggy_saving.services.AuthService;
 import jakarta.validation.Valid;
@@ -23,5 +24,12 @@ public class AuthController {
     public ResponseEntity<RegisterResponseDto> register(@Valid @RequestBody RegisterRequestDto request) {
         RegisterResponseDto response = authService.register(request);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("verify-otp")
+    public ResponseEntity<RegisterResponseDto> otpVerify(@Valid @RequestBody VerifyOtpRequestDto requestDto){
+
+
+        return null;
     }
 }

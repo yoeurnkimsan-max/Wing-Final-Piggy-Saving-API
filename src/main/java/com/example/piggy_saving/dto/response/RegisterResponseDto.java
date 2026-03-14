@@ -14,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class RegisterResponseDto {
 
-    private Integer status;
+    private String status;
 
     private UserData data;
 
@@ -37,7 +37,10 @@ public class RegisterResponseDto {
         @JsonProperty("refresh_token")
         private String refreshToken;
 
-        @JsonProperty("expires_in")
-        private int expiresIn;
+        @JsonProperty("access_token_expires_in")
+        private int accessExpiresIn;
+
+        @JsonProperty("OTP_expires_in")
+        private int otpExpiresIn;
     }
 }
