@@ -75,7 +75,7 @@ public class AuthServiceImpl implements AuthService {
                 .email(registerRequestDto.getEmail())
                 .passwordHash(passwordEncoder.encode(registerRequestDto.getPassword()))
                 .phone(registerRequestDto.getPhone_number())
-                .phoneVerified(false)
+                .emailVerified(false)
                 .build();
 
 

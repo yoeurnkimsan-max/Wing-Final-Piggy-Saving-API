@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
-    public static final String BASE_ROUTE = "/api/auth/v1"; // made public for reuse
+    public static final String BASE_ROUTE = "/api/v1/auth"; // made public for reuse
 
     @PostMapping("/register")
     public ResponseEntity<RegisterResponseDto> register(@Valid @RequestBody RegisterRequestDto request) {

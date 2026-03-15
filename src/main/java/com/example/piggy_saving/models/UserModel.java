@@ -39,8 +39,8 @@ public class UserModel {
     @Column(name = "phone", nullable = false, unique = true)
     private String phone;
 
-    @Column(name = "phone_verified", nullable = false)
-    private boolean phoneVerified;
+    @Column(name = "email_verified", nullable = false)
+    private boolean emailVerified;
 
     @Column(name = "pin_hash")
     private String pinHash;

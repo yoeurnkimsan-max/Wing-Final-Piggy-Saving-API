@@ -2,8 +2,12 @@ package com.example.piggy_saving;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
+@EnableAsync
+@EnableCaching
 public class PiggySavingApplication {
 
 	public static void main(String[] args) {

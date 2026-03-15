@@ -1,0 +1,629 @@
+[INFO] Scanning for projects...
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.example:piggy-saving:jar:0.0.1-SNAPSHOT
+[WARNING] 'dependencies.dependency.(groupId:artifactId:type:classifier)' must be unique: org.projectlombok:lombok:jar -> version (?) vs 1.18.42 @ line 97, column 21
+[WARNING] 'build.plugins.plugin.(groupId:artifactId)' must be unique but found duplicate declaration of plugin org.springframework.boot:spring-boot-maven-plugin @ line 159, column 21
+[WARNING] 'build.plugins.plugin.(groupId:artifactId)' must be unique but found duplicate declaration of plugin org.apache.maven.plugins:maven-compiler-plugin @ line 171, column 21
+[WARNING] 
+[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+[WARNING] 
+[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+[WARNING] 
+[INFO] 
+[INFO] ----------------------< com.example:piggy-saving >----------------------
+[INFO] Building piggy-saving 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:4.0.3:run (default-cli) > test-compile @ piggy-saving >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ piggy-saving ---
+[INFO] Copying 4 resources from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ piggy-saving ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ piggy-saving ---
+[INFO] skip non existing resourceDirectory /Users/mac/Development/Back-end/Spring-Boot/Wing-Final/Piggy-Saving/piggy-saving 2/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ piggy-saving ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] <<< spring-boot:4.0.3:run (default-cli) < test-compile @ piggy-saving <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:4.0.3:run (default-cli) @ piggy-saving ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.3)
+
+2026-03-15T13:36:14.249+07:00  INFO 4179 --- [Piggy-Saving] [           main] c.e.piggy_saving.PiggySavingApplication  : Starting PiggySavingApplication using Java 21.0.10 with PID 4179 (/Users/mac/Development/Back-end/Spring-Boot/Wing-Final/Piggy-Saving/piggy-saving 2/target/classes started by mac in /Users/mac/Development/Back-end/Spring-Boot/Wing-Final/Piggy-Saving/piggy-saving 2)
+2026-03-15T13:36:14.250+07:00  INFO 4179 --- [Piggy-Saving] [           main] c.e.piggy_saving.PiggySavingApplication  : The following 1 profile is active: "dev"
+2026-03-15T13:36:14.471+07:00  INFO 4179 --- [Piggy-Saving] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-03-15T13:36:14.496+07:00  INFO 4179 --- [Piggy-Saving] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 22 ms. Found 11 JPA repository interfaces.
+2026-03-15T13:36:14.682+07:00  INFO 4179 --- [Piggy-Saving] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8081 (http)
+2026-03-15T13:36:14.686+07:00  INFO 4179 --- [Piggy-Saving] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-03-15T13:36:14.687+07:00  INFO 4179 --- [Piggy-Saving] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.18]
+2026-03-15T13:36:14.702+07:00  INFO 4179 --- [Piggy-Saving] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 435 ms
+2026-03-15T13:36:14.759+07:00  INFO 4179 --- [Piggy-Saving] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-03-15T13:36:14.783+07:00  INFO 4179 --- [Piggy-Saving] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.4.Final
+2026-03-15T13:36:14.922+07:00  INFO 4179 --- [Piggy-Saving] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-03-15T13:36:14.933+07:00  INFO 4179 --- [Piggy-Saving] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-03-15T13:36:14.999+07:00  INFO 4179 --- [Piggy-Saving] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@6eb00cbe
+2026-03-15T13:36:15.000+07:00  INFO 4179 --- [Piggy-Saving] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-03-15T13:36:15.028+07:00  INFO 4179 --- [Piggy-Saving] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/piggydb]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 17.5
+	Default catalog/schema: piggydb/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-03-15T13:36:15.493+07:00  INFO 4179 --- [Piggy-Saving] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+Hibernate: 
+    set client_min_messages = WARNING
+Hibernate: 
+    alter table if exists accounts 
+       drop constraint if exists FKmptlhvrdxst2arl8wwrpyf421
+Hibernate: 
+    alter table if exists accounts 
+       drop constraint if exists FKnjuop33mo69pd79ctplkck40n
+Hibernate: 
+    alter table if exists interest_payments 
+       drop constraint if exists FKppx81cm1kjbfcv0hmsbckjmen
+Hibernate: 
+    alter table if exists interest_payments 
+       drop constraint if exists FKo6vg7li69iso3l6et1vupwub9
+Hibernate: 
+    alter table if exists ledger_entries 
+       drop constraint if exists FKccr7q587j5bf49xqb0fqieefp
+Hibernate: 
+    alter table if exists ledger_entries 
+       drop constraint if exists FKgwcsld4m3g325l66qro45i14x
+Hibernate: 
+    alter table if exists notifications 
+       drop constraint if exists FK9y21adhxn0ayjhfocscqox7bh
+Hibernate: 
+    alter table if exists otp_verifications 
+       drop constraint if exists FKssn2wgmijxelm0u26ti271lcf
+Hibernate: 
+    alter table if exists piggy_goals 
+       drop constraint if exists FKig72f8601fceln2e6jj06smnn
+Hibernate: 
+    alter table if exists transactions 
+       drop constraint if exists FK2t3c9440feqvfxm9ofsvwnm36
+Hibernate: 
+    alter table if exists user_roles 
+       drop constraint if exists FKh8ciramu9cc9q3qcqiv4ue8a6
+Hibernate: 
+    alter table if exists user_roles 
+       drop constraint if exists FKhfh9dx7w3ubf1co1vdev94g3f
+Hibernate: 
+    drop table if exists accounts cascade
+Hibernate: 
+    drop table if exists interest_payments cascade
+Hibernate: 
+    drop table if exists ledger_entries cascade
+Hibernate: 
+    drop table if exists notifications cascade
+Hibernate: 
+    drop table if exists otp_verifications cascade
+Hibernate: 
+    drop table if exists piggy_goals cascade
+Hibernate: 
+    drop table if exists roles cascade
+Hibernate: 
+    drop table if exists system_settings cascade
+Hibernate: 
+    drop table if exists transactions cascade
+Hibernate: 
+    drop table if exists user_roles cascade
+Hibernate: 
+    drop table if exists users cascade
+Hibernate: 
+    create table accounts (
+        balance numeric(19,4) not null,
+        currency varchar(3) not null,
+        created_at timestamp(6),
+        id uuid not null,
+        piggy_goal_id uuid unique,
+        user_id uuid,
+        account_type varchar(20) not null check ((account_type in ('MAIN','PIGGY'))),
+        primary key (id)
+    )
+Hibernate: 
+    create table interest_payments (
+        amount numeric(19,4) not null,
+        payment_date date not null,
+        created_at timestamp(6),
+        id uuid not null,
+        piggy_goal_id uuid not null,
+        transaction_id uuid not null,
+        primary key (id)
+    )
+Hibernate: 
+    create table ledger_entries (
+        amount numeric(19,4) not null,
+        created_at timestamp(6),
+        entry_type varchar(10) not null check ((entry_type in ('DEBIT','CREDIT'))),
+        account_id uuid not null,
+        id uuid not null,
+        transaction_id uuid not null,
+        primary key (id)
+    )
+Hibernate: 
+    create table notifications (
+        is_read boolean not null,
+        created_at timestamp(6),
+        id uuid not null,
+        user_id uuid not null,
+        message varchar(255) not null,
+        primary key (id)
+    )
+Hibernate: 
+    create table otp_verifications (
+        attempts integer not null,
+        verified boolean not null,
+        created_at timestamp(6),
+        expires_at timestamp(6) not null,
+        id uuid not null,
+        user_id uuid not null,
+        otp_code varchar(255) not null,
+        phone varchar(255) not null,
+        primary key (id)
+    )
+Hibernate: 
+    create table piggy_goals (
+        current_balance numeric(19,4) not null,
+        lock_period_days integer not null,
+        target_amount numeric(19,4) not null,
+        created_at timestamp(6),
+        updated_at timestamp(6),
+        id uuid not null,
+        user_id uuid not null,
+        status varchar(20) not null check ((status in ('ACTIVE','COMPLETED','BROKEN'))),
+        name varchar(255) not null,
+        primary key (id)
+    )
+Hibernate: 
+    create table roles (
+        id uuid not null,
+        name varchar(50) not null unique,
+        description varchar(255),
+        primary key (id)
+    )
+Hibernate: 
+    create table system_settings (
+        updated_at timestamp(6),
+        key varchar(100) not null,
+        description varchar(255),
+        value varchar(255),
+        primary key (key)
+    )
+Hibernate: 
+    create table transactions (
+        created_at timestamp(6),
+        updated_at timestamp(6),
+        id uuid not null,
+        initiated_by_user_id uuid not null,
+        status varchar(20) not null check ((status in ('PENDING','COMPLETED','FAILED'))),
+        transaction_type varchar(20) not null check ((transaction_type in ('TRANSFER','P2P','CONTRIBUTION','BREAK','INTEREST','FEE'))),
+        metadata jsonb,
+        reference_id varchar(255),
+        primary key (id)
+    )
+Hibernate: 
+    create table user_roles (
+        assigned_at timestamp(6),
+        role_id uuid not null,
+        user_id uuid not null,
+        constraint uk_user_roles primary key (user_id, role_id)
+    )
+Hibernate: 
+    create table users (
+        phone_verified boolean not null,
+        created_at timestamp(6),
+        updated_at timestamp(6),
+        id uuid not null,
+        email varchar(255) not null unique,
+        name varchar(255) not null,
+        password_hash varchar(255) not null,
+        phone varchar(255) not null unique,
+        pin_hash varchar(255),
+        primary key (id)
+    )
+Hibernate: 
+    create index idx_accounts_user 
+       on accounts (user_id)
+Hibernate: 
+    create index idx_accounts_piggy_goal 
+       on accounts (piggy_goal_id)
+Hibernate: 
+    create index idx_interest_payments_piggy_goal 
+       on interest_payments (piggy_goal_id)
+Hibernate: 
+    create index idx_interest_payments_transaction 
+       on interest_payments (transaction_id)
+Hibernate: 
+    create index idx_ledger_entries_transaction 
+       on ledger_entries (transaction_id)
+Hibernate: 
+    create index idx_ledger_entries_account 
+       on ledger_entries (account_id)
+Hibernate: 
+    create index idx_notifications_user 
+       on notifications (user_id)
+Hibernate: 
+    create index idx_otp_verifications_user 
+       on otp_verifications (user_id)
+Hibernate: 
+    create index idx_piggy_goals_user 
+       on piggy_goals (user_id)
+Hibernate: 
+    create index idx_transactions_initiator 
+       on transactions (initiated_by_user_id)
+Hibernate: 
+    create index idx_user_roles_user 
+       on user_roles (user_id)
+Hibernate: 
+    create index idx_user_roles_role 
+       on user_roles (role_id)
+Hibernate: 
+    alter table if exists accounts 
+       add constraint FKmptlhvrdxst2arl8wwrpyf421 
+       foreign key (piggy_goal_id) 
+       references piggy_goals
+Hibernate: 
+    alter table if exists accounts 
+       add constraint FKnjuop33mo69pd79ctplkck40n 
+       foreign key (user_id) 
+       references users
+Hibernate: 
+    alter table if exists interest_payments 
+       add constraint FKppx81cm1kjbfcv0hmsbckjmen 
+       foreign key (piggy_goal_id) 
+       references piggy_goals
+Hibernate: 
+    alter table if exists interest_payments 
+       add constraint FKo6vg7li69iso3l6et1vupwub9 
+       foreign key (transaction_id) 
+       references transactions
+Hibernate: 
+    alter table if exists ledger_entries 
+       add constraint FKccr7q587j5bf49xqb0fqieefp 
+       foreign key (account_id) 
+       references accounts
+Hibernate: 
+    alter table if exists ledger_entries 
+       add constraint FKgwcsld4m3g325l66qro45i14x 
+       foreign key (transaction_id) 
+       references transactions
+Hibernate: 
+    alter table if exists notifications 
+       add constraint FK9y21adhxn0ayjhfocscqox7bh 
+       foreign key (user_id) 
+       references users
+Hibernate: 
+    alter table if exists otp_verifications 
+       add constraint FKssn2wgmijxelm0u26ti271lcf 
+       foreign key (user_id) 
+       references users
+Hibernate: 
+    alter table if exists piggy_goals 
+       add constraint FKig72f8601fceln2e6jj06smnn 
+       foreign key (user_id) 
+       references users
+Hibernate: 
+    alter table if exists transactions 
+       add constraint FK2t3c9440feqvfxm9ofsvwnm36 
+       foreign key (initiated_by_user_id) 
+       references users
+Hibernate: 
+    alter table if exists user_roles 
+       add constraint FKh8ciramu9cc9q3qcqiv4ue8a6 
+       foreign key (role_id) 
+       references roles
+Hibernate: 
+    alter table if exists user_roles 
+       add constraint FKhfh9dx7w3ubf1co1vdev94g3f 
+       foreign key (user_id) 
+       references users
+2026-03-15T13:36:15.540+07:00  INFO 4179 --- [Piggy-Saving] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-03-15T13:36:15.571+07:00  INFO 4179 --- [Piggy-Saving] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-03-15T13:36:15.713+07:00  WARN 4179 --- [Piggy-Saving] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-03-15T13:36:15.751+07:00  INFO 4179 --- [Piggy-Saving] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-03-15T13:36:15.951+07:00  INFO 4179 --- [Piggy-Saving] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8081 (http) with context path '/'
+2026-03-15T13:36:15.953+07:00  INFO 4179 --- [Piggy-Saving] [           main] c.e.piggy_saving.PiggySavingApplication  : Started PiggySavingApplication in 1.848 seconds (process running for 1.977)
+Hibernate: 
+    select
+        rm1_0.id,
+        rm1_0.description,
+        rm1_0.name 
+    from
+        roles rm1_0 
+    where
+        rm1_0.name=?
+Hibernate: 
+    insert 
+    into
+        roles
+        (description, name, id) 
+    values
+        (?, ?, ?)
+2026-03-15T13:36:16.130+07:00  INFO 4179 --- [Piggy-Saving] [           main] c.e.p.config.RoleDataInitializer         : Default USER role created.
+Hibernate: 
+    select
+        rm1_0.id,
+        rm1_0.description,
+        rm1_0.name 
+    from
+        roles rm1_0 
+    where
+        rm1_0.name=?
+Hibernate: 
+    insert 
+    into
+        roles
+        (description, name, id) 
+    values
+        (?, ?, ?)
+2026-03-15T13:36:16.134+07:00  INFO 4179 --- [Piggy-Saving] [           main] c.e.p.config.RoleDataInitializer         : Default ADMIN role created.
+2026-03-15T13:36:30.511+07:00  INFO 4179 --- [Piggy-Saving] [nio-8081-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-03-15T13:36:30.512+07:00  INFO 4179 --- [Piggy-Saving] [nio-8081-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-03-15T13:36:30.512+07:00  INFO 4179 --- [Piggy-Saving] [nio-8081-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
+DEBUG: Jakarta Mail version 2.1.5
+DEBUG: URL jar:file:/Users/mac/.m2/repository/org/eclipse/angus/angus-mail/2.0.5/angus-mail-2.0.5.jar!/META-INF/jakarta.providers
+DEBUG: successfully loaded resource: jar:file:/Users/mac/.m2/repository/org/eclipse/angus/angus-mail/2.0.5/angus-mail-2.0.5.jar!/META-INF/jakarta.providers
+DEBUG: successfully loaded resource: /META-INF/jakarta.default.providers
+DEBUG: Tables of loaded providers
+DEBUG: Providers Listed By Class Name: {org.eclipse.angus.mail.imap.IMAPStore=jakarta.mail.Provider[STORE,imap,org.eclipse.angus.mail.imap.IMAPStore,Oracle], org.eclipse.angus.mail.smtp.SMTPTransport=jakarta.mail.Provider[TRANSPORT,smtp,org.eclipse.angus.mail.smtp.SMTPTransport,Oracle], org.eclipse.angus.mail.pop3.POP3Store=jakarta.mail.Provider[STORE,pop3,org.eclipse.angus.mail.pop3.POP3Store,Oracle], org.eclipse.angus.mail.pop3.POP3SSLStore=jakarta.mail.Provider[STORE,pop3s,org.eclipse.angus.mail.pop3.POP3SSLStore,Oracle], org.eclipse.angus.mail.smtp.SMTPSSLTransport=jakarta.mail.Provider[TRANSPORT,smtps,org.eclipse.angus.mail.smtp.SMTPSSLTransport,Oracle], org.eclipse.angus.mail.imap.IMAPSSLStore=jakarta.mail.Provider[STORE,imaps,org.eclipse.angus.mail.imap.IMAPSSLStore,Oracle]}
+DEBUG: Providers Listed By Protocol: {imap=jakarta.mail.Provider[STORE,imap,org.eclipse.angus.mail.imap.IMAPStore,Oracle], smtp=jakarta.mail.Provider[TRANSPORT,smtp,org.eclipse.angus.mail.smtp.SMTPTransport,Oracle], pop3=jakarta.mail.Provider[STORE,pop3,org.eclipse.angus.mail.pop3.POP3Store,Oracle], imaps=jakarta.mail.Provider[STORE,imaps,org.eclipse.angus.mail.imap.IMAPSSLStore,Oracle], smtps=jakarta.mail.Provider[TRANSPORT,smtps,org.eclipse.angus.mail.smtp.SMTPSSLTransport,Oracle], pop3s=jakarta.mail.Provider[STORE,pop3s,org.eclipse.angus.mail.pop3.POP3SSLStore,Oracle]}
+DEBUG: successfully loaded resource: /META-INF/jakarta.default.address.map
+DEBUG: URL jar:file:/Users/mac/.m2/repository/org/eclipse/angus/angus-mail/2.0.5/angus-mail-2.0.5.jar!/META-INF/jakarta.address.map
+DEBUG: successfully loaded resource: jar:file:/Users/mac/.m2/repository/org/eclipse/angus/angus-mail/2.0.5/angus-mail-2.0.5.jar!/META-INF/jakarta.address.map
+DEBUG: getProvider() returning jakarta.mail.Provider[TRANSPORT,smtp,org.eclipse.angus.mail.smtp.SMTPTransport,Oracle]
+DEBUG SMTP: useEhlo true, useAuth true
+DEBUG SMTP: trying to connect to host "smtp.gmail.com", port 587, isSSL false
+220 smtp.gmail.com ESMTP 98e67ed59e1d1-35a02e19708sm17468683a91.3 - gsmtp
+DEBUG SMTP: connected to host "smtp.gmail.com", port: 587
+EHLO 172.20.10.4
+250-smtp.gmail.com at your service, [117.20.115.132]
+250-SIZE 35882577
+250-8BITMIME
+250-STARTTLS
+250-ENHANCEDSTATUSCODES
+250-PIPELINING
+250-CHUNKING
+250 SMTPUTF8
+DEBUG SMTP: Found extension "SIZE", arg "35882577"
+DEBUG SMTP: Found extension "8BITMIME", arg ""
+DEBUG SMTP: Found extension "STARTTLS", arg ""
+DEBUG SMTP: Found extension "ENHANCEDSTATUSCODES", arg ""
+DEBUG SMTP: Found extension "PIPELINING", arg ""
+DEBUG SMTP: Found extension "CHUNKING", arg ""
+DEBUG SMTP: Found extension "SMTPUTF8", arg ""
+STARTTLS
+220 2.0.0 Ready to start TLS
+EHLO 172.20.10.4
+250-smtp.gmail.com at your service, [117.20.115.132]
+250-SIZE 35882577
+250-8BITMIME
+250-AUTH LOGIN PLAIN XOAUTH2 PLAIN-CLIENTTOKEN OAUTHBEARER XOAUTH
+250-ENHANCEDSTATUSCODES
+250-PIPELINING
+250-CHUNKING
+250 SMTPUTF8
+DEBUG SMTP: Found extension "SIZE", arg "35882577"
+DEBUG SMTP: Found extension "8BITMIME", arg ""
+DEBUG SMTP: Found extension "AUTH", arg "LOGIN PLAIN XOAUTH2 PLAIN-CLIENTTOKEN OAUTHBEARER XOAUTH"
+DEBUG SMTP: Found extension "ENHANCEDSTATUSCODES", arg ""
+DEBUG SMTP: Found extension "PIPELINING", arg ""
+DEBUG SMTP: Found extension "CHUNKING", arg ""
+DEBUG SMTP: Found extension "SMTPUTF8", arg ""
+DEBUG SMTP: protocolConnect login, host=smtp.gmail.com, user=yoeurnkimsan@gmail.com, password=<non-null>
+DEBUG SMTP: Attempt to authenticate using mechanisms: LOGIN PLAIN DIGEST-MD5 NTLM XOAUTH2 
+DEBUG SMTP: Using mechanism LOGIN
+DEBUG SMTP: AUTH LOGIN command trace suppressed
+DEBUG SMTP: AUTH LOGIN failed
+2026-03-15T13:36:39.746+07:00 ERROR 4179 --- [Piggy-Saving] [nio-8081-exec-1] c.e.p.services.EmailOtpService           : Error in sendOtp for email: test@gmail.com
+
+java.util.concurrent.ExecutionException: org.springframework.mail.MailAuthenticationException: Authentication failed
+	at java.base/java.util.concurrent.CompletableFuture.reportGet(CompletableFuture.java:396) ~[na:na]
+	at java.base/java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2073) ~[na:na]
+	at com.example.piggy_saving.services.EmailOtpService.sendOtp(EmailOtpService.java:50) ~[classes/:na]
+	at com.example.piggy_saving.controllers.EmailOtpController.sendOtp(EmailOtpController.java:28) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:252) ~[spring-web-7.0.5.jar:7.0.5]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:184) ~[spring-web-7.0.5.jar:7.0.5]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:117) ~[spring-webmvc-7.0.5.jar:7.0.5]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:934) ~[spring-webmvc-7.0.5.jar:7.0.5]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:853) ~[spring-webmvc-7.0.5.jar:7.0.5]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:86) ~[spring-webmvc-7.0.5.jar:7.0.5]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:963) ~[spring-webmvc-7.0.5.jar:7.0.5]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:866) ~[spring-webmvc-7.0.5.jar:7.0.5]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1000) ~[spring-webmvc-7.0.5.jar:7.0.5]
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:903) ~[spring-webmvc-7.0.5.jar:7.0.5]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:649) ~[tomcat-embed-core-11.0.18.jar:6.1]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:874) ~[spring-webmvc-7.0.5.jar:7.0.5]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:710) ~[tomcat-embed-core-11.0.18.jar:6.1]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:128) ~[tomcat-embed-core-11.0.18.jar:11.0.18]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53) ~[tomcat-embed-websocket-11.0.18.jar:11.0.18]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.18.jar:11.0.18]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:110) ~[spring-web-7.0.5.jar:7.0.5]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.18.jar:11.0.18]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108) ~[spring-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:235) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:371) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:101) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:380) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:380) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:132) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:86) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:380) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:380) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:181) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:380) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:380) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at com.example.piggy_saving.security.JwtAuthenticationFilter.doFilterInternal(JwtAuthenticationFilter.java:40) ~[classes/:na]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:380) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:110) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:96) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:380) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:380) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:380) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:380) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:380) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:237) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:195) ~[spring-security-web-7.0.3.jar:7.0.3]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-7.0.5.jar:7.0.5]
+	at org.springframework.web.filter.ServletRequestPathFilter.doFilter(ServletRequestPathFilter.java:52) ~[spring-web-7.0.5.jar:7.0.5]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-7.0.5.jar:7.0.5]
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74) ~[spring-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebSecurityConfiguration.java:317) ~[spring-security-config-7.0.3.jar:7.0.3]
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:355) ~[spring-web-7.0.5.jar:7.0.5]
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:272) ~[spring-web-7.0.5.jar:7.0.5]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.18.jar:11.0.18]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-7.0.5.jar:7.0.5]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.5.jar:7.0.5]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.18.jar:11.0.18]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-7.0.5.jar:7.0.5]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.5.jar:7.0.5]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.18.jar:11.0.18]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:199) ~[spring-web-7.0.5.jar:7.0.5]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.5.jar:7.0.5]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.18.jar:11.0.18]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:165) ~[tomcat-embed-core-11.0.18.jar:11.0.18]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:77) ~[tomcat-embed-core-11.0.18.jar:11.0.18]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:492) ~[tomcat-embed-core-11.0.18.jar:11.0.18]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:113) ~[tomcat-embed-core-11.0.18.jar:11.0.18]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:83) ~[tomcat-embed-core-11.0.18.jar:11.0.18]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:72) ~[tomcat-embed-core-11.0.18.jar:11.0.18]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:341) ~[tomcat-embed-core-11.0.18.jar:11.0.18]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397) ~[tomcat-embed-core-11.0.18.jar:11.0.18]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63) ~[tomcat-embed-core-11.0.18.jar:11.0.18]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:903) ~[tomcat-embed-core-11.0.18.jar:11.0.18]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1779) ~[tomcat-embed-core-11.0.18.jar:11.0.18]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52) ~[tomcat-embed-core-11.0.18.jar:11.0.18]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:946) ~[tomcat-embed-core-11.0.18.jar:11.0.18]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:480) ~[tomcat-embed-core-11.0.18.jar:11.0.18]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:57) ~[tomcat-embed-core-11.0.18.jar:11.0.18]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.springframework.mail.MailAuthenticationException: Authentication failed
+	at org.springframework.mail.javamail.JavaMailSenderImpl.doSend(JavaMailSenderImpl.java:389) ~[spring-context-support-7.0.5.jar:7.0.5]
+	at org.springframework.mail.javamail.JavaMailSenderImpl.send(JavaMailSenderImpl.java:337) ~[spring-context-support-7.0.5.jar:7.0.5]
+	at org.springframework.mail.javamail.JavaMailSender.send(JavaMailSender.java:101) ~[spring-context-support-7.0.5.jar:7.0.5]
+	at com.example.piggy_saving.services.EmailService.sendOtpEmail(EmailService.java:38) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359) ~[spring-aop-7.0.5.jar:7.0.5]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:190) ~[spring-aop-7.0.5.jar:7.0.5]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:158) ~[spring-aop-7.0.5.jar:7.0.5]
+	at org.springframework.aop.interceptor.AsyncExecutionInterceptor.lambda$invoke$0(AsyncExecutionInterceptor.java:112) ~[spring-aop-7.0.5.jar:7.0.5]
+	at org.springframework.util.concurrent.FutureUtils.lambda$toSupplier$0(FutureUtils.java:74) ~[spring-core-7.0.5.jar:7.0.5]
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1768) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642) ~[na:na]
+	... 1 common frames omitted
+Caused by: jakarta.mail.AuthenticationFailedException: 535-5.7.8 Username and Password not accepted. For more information, go to
+535 5.7.8  https://support.google.com/mail/?p=BadCredentials 98e67ed59e1d1-35a02e19708sm17468683a91.3 - gsmtp
+
+	at org.eclipse.angus.mail.smtp.SMTPTransport$Authenticator.authenticate(SMTPTransport.java:954) ~[angus-mail-2.0.5.jar:na]
+	at org.eclipse.angus.mail.smtp.SMTPTransport.authenticate(SMTPTransport.java:865) ~[angus-mail-2.0.5.jar:na]
+	at org.eclipse.angus.mail.smtp.SMTPTransport.protocolConnect(SMTPTransport.java:769) ~[angus-mail-2.0.5.jar:na]
+	at jakarta.mail.Service.connect(Service.java:345) ~[jakarta.mail-api-2.1.5.jar:na]
+	at org.springframework.mail.javamail.JavaMailSenderImpl.connectTransport(JavaMailSenderImpl.java:467) ~[spring-context-support-7.0.5.jar:7.0.5]
+	at org.springframework.mail.javamail.JavaMailSenderImpl.doSend(JavaMailSenderImpl.java:386) ~[spring-context-support-7.0.5.jar:7.0.5]
+	... 14 common frames omitted
+
+2026-03-15T13:37:26.853+07:00  INFO 4179 --- [Piggy-Saving] [ionShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-03-15T13:37:26.856+07:00  INFO 4179 --- [Piggy-Saving] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-03-15T13:37:26.858+07:00  INFO 4179 --- [Piggy-Saving] [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+Hibernate: 
+    set client_min_messages = WARNING
+Hibernate: 
+    alter table if exists accounts 
+       drop constraint if exists FKmptlhvrdxst2arl8wwrpyf421
+Hibernate: 
+    alter table if exists accounts 
+       drop constraint if exists FKnjuop33mo69pd79ctplkck40n
+Hibernate: 
+    alter table if exists interest_payments 
+       drop constraint if exists FKppx81cm1kjbfcv0hmsbckjmen
+Hibernate: 
+    alter table if exists interest_payments 
+       drop constraint if exists FKo6vg7li69iso3l6et1vupwub9
+Hibernate: 
+    alter table if exists ledger_entries 
+       drop constraint if exists FKccr7q587j5bf49xqb0fqieefp
+Hibernate: 
+    alter table if exists ledger_entries 
+       drop constraint if exists FKgwcsld4m3g325l66qro45i14x
+Hibernate: 
+    alter table if exists notifications 
+       drop constraint if exists FK9y21adhxn0ayjhfocscqox7bh
+Hibernate: 
+    alter table if exists otp_verifications 
+       drop constraint if exists FKssn2wgmijxelm0u26ti271lcf
+Hibernate: 
+    alter table if exists piggy_goals 
+       drop constraint if exists FKig72f8601fceln2e6jj06smnn
+Hibernate: 
+    alter table if exists transactions 
+       drop constraint if exists FK2t3c9440feqvfxm9ofsvwnm36
+Hibernate: 
+    alter table if exists user_roles 
+       drop constraint if exists FKh8ciramu9cc9q3qcqiv4ue8a6
+Hibernate: 
+    alter table if exists user_roles 
+       drop constraint if exists FKhfh9dx7w3ubf1co1vdev94g3f
+Hibernate: 
+    drop table if exists accounts cascade
+Hibernate: 
+    drop table if exists interest_payments cascade
+Hibernate: 
+    drop table if exists ledger_entries cascade
+Hibernate: 
+    drop table if exists notifications cascade
+Hibernate: 
+    drop table if exists otp_verifications cascade
+Hibernate: 
+    drop table if exists piggy_goals cascade
+Hibernate: 
+    drop table if exists roles cascade
+Hibernate: 
+    drop table if exists system_settings cascade
+Hibernate: 
+    drop table if exists transactions cascade
+Hibernate: 
+    drop table if exists user_roles cascade
+Hibernate: 
+    drop table if exists users cascade
+2026-03-15T13:37:26.871+07:00  INFO 4179 --- [Piggy-Saving] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-03-15T13:37:26.873+07:00  INFO 4179 --- [Piggy-Saving] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

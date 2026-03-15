@@ -26,7 +26,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // Disable CSRF for stateless APIs
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // No sessions
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/api/auth/v1/**", "/public/**").permitAll() // Public endpoints
+                        .requestMatchers("/api/v1/**", "/public/**").permitAll() // Public endpoints
+                        .requestMatchers("/api/v1/email-otp/**").permitAll()
                         .anyRequest().authenticated() // All other endpoints require authentication
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // Add JWT filter
