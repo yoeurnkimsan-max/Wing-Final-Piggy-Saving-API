@@ -1,4 +1,7 @@
 package com.example.piggy_saving.services;
+
+import com.example.piggy_saving.repository.OtpVerificationRepository;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,14 +10,18 @@ import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
+@RequiredArgsConstructor
 public class EmailOtpService {
 
     private static final Logger logger = LoggerFactory.getLogger(EmailOtpService.class);
     private static final SecureRandom secureRandom = new SecureRandom();
-    private static final String OTP_CACHE = "otpCache";
+    private static final String OTP_CACHE = "otpCache"; // should match your cache config
+    private final OtpVerificationRepository otpVerificationRepository;
 
     @Autowired
     private EmailService emailService;
@@ -22,8 +29,8 @@ public class EmailOtpService {
     @Autowired(required = false)
     private CacheManager cacheManager;
 
-    // Fallback in-memory store if cache is not configured
-    private final java.util.Map<String, OtpData> fallbackStore = new java.util.concurrent.ConcurrentHashMap<>();
+    // Fallback in-memory store if cache not configured
+    private final Map<String, OtpData> fallbackStore = new ConcurrentHashMap<>();
 
     /**
      * Generate a 6-digit OTP
@@ -46,20 +53,24 @@ public class EmailOtpService {
             // Send email asynchronously
             CompletableFuture<Boolean> emailFuture = emailService.sendOtpEmail(email, otpCode, userName);
 
-            // Wait for email result (or make controller async later)
+            // Wait for email result (can also make controller async)
             Boolean emailSent = emailFuture.get();
 
             if (emailSent) {
+
+//                otpVerificationRepository.
+
                 logger.info("OTP sent and stored for email: {}", email);
                 return true;
             } else {
                 // Remove stored OTP if email failed
                 removeOtp(email);
+                logger.warn("Failed to send OTP email for: {}", email);
                 return false;
             }
 
         } catch (Exception e) {
-            logger.error("Error in sendOtp for email: {}", email, e);
+            logger.error("Error sending OTP for email: {}", email, e);
             return false;
         }
     }
@@ -68,17 +79,18 @@ public class EmailOtpService {
      * Store OTP with 5-minute expiration
      */
     private void storeOtp(String email, String otpCode) {
+        long expiryTime = System.currentTimeMillis() + 5 * 60 * 1000; // 5 minutes
+
         if (cacheManager != null) {
-            // Use Caffeine cache if available
             Cache cache = cacheManager.getCache(OTP_CACHE);
             if (cache != null) {
-                cache.put(email, new OtpData(otpCode, System.currentTimeMillis() + 300000)); // 5 minutes
+                cache.put(email, new OtpData(otpCode, expiryTime));
                 return;
             }
         }
 
-        // Fallback to in-memory store
-        fallbackStore.put(email, new OtpData(otpCode, System.currentTimeMillis() + 300000));
+        // Fallback in-memory store
+        fallbackStore.put(email, new OtpData(otpCode, expiryTime));
     }
 
     /**
@@ -103,7 +115,7 @@ public class EmailOtpService {
         boolean isValid = storedData.otpCode.equals(otpCode);
 
         if (isValid) {
-            // Remove after successful verification (one-time use)
+            // Remove OTP after successful verification (one-time use)
             removeOtp(email);
             logger.info("OTP verified successfully for email: {}", email);
         } else {
@@ -113,6 +125,9 @@ public class EmailOtpService {
         return isValid;
     }
 
+    /**
+     * Retrieve stored OTP
+     */
     private OtpData getStoredOtp(String email) {
         if (cacheManager != null) {
             Cache cache = cacheManager.getCache(OTP_CACHE);
@@ -121,12 +136,14 @@ public class EmailOtpService {
                 if (wrapper != null) {
                     return (OtpData) wrapper.get();
                 }
-                return null;
             }
         }
         return fallbackStore.get(email);
     }
 
+    /**
+     * Remove OTP
+     */
     private void removeOtp(String email) {
         if (cacheManager != null) {
             Cache cache = cacheManager.getCache(OTP_CACHE);
@@ -139,11 +156,11 @@ public class EmailOtpService {
     }
 
     /**
-     * Inner class to hold OTP data
+     * Inner class to hold OTP and expiry
      */
     private static class OtpData {
-        String otpCode;
-        long expiryTime;
+        final String otpCode;
+        final long expiryTime;
 
         OtpData(String otpCode, long expiryTime) {
             this.otpCode = otpCode;
