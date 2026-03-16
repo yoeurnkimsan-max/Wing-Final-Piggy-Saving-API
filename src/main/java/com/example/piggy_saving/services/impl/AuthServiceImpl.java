@@ -15,6 +15,7 @@ import com.example.piggy_saving.repository.UserRoleRepository;
 import com.example.piggy_saving.security.CustomUserDetailsService;
 import com.example.piggy_saving.security.JwtService;
 import com.example.piggy_saving.services.AuthService;
+import com.example.piggy_saving.services.EmailService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -39,6 +40,7 @@ public class AuthServiceImpl implements AuthService {
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
     private final OtpVerificationRepository otpVerificationRepository;
+    private final EmailService emailService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -94,17 +96,17 @@ public class AuthServiceImpl implements AuthService {
         userRoleRepository.save(userRole);
         log.info("Registration successful for user: {}", savedUser.getEmail());
 
-        String OptCode = String.format("%06d", ThreadLocalRandom.current().nextInt(0,999999));
-        OtpVerificationModel otpVerificationModel = OtpVerificationModel.builder()
-                .phone(savedUser.getPhone())
-                .userModel(savedUser)
-                .attempts(3)
-                .optCode(OptCode)
-                .verified(false)
-                .expiresAt(LocalDateTime.now().plusMinutes(5))
-                .build();
-
-        otpVerificationRepository.save(otpVerificationModel);
+//        String OptCode = String.format("%06d", ThreadLocalRandom.current().nextInt(0,999999));
+//        OtpVerificationModel otpVerificationModel = OtpVerificationModel.builder()
+//                .phone(savedUser.getPhone())
+//                .userModel(savedUser)
+//                .attempts(3)
+//                .optCode(OptCode)
+//                .verified(false)
+//                .expiresAt(LocalDateTime.now().plusMinutes(5))
+//                .build();
+//
+//        otpVerificationRepository.save(otpVerificationModel);
 
         return RegisterResponseDto.builder()
                 .status("PENDING")  // String, not integer

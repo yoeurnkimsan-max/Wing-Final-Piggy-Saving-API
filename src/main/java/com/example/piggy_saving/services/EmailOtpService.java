@@ -1,6 +1,11 @@
 package com.example.piggy_saving.services;
 
+import com.example.piggy_saving.exception.UserNotFoundException;
+import com.example.piggy_saving.models.OtpVerificationModel;
+import com.example.piggy_saving.models.UserModel;
 import com.example.piggy_saving.repository.OtpVerificationRepository;
+import com.example.piggy_saving.repository.UserRepository;
+import com.example.piggy_saving.security.PasswordEncoderConfig;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +27,8 @@ public class EmailOtpService {
     private static final SecureRandom secureRandom = new SecureRandom();
     private static final String OTP_CACHE = "otpCache"; // should match your cache config
     private final OtpVerificationRepository otpVerificationRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoderConfig passwordEncoderConfig;
 
     @Autowired
     private EmailService emailService;
@@ -47,28 +54,38 @@ public class EmailOtpService {
         try {
             String otpCode = generateOtp();
 
-            // Store OTP with expiration
+            UserModel userModel = userRepository.findUserModelByEmail(email);
+            if (userModel == null) {
+                throw new UserNotFoundException("User not found with email: " + email);
+            }
+
+            OtpVerificationModel otpVerificationModel = OtpVerificationModel.builder()
+                    .optCode(passwordEncoderConfig.passwordEncoder().encode(otpCode))
+                    .userModel(userModel)
+                    .attempts(3)
+                    .phone(userModel.getPhone())
+                    .verified(false)
+                    .expiresAt(java.time.LocalDateTime.now().plusMinutes(5))
+                    .build();
+            otpVerificationRepository.save(otpVerificationModel);
+
             storeOtp(email, otpCode);
 
-            // Send email asynchronously
             CompletableFuture<Boolean> emailFuture = emailService.sendOtpEmail(email, otpCode, userName);
-
-            // Wait for email result (can also make controller async)
             Boolean emailSent = emailFuture.get();
 
             if (emailSent) {
-
-//                otpVerificationRepository.
-
                 logger.info("OTP sent and stored for email: {}", email);
                 return true;
             } else {
-                // Remove stored OTP if email failed
                 removeOtp(email);
                 logger.warn("Failed to send OTP email for: {}", email);
                 return false;
             }
 
+        } catch (UserNotFoundException e) {
+            // Re-throw to let controller handle it as 404
+            throw e;
         } catch (Exception e) {
             logger.error("Error sending OTP for email: {}", email, e);
             return false;
@@ -97,32 +114,41 @@ public class EmailOtpService {
      * Verify OTP entered by user
      */
     public boolean verifyOtp(String email, String otpCode) {
-        OtpData storedData = getStoredOtp(email);
 
-        if (storedData == null) {
+        UserModel user = userRepository.findUserModelByEmail(email);
+
+        if (user == null) {
+            logger.warn("User not found for email: {}", email);
+            return false;
+        }
+
+        OtpVerificationModel otp = otpVerificationRepository
+                .findTopByUserModelOrderByCreatedAtDesc(user);
+
+        if (otp == null) {
             logger.warn("No OTP found for email: {}", email);
             return false;
         }
 
-        // Check expiration
-        if (System.currentTimeMillis() > storedData.expiryTime) {
-            removeOtp(email);
-            logger.warn("Expired OTP for email: {}", email);
+        if (otp.getExpiresAt().isBefore(java.time.LocalDateTime.now())) {
+            logger.warn("OTP expired for email: {}", email);
             return false;
         }
 
-        // Verify OTP
-        boolean isValid = storedData.otpCode.equals(otpCode);
+        boolean isValid = passwordEncoderConfig.passwordEncoder()
+                .matches(otpCode, otp.getOptCode());
 
-        if (isValid) {
-            // Remove OTP after successful verification (one-time use)
-            removeOtp(email);
-            logger.info("OTP verified successfully for email: {}", email);
-        } else {
+        if (!isValid) {
             logger.warn("Invalid OTP attempt for email: {}", email);
+            return false;
         }
 
-        return isValid;
+        otp.setVerified(true);
+        otpVerificationRepository.save(otp);
+
+        logger.info("OTP verified successfully for email: {}", email);
+
+        return true;
     }
 
     /**
