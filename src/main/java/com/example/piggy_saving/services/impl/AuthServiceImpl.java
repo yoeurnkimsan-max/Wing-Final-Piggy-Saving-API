@@ -4,9 +4,7 @@ import com.example.piggy_saving.dto.request.LoginRequestDto;
 import com.example.piggy_saving.dto.request.RegisterRequestDto;
 import com.example.piggy_saving.dto.response.LoginResponseDto;
 import com.example.piggy_saving.dto.response.RegisterResponseDto;
-import com.example.piggy_saving.exception.RoleNotFoundExceptionHandler;
 import com.example.piggy_saving.exception.UserAlreadyExistsException;
-import com.example.piggy_saving.models.OtpVerificationModel;
 import com.example.piggy_saving.models.RoleModel;
 import com.example.piggy_saving.models.UserModel;
 import com.example.piggy_saving.models.UserRoleModel;
@@ -28,10 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 @Service
@@ -73,8 +68,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         RoleModel defaultRole = roleRepository.findByName("USER")
-                .orElseThrow(()-> new RuntimeException("Default Role not found"));
-
+                .orElseThrow(() -> new RuntimeException("Default Role not found"));
 
 
         // Create and save user
@@ -111,8 +105,8 @@ public class AuthServiceImpl implements AuthService {
 
         return RegisterResponseDto.builder()
                 .status("PENDING")  // String, not integer
-                .data(new RegisterResponseDto.UserData(savedUser.getId(), savedUser.getEmail(), null, null,0, 3000))
-                .message("Registration successful. Please verify your email via OTP sent to "+ savedUser.getEmail())
+                .data(new RegisterResponseDto.UserData(savedUser.getId(), savedUser.getEmail(), null, null, 0, 3000))
+                .message("Registration successful. Please verify your email via OTP sent to " + savedUser.getEmail())
                 .build();
     }
 
@@ -157,16 +151,15 @@ public class AuthServiceImpl implements AuthService {
                 .map(userRole -> userRole.getRoleModel().getName())
                 .toList();
 
-        // Create extra claims for the token
-        Map<String, Object> extraClaims = new HashMap<>();
-        extraClaims.put("userId", user.getId().toString());
-        extraClaims.put("name", user.getName());
-        extraClaims.put("email", user.getEmail());
-        extraClaims.put("phone", user.getPhone());
-        extraClaims.put("emailVerified", user.isEmailVerified());
-        extraClaims.put("roles", roles);
-
-        String token = jwtService.generateToken(extraClaims, userDetails);
+        JwtService.TokenPair tokenPair = jwtService.generateTokenPairForUser(
+                user.getId().toString(),
+                user.getName(),
+                user.getEmail(),
+                user.getPhone(),
+                user.isEmailVerified(),
+                roles,
+                userDetails
+        );
 
         log.info("Login successful for user: {}", user.getEmail());
 
@@ -175,7 +168,8 @@ public class AuthServiceImpl implements AuthService {
                 .data(LoginResponseDto.LoginData.builder()
                         .userId(user.getId())
                         .email(user.getEmail())
-                        .token(token)
+                        .accessToken(tokenPair.accessToken)
+                        .refreshToken(tokenPair.refreshToken)
                         .tokenType("Bearer")
                         .build())
                 .message("Login successful")
@@ -211,30 +205,94 @@ public class AuthServiceImpl implements AuthService {
                 .map(userRole -> userRole.getRoleModel().getName())
                 .toList();
 
-        // Create extra claims for the token
-        Map<String, Object> extraClaims = new HashMap<>();
-        extraClaims.put("userId", user.getId().toString());
-        extraClaims.put("name", user.getName());
-        extraClaims.put("email", user.getEmail());
-        extraClaims.put("phone", user.getPhone());
-        extraClaims.put("emailVerified", user.isEmailVerified());
-        extraClaims.put("roles", roles);
+        JwtService.TokenPair tokenPair = jwtService.generateTokenPairForUser(
+                user.getId().toString(),
+                user.getName(),
+                user.getEmail(),
+                user.getPhone(),
+                user.isEmailVerified(),
+                roles,
+                userDetails
+        );
 
-        String token = jwtService.generateToken(extraClaims, userDetails);
-
-        // Update user emailVerified status
-        user.setEmailVerified(true);
-        userRepository.save(user);
+        log.info("OTP verified successfully for email: {}", email);
 
         return LoginResponseDto.builder()
                 .status("SUCCESS")
                 .data(LoginResponseDto.LoginData.builder()
                         .userId(user.getId())
                         .email(user.getEmail())
-                        .token(token)
+                        .accessToken(tokenPair.accessToken)
+                        .refreshToken(tokenPair.refreshToken)
                         .tokenType("Bearer")
                         .build())
                 .message("OTP verified successfully. Login token generated.")
                 .build();
+    }
+
+    @Override
+    public LoginResponseDto refreshToken(String refreshToken) {
+        try {
+            // Extract username from refresh token
+            String username = jwtService.extractUsername(refreshToken);
+
+            // Load user details
+            UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+
+            // Validate refresh token
+            if (!jwtService.isTokenValid(refreshToken, userDetails)) {
+                return LoginResponseDto.builder()
+                        .status("FAILED")
+                        .message("Invalid refresh token")
+                        .build();
+            }
+
+            // Get user from database
+            UserModel user = userRepository.findUserModelByEmail(username);
+            if (user == null) {
+                return LoginResponseDto.builder()
+                        .status("FAILED")
+                        .message("User not found")
+                        .build();
+            }
+
+            // Get user roles
+            List<UserRoleModel> userRoles = userRoleRepository.findByUserModel(user);
+            List<String> roles = userRoles.stream()
+                    .map(userRole -> userRole.getRoleModel().getName())
+                    .toList();
+
+            // Generate new token pair
+            JwtService.TokenPair tokenPair = jwtService.generateTokenPairForUser(
+                    user.getId().toString(),
+                    user.getName(),
+                    user.getEmail(),
+                    user.getPhone(),
+                    user.isEmailVerified(),
+                    roles,
+                    userDetails
+            );
+
+            log.info("Token refreshed successfully for user: {}", user.getEmail());
+
+            return LoginResponseDto.builder()
+                    .status("SUCCESS")
+                    .data(LoginResponseDto.LoginData.builder()
+                            .userId(user.getId())
+                            .email(user.getEmail())
+                            .accessToken(tokenPair.accessToken)
+                            .refreshToken(tokenPair.refreshToken)
+                            .tokenType("Bearer")
+                            .build())
+                    .message("Token refreshed successfully")
+                    .build();
+
+        } catch (Exception e) {
+            log.error("Error refreshing token", e);
+            return LoginResponseDto.builder()
+                    .status("FAILED")
+                    .message("Token refresh failed")
+                    .build();
+        }
     }
 }

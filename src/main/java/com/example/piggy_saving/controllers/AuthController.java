@@ -79,4 +79,14 @@ public class AuthController {
             return ResponseEntity.badRequest().body(response);
         }
     }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<LoginResponseDto> refreshToken(@RequestParam String refreshToken) {
+        LoginResponseDto response = authService.refreshToken(refreshToken);
+        if ("SUCCESS".equals(response.getStatus())) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
 }

@@ -144,6 +144,8 @@ public class EmailOtpService {
         }
 
         otp.setVerified(true);
+        user.setEmailVerified(true);
+        userRepository.save(user);
         otpVerificationRepository.save(otp);
 
         logger.info("OTP verified successfully for email: {}", email);

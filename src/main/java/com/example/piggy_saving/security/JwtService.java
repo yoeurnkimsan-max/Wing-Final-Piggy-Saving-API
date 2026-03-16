@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -54,6 +55,49 @@ public class JwtService {
     // Generate token with extra claims
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return buildToken(extraClaims, userDetails, jwtExpiration);
+    }
+
+    // Generate token with comprehensive user claims
+    public String generateTokenForUser(String userId, String name, String email, String phone,
+                                     boolean emailVerified, List<String> roles, UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", userId);
+        claims.put("name", name);
+        claims.put("email", email);
+        claims.put("phone", phone);
+        claims.put("emailVerified", emailVerified);
+        claims.put("roles", roles);
+
+        return generateToken(claims, userDetails);
+    }
+
+    // Generate both access and refresh tokens with user claims
+    public TokenPair generateTokenPairForUser(String userId, String name, String email,
+                                            String phone, boolean emailVerified,
+                                            List<String> roles, UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", userId);
+        claims.put("name", name);
+        claims.put("email", email);
+        claims.put("phone", phone);
+        claims.put("emailVerified", emailVerified);
+        claims.put("roles", roles);
+
+        String accessToken = generateToken(claims, userDetails);
+        String refreshToken = buildToken(claims, userDetails, jwtRefreshExpiration);
+
+        return new TokenPair(accessToken, refreshToken);
+    }
+
+    // Inner class to hold token pair
+    public static class TokenPair {
+        public final String accessToken;
+        public final String refreshToken;
+
+        public TokenPair(String accessToken, String refreshToken) {
+            this.accessToken = accessToken;
+            this.refreshToken = refreshToken;
+        }
     }
 
     private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {

@@ -12,4 +12,6 @@ public interface AuthService {
     LoginResponseDto login(LoginRequestDto loginRequestDto);
 
     LoginResponseDto verifyOtp(String email, String otpCode);
+
+    LoginResponseDto refreshToken(String refreshToken);
 }
