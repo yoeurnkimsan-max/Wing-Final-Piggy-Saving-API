@@ -5,15 +5,14 @@ import com.example.piggy_saving.dto.request.RegisterRequestDto;
 import com.example.piggy_saving.dto.response.LoginResponseDto;
 import com.example.piggy_saving.dto.response.RegisterResponseDto;
 import com.example.piggy_saving.exception.UserAlreadyExistsException;
+import com.example.piggy_saving.models.AccountModel;
 import com.example.piggy_saving.models.RoleModel;
 import com.example.piggy_saving.models.UserModel;
 import com.example.piggy_saving.models.UserRoleModel;
-import com.example.piggy_saving.repository.OtpVerificationRepository;
-import com.example.piggy_saving.repository.RoleRepository;
-import com.example.piggy_saving.repository.UserRepository;
-import com.example.piggy_saving.repository.UserRoleRepository;
+import com.example.piggy_saving.repository.*;
 import com.example.piggy_saving.security.CustomUserDetailsService;
 import com.example.piggy_saving.security.JwtService;
+import com.example.piggy_saving.services.AccountService;
 import com.example.piggy_saving.services.AuthService;
 import com.example.piggy_saving.services.EmailOtpService;
 import com.example.piggy_saving.services.EmailService;
@@ -42,6 +41,8 @@ public class AuthServiceImpl implements AuthService {
     private final OtpVerificationRepository otpVerificationRepository;
     private final EmailService emailService;
     private final EmailOtpService emailOtpService;
+    private final AccountRepository accountRepository;
+    private final AccountService accountService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -95,6 +96,8 @@ public class AuthServiceImpl implements AuthService {
 
         userRoleRepository.save(userRole);
         log.info("Registration successful for user: {}", savedUser.getEmail());
+
+        accountService.createMainAccount(savedUser);
 
         // Send OTP email for verification
         boolean otpSent = emailOtpService.sendOtp(savedUser.getEmail(), savedUser.getName());
@@ -186,8 +189,6 @@ public class AuthServiceImpl implements AuthService {
                     .message("Invalid or expired OTP")
                     .build();
         }
-
-        // Get user details
         UserModel user = userRepository.findUserModelByEmail(email);
         if (user == null) {
             return LoginResponseDto.builder()

@@ -28,6 +28,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/v1/**", "/public/**").permitAll() // Public endpoints
                         .requestMatchers("/api/v1/email-otp/**").permitAll()
+                        .requestMatchers("/api/v1/accounts","/api/v1/accounts/**").permitAll()
                         .anyRequest().authenticated() // All other endpoints require authentication
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // Add JWT filter
