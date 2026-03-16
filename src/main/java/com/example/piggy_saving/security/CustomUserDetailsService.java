@@ -22,12 +22,16 @@ public class CustomUserDetailsService implements UserDetailsService {
         UserModel user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
+        // Use eager fetch to avoid LazyInitializationException
+        String[] roles = userRoleRepository.findByUserModelWithRoles(user)
+                .stream()
+                .map(r -> r.getRoleModel().getName())
+                .toArray(String[]::new);
+
         return User.builder()
                 .username(user.getEmail())
                 .password(user.getPasswordHash())
-                .roles(
-                        userRoleRepository.findByUserModel(user).stream().map(r -> r.getRoleModel().getName()).toArray(String[]::new)
-                )
+                .roles(roles)
                 .build();
     }
 }

@@ -9,12 +9,9 @@ import com.example.piggy_saving.services.AuthService;
 import com.example.piggy_saving.services.EmailOtpService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -71,7 +68,7 @@ public class AuthController {
     }
 
     @PostMapping("verify-otp")
-    public ResponseEntity<LoginResponseDto> otpVerify(@Valid @RequestBody VerifyOtpRequestDto requestDto){
+    public ResponseEntity<LoginResponseDto> otpVerify(@Valid @RequestBody VerifyOtpRequestDto requestDto) {
         LoginResponseDto response = authService.verifyOtp(requestDto.getEmail(), requestDto.getOtpCode());
         if ("SUCCESS".equals(response.getStatus())) {
             return ResponseEntity.ok(response);
@@ -81,12 +78,26 @@ public class AuthController {
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<LoginResponseDto> refreshToken(@RequestParam String refreshToken) {
+    public ResponseEntity<LoginResponseDto> refreshToken(
+            @RequestHeader("Authorization") String authHeader) {
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest().body(
+                    LoginResponseDto.builder()
+                            .status("FAIL")
+                            .message("Missing or invalid Authorization header")
+                            .build()
+            );
+        }
+
+        String refreshToken = authHeader.substring(7);
+
         LoginResponseDto response = authService.refreshToken(refreshToken);
+
         if ("SUCCESS".equals(response.getStatus())) {
             return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.badRequest().body(response);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
     }
 }
