@@ -1,6 +1,8 @@
 package com.example.piggy_saving.services.impl;
 
+import com.example.piggy_saving.dto.request.LoginRequestDto;
 import com.example.piggy_saving.dto.request.RegisterRequestDto;
+import com.example.piggy_saving.dto.response.LoginResponseDto;
 import com.example.piggy_saving.dto.response.RegisterResponseDto;
 import com.example.piggy_saving.exception.RoleNotFoundExceptionHandler;
 import com.example.piggy_saving.exception.UserAlreadyExistsException;
@@ -15,6 +17,7 @@ import com.example.piggy_saving.repository.UserRoleRepository;
 import com.example.piggy_saving.security.CustomUserDetailsService;
 import com.example.piggy_saving.security.JwtService;
 import com.example.piggy_saving.services.AuthService;
+import com.example.piggy_saving.services.EmailOtpService;
 import com.example.piggy_saving.services.EmailService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +28,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
@@ -41,6 +46,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRoleRepository userRoleRepository;
     private final OtpVerificationRepository otpVerificationRepository;
     private final EmailService emailService;
+    private final EmailOtpService emailOtpService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -96,22 +102,139 @@ public class AuthServiceImpl implements AuthService {
         userRoleRepository.save(userRole);
         log.info("Registration successful for user: {}", savedUser.getEmail());
 
-//        String OptCode = String.format("%06d", ThreadLocalRandom.current().nextInt(0,999999));
-//        OtpVerificationModel otpVerificationModel = OtpVerificationModel.builder()
-//                .phone(savedUser.getPhone())
-//                .userModel(savedUser)
-//                .attempts(3)
-//                .optCode(OptCode)
-//                .verified(false)
-//                .expiresAt(LocalDateTime.now().plusMinutes(5))
-//                .build();
-//
-//        otpVerificationRepository.save(otpVerificationModel);
+        // Send OTP email for verification
+        boolean otpSent = emailOtpService.sendOtp(savedUser.getEmail(), savedUser.getName());
+        if (!otpSent) {
+            log.warn("Failed to send OTP email to: {}", savedUser.getEmail());
+            // Maybe throw exception or handle
+        }
 
         return RegisterResponseDto.builder()
                 .status("PENDING")  // String, not integer
                 .data(new RegisterResponseDto.UserData(savedUser.getId(), savedUser.getEmail(), null, null,0, 3000))
-                .message("Registration successful. Please verify your phone via OTP sent to "+registerRequestDto.getPhone_number())
+                .message("Registration successful. Please verify your email via OTP sent to "+ savedUser.getEmail())
+                .build();
+    }
+
+    @Override
+    public LoginResponseDto login(LoginRequestDto loginRequestDto) {
+        log.info("Attempting to login user with email: {}", loginRequestDto.getEmail());
+
+        // Find user by email
+        UserModel user = userRepository.findUserModelByEmail(loginRequestDto.getEmail());
+        if (user == null) {
+            log.warn("User not found with email: {}", loginRequestDto.getEmail());
+            return LoginResponseDto.builder()
+                    .status("FAILED")
+                    .message("Invalid email or password")
+                    .build();
+        }
+
+        // Check if email is verified
+        if (!user.isEmailVerified()) {
+            log.warn("User email not verified: {}", loginRequestDto.getEmail());
+            return LoginResponseDto.builder()
+                    .status("FAILED")
+                    .message("Please verify your email before logging in")
+                    .build();
+        }
+
+        // Verify password
+        if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPasswordHash())) {
+            log.warn("Invalid password for user: {}", loginRequestDto.getEmail());
+            return LoginResponseDto.builder()
+                    .status("FAILED")
+                    .message("Invalid email or password")
+                    .build();
+        }
+
+        // Generate JWT token with user roles and important claims
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(loginRequestDto.getEmail());
+
+        // Get user roles
+        List<UserRoleModel> userRoles = userRoleRepository.findByUserModel(user);
+        List<String> roles = userRoles.stream()
+                .map(userRole -> userRole.getRoleModel().getName())
+                .toList();
+
+        // Create extra claims for the token
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("userId", user.getId().toString());
+        extraClaims.put("name", user.getName());
+        extraClaims.put("email", user.getEmail());
+        extraClaims.put("phone", user.getPhone());
+        extraClaims.put("emailVerified", user.isEmailVerified());
+        extraClaims.put("roles", roles);
+
+        String token = jwtService.generateToken(extraClaims, userDetails);
+
+        log.info("Login successful for user: {}", user.getEmail());
+
+        return LoginResponseDto.builder()
+                .status("SUCCESS")
+                .data(LoginResponseDto.LoginData.builder()
+                        .userId(user.getId())
+                        .email(user.getEmail())
+                        .token(token)
+                        .tokenType("Bearer")
+                        .build())
+                .message("Login successful")
+                .build();
+    }
+
+    @Override
+    public LoginResponseDto verifyOtp(String email, String otpCode) {
+        boolean verified = emailOtpService.verifyOtp(email, otpCode);
+
+        if (!verified) {
+            return LoginResponseDto.builder()
+                    .status("FAILED")
+                    .message("Invalid or expired OTP")
+                    .build();
+        }
+
+        // Get user details
+        UserModel user = userRepository.findUserModelByEmail(email);
+        if (user == null) {
+            return LoginResponseDto.builder()
+                    .status("FAILED")
+                    .message("User not found")
+                    .build();
+        }
+
+        // Generate JWT token with user roles and important claims
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+
+        // Get user roles
+        List<UserRoleModel> userRoles = userRoleRepository.findByUserModel(user);
+        List<String> roles = userRoles.stream()
+                .map(userRole -> userRole.getRoleModel().getName())
+                .toList();
+
+        // Create extra claims for the token
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("userId", user.getId().toString());
+        extraClaims.put("name", user.getName());
+        extraClaims.put("email", user.getEmail());
+        extraClaims.put("phone", user.getPhone());
+        extraClaims.put("emailVerified", user.isEmailVerified());
+        extraClaims.put("roles", roles);
+
+        String token = jwtService.generateToken(extraClaims, userDetails);
+
+        // Update user emailVerified status
+        user.setEmailVerified(true);
+        userRepository.save(user);
+
+        return LoginResponseDto.builder()
+                .status("SUCCESS")
+                .data(LoginResponseDto.LoginData.builder()
+                        .userId(user.getId())
+                        .email(user.getEmail())
+                        .token(token)
+                        .tokenType("Bearer")
+                        .build())
+                .message("OTP verified successfully. Login token generated.")
                 .build();
     }
 }

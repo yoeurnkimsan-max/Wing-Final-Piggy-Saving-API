@@ -63,7 +63,7 @@ public class EmailOtpService {
                     .optCode(passwordEncoderConfig.passwordEncoder().encode(otpCode))
                     .userModel(userModel)
                     .attempts(3)
-                    .phone(userModel.getPhone())
+                    .email(email)
                     .verified(false)
                     .expiresAt(java.time.LocalDateTime.now().plusMinutes(5))
                     .build();

@@ -26,8 +26,8 @@ public class OtpVerificationModel {
     @JoinColumn(name = "user_id", nullable = false)
     private UserModel userModel;
 
-    @Column(name = "phone", nullable = false)
-    private String phone;
+    @Column(name = "email", nullable = false)
+    private String email;
 
     @Column(name = "otp_code", nullable = false)
     private String optCode;
