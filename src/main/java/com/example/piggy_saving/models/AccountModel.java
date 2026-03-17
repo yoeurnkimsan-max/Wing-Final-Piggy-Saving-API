@@ -29,11 +29,11 @@ public class AccountModel {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private UserModel userModel; // null for piggy accounts
+    private UserModel userModel; // required for main accounts, optional for piggy accounts
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "piggy_goal_id", unique = true)
-    private PiggyGoalModel piggyGoalModel; // null for main accounts
+    private PiggyGoalModel piggyGoalModel; // optional, only for PIGGY accounts
 
     @Enumerated(EnumType.STRING)
     @Column(name = "account_type", nullable = false, length = 20)
@@ -49,13 +49,18 @@ public class AccountModel {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    // Business rule: exactly one of user or piggyGoal must be non‑null.
-    // This can be enforced with @PrePersist/@PreUpdate or database trigger.
+    /**
+     * Validation: a main account must have a user,
+     * a PIGGY account must have either a user or a piggyGoal.
+     */
     @PrePersist
     @PreUpdate
     private void validate() {
-        if ((userModel == null) == (piggyGoalModel == null)) {
-            throw new IllegalStateException("Exactly one of user or piggyGoal must be set");
+        if (accountType == AccountType.MAIN && userModel == null) {
+            throw new IllegalStateException("Main account must be linked to a user");
+        }
+        if (accountType == AccountType.PIGGY && piggyGoalModel == null) {
+            throw new IllegalStateException("Piggy account must be linked to a PiggyGoal");
         }
     }
 }

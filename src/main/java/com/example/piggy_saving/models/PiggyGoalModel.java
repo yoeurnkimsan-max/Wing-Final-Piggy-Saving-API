@@ -33,11 +33,29 @@ public class PiggyGoalModel {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "target_amount", nullable = false, precision = 19, scale = 4)
+    @Column(name = "target_amount", nullable = true, precision = 19, scale = 4)
     private BigDecimal targetAmount;
 
     @Column(name = "lock_period_days", nullable = false)
     private Integer lockPeriodDays;
+
+    @Column(name = "start_at", nullable = false)
+    private LocalDateTime startAt;
+
+    @Column(name = "end_at", nullable = false)
+    private LocalDateTime endAt;
+
+    @Column(name = "lock_expires_at", nullable = false)
+    private LocalDateTime lockExpiresAt;
+
+    @Column(name = "locked_at", nullable = false)
+    private LocalDateTime lockedAt;
+
+    @Column(name = "broken_at", nullable = true)
+    private LocalDateTime brokenAt;
+
+    @Column(name = "completed_at", nullable = true)
+    private LocalDateTime completedAt;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)

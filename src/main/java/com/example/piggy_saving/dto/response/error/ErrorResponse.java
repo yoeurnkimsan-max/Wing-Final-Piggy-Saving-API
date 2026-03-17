@@ -12,6 +12,7 @@ import java.util.Map;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorResponse {
+    private boolean success;
     private LocalDateTime timestamp;
     private Integer status;
     private String message;

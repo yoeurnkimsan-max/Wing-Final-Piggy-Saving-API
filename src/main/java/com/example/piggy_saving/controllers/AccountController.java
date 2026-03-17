@@ -1,16 +1,18 @@
 package com.example.piggy_saving.controllers;
 
+import com.example.piggy_saving.dto.request.CreatePiggyRequestDto;
 import com.example.piggy_saving.dto.response.AccountResponseDto;
 import com.example.piggy_saving.dto.response.ApiResponse;
+import com.example.piggy_saving.dto.response.CreatePiggyGoalResponseDto;
+import com.example.piggy_saving.models.enums.AccountType;
 import com.example.piggy_saving.security.CustomUserDetails;
 import com.example.piggy_saving.services.AccountService;
+import com.example.piggy_saving.services.PiggyAccountService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -23,6 +25,7 @@ public class AccountController {
     public static final String BASE_ROUTE = "/api/v1/accounts";
 
     private final AccountService accountService;
+    private final PiggyAccountService piggyAccountService;
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<AccountResponseDto>>> getAccounts() {
@@ -34,7 +37,7 @@ public class AccountController {
     }
 
     @GetMapping("/{accountId}")
-    public ResponseEntity<ApiResponse<AccountResponseDto>> getAccountById(@PathVariable UUID accountId){
+    public ResponseEntity<ApiResponse<AccountResponseDto>> getAccountById(@PathVariable UUID accountId) {
 
         ApiResponse<AccountResponseDto> response =
                 accountService.getAccountById(accountId);
@@ -51,4 +54,35 @@ public class AccountController {
                 accountService.getAccountByUserId(userDetails.getUserId())
         );
     }
+    /**
+     * List all Piggy account
+     */
+
+    @GetMapping("/my-accounts/{accountType}")
+    public ResponseEntity<ApiResponse<List<AccountResponseDto>>> getMyAccountsByType(
+            @PathVariable AccountType accountType,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+
+        ApiResponse<List<AccountResponseDto>> accounts = accountService.getAllAccountByUserIdAndType(
+                userDetails.getUserId(), accountType
+        );
+
+        return ResponseEntity.ok(
+                accounts
+        );
+    }
+
+    /**
+     * Create Piggy account
+     */
+    @PostMapping("/piggy-account")
+    public ResponseEntity<ApiResponse<CreatePiggyGoalResponseDto>> createPiggyAccount(
+            @Valid @RequestBody CreatePiggyRequestDto requestDto,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+            ){
+
+        return ResponseEntity.ok(piggyAccountService.createPiggyAccount(userDetails.getUserId(), requestDto));
+    }
+
 }

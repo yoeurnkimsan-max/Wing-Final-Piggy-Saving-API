@@ -2,10 +2,7 @@ package com.example.piggy_saving.exception.handler;
 
 import com.example.piggy_saving.dto.response.ApiResponse;
 import com.example.piggy_saving.dto.response.error.ErrorResponse;
-import com.example.piggy_saving.exception.AccountNotFoundException;
-import com.example.piggy_saving.exception.InvalidCredentialsException;
-import com.example.piggy_saving.exception.ResourceNotFoundException;
-import com.example.piggy_saving.exception.UserAlreadyExistsException;
+import com.example.piggy_saving.exception.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,6 +57,39 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+    /**
+     * Role Not Found
+     */
+
+    @ExceptionHandler(RoleNotFoundExceptionHandler.class)
+    public ResponseEntity<ErrorResponse> handleRoleNotFound(
+            RoleNotFoundExceptionHandler exceptionHandler, HttpServletRequest request
+    ){
+        ErrorResponse errorResponse = buildErrorResponse(
+                HttpStatus.NOT_FOUND,
+                exceptionHandler.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    /**
+     * OTP send failed
+     */
+
+    @ExceptionHandler(OtpFailedToSentExceptionHandler.class)
+    public ResponseEntity<ErrorResponse> handleRoleNotFound(
+            OtpFailedToSentExceptionHandler exceptionHandler, HttpServletRequest request
+    ){
+        ErrorResponse errorResponse = buildErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                exceptionHandler.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 
     // Handle validation errors from @Valid (400 Bad Request)

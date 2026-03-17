@@ -5,6 +5,7 @@ import com.example.piggy_saving.dto.request.RegisterRequestDto;
 import com.example.piggy_saving.dto.response.ApiResponse;
 import com.example.piggy_saving.dto.response.LoginResponseDto;
 import com.example.piggy_saving.dto.response.RegisterResponseDto;
+import com.example.piggy_saving.exception.OtpFailedToSentExceptionHandler;
 import com.example.piggy_saving.exception.UserAlreadyExistsException;
 import com.example.piggy_saving.mappers.AuthMapper;
 import com.example.piggy_saving.models.AccountModel;
@@ -107,6 +108,7 @@ public class AuthServiceImpl implements AuthService {
         if (!otpSent) {
             log.warn("Failed to send OTP email to: {}", savedUser.getEmail());
             // Maybe throw exception or handle
+            throw new OtpFailedToSentExceptionHandler(savedUser.getEmail());
         }
 
         RegisterResponseDto registerResponseDto = authMapper.toRegisterResponseDto(savedUser);
@@ -117,6 +119,8 @@ public class AuthServiceImpl implements AuthService {
 
         ApiResponse<RegisterResponseDto> responseData = ApiResponse.<RegisterResponseDto>builder()
                 .success(true)
+                .statusCode(HttpStatus.OK.value())
+                .statusMessage(HttpStatus.OK.name())
                 .message("Registration successful. Please verify your email "+ savedUser.getEmail() +" using the OTP sent. OTP will be expired in "+otpExpiresIn+"s.")
                 .timestamp(LocalDateTime.now())
                 .data(registerResponseDto)

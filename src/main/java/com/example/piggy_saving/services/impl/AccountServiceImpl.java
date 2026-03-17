@@ -52,7 +52,7 @@ public class AccountServiceImpl implements AccountService {
             throw new UserNotFoundException("User not found");
         }
 
-        List<AccountResponseDto> accountResponseDtoList = accountMapper.toAccountUserDataAsList(accountRepository.findAllByUserModelId(userId));
+        List<AccountResponseDto> accountResponseDtoList = accountMapper.toAccountUserDataAsList(accountRepository.findAllAccountsByUserId(userId));
 
         ApiResponse<List<AccountResponseDto>> accountResponseDto= ApiResponse.<List<AccountResponseDto>>builder()
                 .message("success")
@@ -66,10 +66,10 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     public ApiResponse<AccountResponseDto> getAccountById(UUID id) {
 
-        accountRepository.findById(id)
+        AccountModel account = accountRepository.findById(id)
                 .orElseThrow(()-> new AccountNotFoundException("Account with ID " + id + " not found"));
 
-        AccountResponseDto accountDataResponseMapper= accountMapper.toAccountUserData(accountRepository.findAccountModelsById(id));
+        AccountResponseDto accountDataResponseMapper= accountMapper.toAccountUserData(account);
 
         ApiResponse<AccountResponseDto> accountDataApiResponse = ApiResponse.<AccountResponseDto>builder()
                 .message("SUCCESS")
@@ -91,5 +91,21 @@ public class AccountServiceImpl implements AccountService {
                 .currency("USD")
                 .build();
         accountRepository.save(accountModel);
+    }
+
+    @Override
+    public ApiResponse<List<AccountResponseDto>> getAllAccountByUserIdAndType(UUID userId,AccountType accountType) {
+        List<AccountResponseDto> accountResponseDtoList = accountMapper.toAccountUserDataAsList(accountRepository.findAllAccountsByUserIdAndTypeIncludingPiggy(userId,accountType));
+
+        ApiResponse<List<AccountResponseDto>> listApiResponse = ApiResponse.<List<AccountResponseDto>>builder()
+                .data(accountResponseDtoList)
+                .success(true)
+                .timestamp(LocalDateTime.now())
+                .statusMessage("success")
+                .statusCode(200)
+                .message("success")
+                .build();
+
+        return listApiResponse;
     }
 }
