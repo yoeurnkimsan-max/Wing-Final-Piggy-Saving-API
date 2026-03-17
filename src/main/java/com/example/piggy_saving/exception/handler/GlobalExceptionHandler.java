@@ -1,6 +1,8 @@
 package com.example.piggy_saving.exception.handler;
 
+import com.example.piggy_saving.dto.response.ApiResponse;
 import com.example.piggy_saving.dto.response.error.ErrorResponse;
+import com.example.piggy_saving.exception.AccountNotFoundException;
 import com.example.piggy_saving.exception.InvalidCredentialsException;
 import com.example.piggy_saving.exception.ResourceNotFoundException;
 import com.example.piggy_saving.exception.UserAlreadyExistsException;
@@ -32,6 +34,20 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    //    Handle account not found
+    @ExceptionHandler(AccountNotFoundException.class)
+    public ResponseEntity<ApiResponse<?>> handleAccountNotFound(
+            AccountNotFoundException ex, HttpServletRequest request) {
+
+        ApiResponse<Object> apiResponse = ApiResponse.builder()
+                .success(false)
+                .message(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
     }
 
     // Handle user already exists (409 Conflict)
@@ -111,7 +127,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleInvalidCredentials(
             InvalidCredentialsException ex,
             HttpServletRequest request
-    ){
+    ) {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.UNAUTHORIZED.value())

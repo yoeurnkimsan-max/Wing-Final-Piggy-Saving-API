@@ -2,9 +2,11 @@ package com.example.piggy_saving.services.impl;
 
 import com.example.piggy_saving.dto.request.LoginRequestDto;
 import com.example.piggy_saving.dto.request.RegisterRequestDto;
+import com.example.piggy_saving.dto.response.ApiResponse;
 import com.example.piggy_saving.dto.response.LoginResponseDto;
 import com.example.piggy_saving.dto.response.RegisterResponseDto;
 import com.example.piggy_saving.exception.UserAlreadyExistsException;
+import com.example.piggy_saving.mappers.AuthMapper;
 import com.example.piggy_saving.models.AccountModel;
 import com.example.piggy_saving.models.RoleModel;
 import com.example.piggy_saving.models.UserModel;
@@ -43,10 +45,11 @@ public class AuthServiceImpl implements AuthService {
     private final EmailOtpService emailOtpService;
     private final AccountRepository accountRepository;
     private final AccountService accountService;
+    private final AuthMapper authMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public RegisterResponseDto register(RegisterRequestDto registerRequestDto) {
+    public ApiResponse<RegisterResponseDto> register(RegisterRequestDto registerRequestDto) {
 
         log.info("Attempting to register user with email: {}", registerRequestDto.getEmail());
 
@@ -106,11 +109,21 @@ public class AuthServiceImpl implements AuthService {
             // Maybe throw exception or handle
         }
 
-        return RegisterResponseDto.builder()
-                .status("PENDING")  // String, not integer
-                .data(new RegisterResponseDto.UserData(savedUser.getId(), savedUser.getEmail(), null, null, 0, 3000))
-                .message("Registration successful. Please verify your email via OTP sent to " + savedUser.getEmail())
+        RegisterResponseDto registerResponseDto = authMapper.toRegisterResponseDto(savedUser);
+
+        int otpExpiresIn = emailOtpService.getOtpInSeconds(LocalDateTime.now().plusMinutes(5));
+
+        registerResponseDto.setOtpExpiresIn(otpExpiresIn);
+
+        ApiResponse<RegisterResponseDto> responseData = ApiResponse.<RegisterResponseDto>builder()
+                .success(true)
+                .message("Registration successful. Please verify your email "+ savedUser.getEmail() +" using the OTP sent. OTP will be expired in "+otpExpiresIn+"s.")
+                .timestamp(LocalDateTime.now())
+                .data(registerResponseDto)
                 .build();
+
+
+        return responseData;
     }
 
     @Override

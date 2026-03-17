@@ -36,8 +36,11 @@ public class AccountController {
     @GetMapping("/{accountId}")
     public ResponseEntity<ApiResponse<AccountResponseDto>> getAccountById(@PathVariable UUID accountId){
 
+        ApiResponse<AccountResponseDto> response =
+                accountService.getAccountById(accountId);
 
-        return null;
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/my-accounts")

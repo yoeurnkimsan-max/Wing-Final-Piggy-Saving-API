@@ -14,33 +14,12 @@ import java.util.UUID;
 @AllArgsConstructor
 public class RegisterResponseDto {
 
-    private String status;
+    @JsonProperty("user_id")
+    private UUID userId;
 
-    private UserData data;
+    @JsonProperty("email")
+    private String email;
 
-    private String message;
-
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class UserData {
-
-        @JsonProperty("user_id")
-        private UUID userId;
-
-        private String email;
-
-        @JsonProperty("access_token")
-        private String accessToken;
-
-        @JsonProperty("refresh_token")
-        private String refreshToken;
-
-        @JsonProperty("access_token_expires_in")
-        private int accessExpiresIn;
-
-        @JsonProperty("OTP_expires_in")
-        private int otpExpiresIn;
-    }
+    @JsonProperty("OTP_expires_in")
+    private int otpExpiresIn;
 }

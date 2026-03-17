@@ -10,5 +10,6 @@ import java.util.List;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface AccountMapper {
-    List<AccountResponseDto> toAccountUserData(List<AccountModel> accountModel);
+    List<AccountResponseDto> toAccountUserDataAsList(List<AccountModel> accountModel);
+    AccountResponseDto toAccountUserData(AccountModel accountModel);
 }

@@ -10,5 +10,6 @@ import java.util.UUID;
 public interface AccountService {
     ApiResponse<List<AccountResponseDto>> getAllAccount();
     ApiResponse<List<AccountResponseDto>> getAccountByUserId(UUID userId);
+    ApiResponse<AccountResponseDto> getAccountById(UUID id);
     public void createMainAccount(UserModel user);
 }

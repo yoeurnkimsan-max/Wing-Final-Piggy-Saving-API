@@ -15,6 +15,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -194,5 +195,14 @@ public class EmailOtpService {
             this.otpCode = otpCode;
             this.expiryTime = expiryTime;
         }
+    }
+
+
+    public int getOtpInSeconds(LocalDateTime expiresAt) {
+        long seconds = java.time.Duration
+                .between(LocalDateTime.now(), expiresAt)
+                .getSeconds();
+
+        return Math.toIntExact(Math.max(seconds, 0));
     }
 }

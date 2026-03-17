@@ -3,6 +3,7 @@ package com.example.piggy_saving.services.impl;
 import com.example.piggy_saving.dto.response.AccountResponseDto;
 import com.example.piggy_saving.dto.response.ApiResponse;
 import com.example.piggy_saving.dto.response.statusEnum.AccountStatus;
+import com.example.piggy_saving.exception.AccountNotFoundException;
 import com.example.piggy_saving.exception.UserNotFoundException;
 import com.example.piggy_saving.mappers.AccountMapper;
 import com.example.piggy_saving.models.AccountModel;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,7 +30,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public ApiResponse<List<AccountResponseDto>> getAllAccount() {
 
-        List<AccountResponseDto> userData = accountMapper.toAccountUserData(accountRepository.findAll());
+        List<AccountResponseDto> userData = accountMapper.toAccountUserDataAsList(accountRepository.findAll());
 
             ApiResponse<List<AccountResponseDto>> accountResponseDto= ApiResponse.<List<AccountResponseDto>>builder()
                     .message("success")
@@ -50,7 +52,7 @@ public class AccountServiceImpl implements AccountService {
             throw new UserNotFoundException("User not found");
         }
 
-        List<AccountResponseDto> accountResponseDtoList = accountMapper.toAccountUserData(accountRepository.findAllByUserModelId(userId));
+        List<AccountResponseDto> accountResponseDtoList = accountMapper.toAccountUserDataAsList(accountRepository.findAllByUserModelId(userId));
 
         ApiResponse<List<AccountResponseDto>> accountResponseDto= ApiResponse.<List<AccountResponseDto>>builder()
                 .message("success")
@@ -58,6 +60,25 @@ public class AccountServiceImpl implements AccountService {
                 .data(accountResponseDtoList)
                 .build();
         return accountResponseDto;
+    }
+
+    @Override
+    @Transactional
+    public ApiResponse<AccountResponseDto> getAccountById(UUID id) {
+
+        accountRepository.findById(id)
+                .orElseThrow(()-> new AccountNotFoundException("Account with ID " + id + " not found"));
+
+        AccountResponseDto accountDataResponseMapper= accountMapper.toAccountUserData(accountRepository.findAccountModelsById(id));
+
+        ApiResponse<AccountResponseDto> accountDataApiResponse = ApiResponse.<AccountResponseDto>builder()
+                .message("SUCCESS")
+                .success(true)
+                .data(accountDataResponseMapper)
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return accountDataApiResponse;
     }
 
     @Override
