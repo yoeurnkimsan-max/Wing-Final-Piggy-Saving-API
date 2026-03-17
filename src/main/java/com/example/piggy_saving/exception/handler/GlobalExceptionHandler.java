@@ -220,6 +220,7 @@ public class GlobalExceptionHandler {
         error.put("timestamp", LocalDateTime.now().toString());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
+
     /**
      * Insufficient Balance
      */
@@ -234,8 +235,37 @@ public class GlobalExceptionHandler {
 
 
     /**
-     * Catch all handler
+     * Forbidden
      */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<?> handleAccessDenied() {
+        return ResponseEntity.status(403).body(Map.of(
+                "success", false,
+                "message", "Email not verified"
+        ));
+    }
+
+    /**
+     * Selft Transfer Main to Main exception
+     */
+
+    @ExceptionHandler(SelfTransferNotAllowedException.class)
+    public ResponseEntity<ErrorResponse> handleSelfTransfer(
+            SelfTransferNotAllowedException ex,
+            HttpServletRequest request) {
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .success(false)
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .validationErrors(null) // or omit if you prefer not to include
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 
 
 }

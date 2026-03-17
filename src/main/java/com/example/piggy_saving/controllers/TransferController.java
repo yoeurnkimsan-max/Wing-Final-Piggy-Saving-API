@@ -1,7 +1,9 @@
 package com.example.piggy_saving.controllers;
 
+import com.example.piggy_saving.dto.request.TransferP2PRequestDto;
 import com.example.piggy_saving.dto.request.TransferToPiggyRequestDto;
 import com.example.piggy_saving.dto.response.ApiResponse;
+import com.example.piggy_saving.dto.response.TransferP2PResponseDto;
 import com.example.piggy_saving.dto.response.TransferResponseDto;
 import com.example.piggy_saving.security.CustomUserDetails;
 import com.example.piggy_saving.services.TransferService;
@@ -45,5 +47,25 @@ public class TransferController {
                 .build();
         return ResponseEntity.ok(apiResponse);
 //        return null;
+    }
+
+    /**
+     * Transfer P2P
+     */
+    @PostMapping("/p2p")
+    public ResponseEntity<ApiResponse<TransferP2PResponseDto>> transferPeerToPeer(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @Valid @RequestBody TransferP2PRequestDto transferRequestDto
+    ) {
+        TransferP2PResponseDto transferP2PRequestDto = transferService.transferP2P(customUserDetails.getUserId(), transferRequestDto);
+        ApiResponse<TransferP2PResponseDto> apiResponse = ApiResponse.<TransferP2PResponseDto>builder()
+                .success(true)
+                .message("Transfer successfully")
+                .statusCode(200)
+                .statusMessage("OK")
+                .data(transferP2PRequestDto)
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.ok(apiResponse);
     }
 }

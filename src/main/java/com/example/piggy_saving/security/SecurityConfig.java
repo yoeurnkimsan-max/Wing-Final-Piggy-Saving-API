@@ -12,13 +12,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter) {
-        this.jwtAuthFilter = jwtAuthFilter;
-    }
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -28,8 +28,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/v1/**", "/public/**").permitAll() // Public endpoints
                         .requestMatchers("/api/v1/email-otp/**").permitAll()
-//                        .requestMatchers("/api/v1/accounts","/api/v1/accounts/**").permitAll()
                         .anyRequest().authenticated() // All other endpoints require authentication
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint) // handles 401 Unauthorized
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // Add JWT filter
 

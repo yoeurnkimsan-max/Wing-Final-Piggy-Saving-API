@@ -12,6 +12,7 @@ public class CustomUserDetails implements UserDetails {
     private final UUID userId;
     private final String email;
     private final String password;
+    private boolean emailVerified;
     private final Collection<? extends GrantedAuthority> authorities;
 
     public CustomUserDetails(UUID userId,
@@ -32,6 +33,10 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public String getPassword() {
         return password;
+    }
+
+    public boolean isEmailVerified(){
+        return emailVerified;
     }
 
     @Override
