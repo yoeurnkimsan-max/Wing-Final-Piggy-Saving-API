@@ -25,4 +25,11 @@ public interface AccountRepository extends JpaRepository<AccountModel, UUID> {
                    OR p.userModel.id = :userId
             """)
     List<AccountModel> findAllAccountsByUserId(@Param("userId") UUID userId);
+
+    Optional<AccountModel> findAccountModelsByUserModelIdAndAccountType(UUID userModelId, AccountType accountType);
+
+    Optional<AccountModel> findByIdAndUserModelId(UUID id, UUID userModelId);
+
+    Optional<AccountModel> findByPiggyGoalModelIdAndUserModelId(UUID piggyGoalModelId, UUID userModelId);
+    
 }

@@ -5,6 +5,7 @@ import com.example.piggy_saving.dto.response.AccountResponseDto;
 import com.example.piggy_saving.dto.response.ApiResponse;
 import com.example.piggy_saving.dto.response.CreatePiggyGoalResponseDto;
 import com.example.piggy_saving.dto.response.PiggyGoalResponseDto;
+import com.example.piggy_saving.exception.AccountNotFoundException;
 import com.example.piggy_saving.exception.NotFoundExceptionHandler;
 import com.example.piggy_saving.exception.UserNotFoundException;
 import com.example.piggy_saving.mappers.PiggyAccountMapper;
@@ -91,7 +92,8 @@ public class PiggyAccountServiceImpl implements PiggyAccountService {
     public ResponseEntity<ApiResponse<PiggyGoalResponseDto>> getPiggyAccountById(UUID userId, UUID piggyId) {
 
 
-        PiggyGoalModel piggyGoalModel = piggyGoalRepository.findByIdAndUserModelId(piggyId, userId);
+        PiggyGoalModel piggyGoalModel = piggyGoalRepository.findByIdAndUserModelId(piggyId, userId)
+                .orElseThrow(() -> new AccountNotFoundException("Piggy Goal not found"));
 
         if (piggyGoalModel == null) {
             throw new NotFoundExceptionHandler("Piggy goal not found");

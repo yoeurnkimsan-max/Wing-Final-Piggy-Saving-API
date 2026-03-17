@@ -13,9 +13,9 @@ public class TransferToPiggyRequestDto {
     @NotNull(message = "Piggy account ID must not be null")
     private UUID piggyAccountId;
 
-    @NotNull(message = "Amount must not be null")
-    @Positive(message = "Amount must be greater than zero")
-    private BigDecimal amount;
+    @NotNull(message = "Transfer Amount must not be null")
+    @Positive(message = "Transfer Amount must be greater than zero")
+    private BigDecimal transferAmount;
 
 
 }

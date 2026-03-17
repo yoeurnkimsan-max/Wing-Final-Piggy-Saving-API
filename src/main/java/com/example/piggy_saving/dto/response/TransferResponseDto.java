@@ -7,19 +7,20 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Builder
 public class TransferResponseDto {
 
     @JsonProperty("transaction_id")
-    private String transactionId;
+    private UUID transactionId;
 
     @JsonProperty("from_account_id")
-    private String fromAccountId;
+    private UUID fromAccountId;
 
     @JsonProperty("to_account_id")
-    private String toAccountId;
+    private UUID toAccountId;
 
     @JsonProperty("amount")
     private BigDecimal amount;

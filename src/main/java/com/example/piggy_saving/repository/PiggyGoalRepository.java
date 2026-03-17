@@ -9,10 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface PiggyGoalRepository extends JpaRepository<PiggyGoalModel, UUID> {
-    @Query("SELECT pg FROM PiggyGoalModel pg " +
-            "LEFT JOIN FETCH pg.accountModel a " +
-            "WHERE pg.id = :goalId")
-    PiggyGoalModel findByIdWithAccount(@Param("goalId") UUID goalId);
 
-    PiggyGoalModel findByIdAndUserModelId(UUID id, UUID userModelId);
+
+    Optional<PiggyGoalModel> findByIdAndUserModelId(UUID id, UUID userModelId);
 }

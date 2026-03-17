@@ -209,4 +209,33 @@ public class GlobalExceptionHandler {
                 .path(path)
                 .build();
     }
+
+    /**
+     * Database fetch exception
+     */
+    @ExceptionHandler(DatabaseFetchException.class)
+    public ResponseEntity<Map<String, String>> handleDatabaseFetch(DatabaseFetchException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", ex.getMessage());
+        error.put("timestamp", LocalDateTime.now().toString());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+    /**
+     * Insufficient Balance
+     */
+    @ExceptionHandler(InsufficientBalanceException.class)
+    public ResponseEntity<Map<String, Object>> handleInsufficientBalance(InsufficientBalanceException ex) {
+        Map<String, Object> error = new HashMap<>();
+        error.put("error", ex.getMessage());
+        error.put("timestamp", LocalDateTime.now());
+        error.put("status", HttpStatus.BAD_REQUEST.value()); // 400 Bad Request
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+
+    /**
+     * Catch all handler
+     */
+
+
 }
