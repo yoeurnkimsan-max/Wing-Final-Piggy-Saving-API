@@ -58,6 +58,7 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
+
     /**
      * Role Not Found
      */
@@ -65,7 +66,24 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RoleNotFoundExceptionHandler.class)
     public ResponseEntity<ErrorResponse> handleRoleNotFound(
             RoleNotFoundExceptionHandler exceptionHandler, HttpServletRequest request
-    ){
+    ) {
+        ErrorResponse errorResponse = buildErrorResponse(
+                HttpStatus.NOT_FOUND,
+                exceptionHandler.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    /**
+     * Not Found exception
+     */
+
+    @ExceptionHandler(NotFoundExceptionHandler.class)
+    public ResponseEntity<ErrorResponse> handleRoleNotFound(
+            NotFoundExceptionHandler exceptionHandler, HttpServletRequest request
+    ) {
         ErrorResponse errorResponse = buildErrorResponse(
                 HttpStatus.NOT_FOUND,
                 exceptionHandler.getMessage(),
@@ -82,7 +100,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(OtpFailedToSentExceptionHandler.class)
     public ResponseEntity<ErrorResponse> handleRoleNotFound(
             OtpFailedToSentExceptionHandler exceptionHandler, HttpServletRequest request
-    ){
+    ) {
         ErrorResponse errorResponse = buildErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 exceptionHandler.getMessage(),

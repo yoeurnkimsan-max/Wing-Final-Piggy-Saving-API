@@ -4,6 +4,7 @@ import com.example.piggy_saving.dto.request.CreatePiggyRequestDto;
 import com.example.piggy_saving.dto.response.AccountResponseDto;
 import com.example.piggy_saving.dto.response.ApiResponse;
 import com.example.piggy_saving.dto.response.CreatePiggyGoalResponseDto;
+import com.example.piggy_saving.dto.response.PiggyGoalResponseDto;
 import com.example.piggy_saving.models.enums.AccountType;
 import com.example.piggy_saving.security.CustomUserDetails;
 import com.example.piggy_saving.services.AccountService;
@@ -83,6 +84,18 @@ public class AccountController {
             ){
 
         return ResponseEntity.ok(piggyAccountService.createPiggyAccount(userDetails.getUserId(), requestDto));
+    }
+
+    /**
+     * Get Detail Specific piggy-account by id
+     */
+    @GetMapping("/piggy-account/{piggy_id}")
+    public ResponseEntity<ApiResponse<PiggyGoalResponseDto>> getPiggyAccountById(
+            @PathVariable UUID piggy_id,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ){
+
+        return piggyAccountService.getPiggyAccountById(userDetails.getUserId(), piggy_id);
     }
 
 }

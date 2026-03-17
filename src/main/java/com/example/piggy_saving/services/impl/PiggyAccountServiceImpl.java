@@ -1,8 +1,11 @@
 package com.example.piggy_saving.services.impl;
 
 import com.example.piggy_saving.dto.request.CreatePiggyRequestDto;
+import com.example.piggy_saving.dto.response.AccountResponseDto;
 import com.example.piggy_saving.dto.response.ApiResponse;
 import com.example.piggy_saving.dto.response.CreatePiggyGoalResponseDto;
+import com.example.piggy_saving.dto.response.PiggyGoalResponseDto;
+import com.example.piggy_saving.exception.NotFoundExceptionHandler;
 import com.example.piggy_saving.exception.UserNotFoundException;
 import com.example.piggy_saving.mappers.PiggyAccountMapper;
 import com.example.piggy_saving.models.AccountModel;
@@ -14,6 +17,7 @@ import com.example.piggy_saving.repository.PiggyGoalRepository;
 import com.example.piggy_saving.repository.UserRepository;
 import com.example.piggy_saving.services.PiggyAccountService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -59,7 +63,7 @@ public class PiggyAccountServiceImpl implements PiggyAccountService {
                 .balance(BigDecimal.ZERO)
                 .currency("USD")
                 .piggyGoalModel(piggyGoal) // only set piggyGoalModel, not userModel
-
+                .userModel(user)
                 .build();
 
         // 4️⃣ Set bidirectional mapping
@@ -81,5 +85,28 @@ public class PiggyAccountServiceImpl implements PiggyAccountService {
                 .data(mappingPiggyModel)
                 .timestamp(LocalDateTime.now())
                 .build();
+    }
+
+    @Override
+    public ResponseEntity<ApiResponse<PiggyGoalResponseDto>> getPiggyAccountById(UUID userId, UUID piggyId) {
+
+
+        PiggyGoalModel piggyGoalModel = piggyGoalRepository.findByIdAndUserModelId(piggyId, userId);
+
+        if (piggyGoalModel == null) {
+            throw new NotFoundExceptionHandler("Piggy goal not found");
+        }
+
+        PiggyGoalResponseDto toDto = piggyAccountMapper.toPiggyGoalResponse(piggyGoalModel);
+
+        ApiResponse<PiggyGoalResponseDto> dataResponse = ApiResponse.<PiggyGoalResponseDto>builder()
+                .success(true)
+                .message("Get PiggyGoal successfully")
+                .statusCode(200)
+                .statusMessage("SUCCESS")
+                .data(toDto)
+                .build();
+
+        return ResponseEntity.ok(dataResponse);
     }
 }

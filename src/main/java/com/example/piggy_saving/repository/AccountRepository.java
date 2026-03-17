@@ -11,29 +11,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface AccountRepository extends JpaRepository<AccountModel, UUID> {
-    List<AccountModel> findAllByUserModelId(UUID userModelId);
-
-    boolean existsAccountModelById(UUID id);
-
-    AccountModel findAccountModelsById(UUID id);
-
-    Optional<AccountModel> findById(UUID id);
-
-    List<AccountModel> findAllByAccountType(AccountType accountType);
-
-    List<AccountModel> getAccountModelByUserModelIdAndAccountType(UUID userModelId, AccountType accountType);
-
-    @Query("SELECT a FROM AccountModel a WHERE a.userModel.id = :userId OR a.piggyGoalModel.userModel.id = :userId")
-    List<AccountModel> findAllAccountsByUserIdIncludingPiggy(@Param("userId") UUID userId);
 
     @Query("SELECT a FROM AccountModel a WHERE (a.userModel.id = :userId OR a.piggyGoalModel.userModel.id = :userId) AND a.accountType = :accountType")
     List<AccountModel> findAllAccountsByUserIdAndTypeIncludingPiggy(@Param("userId") UUID userId, @Param("accountType") AccountType accountType);
 
-    @Query("SELECT a FROM AccountModel a WHERE a.userModel.id = :userId AND a.accountType IN :types")
-    List<AccountModel> findAllByUserIdAndTypes(
-            @Param("userId") UUID userId,
-            @Param("types") List<AccountType> types
-    );
+    List<AccountModel> findAllByUserModelIdAndAccountType(UUID userModelId, AccountType accountType);
 
     @Query("""
                 SELECT a

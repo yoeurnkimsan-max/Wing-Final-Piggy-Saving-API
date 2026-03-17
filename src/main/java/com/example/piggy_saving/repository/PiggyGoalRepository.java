@@ -13,4 +13,6 @@ public interface PiggyGoalRepository extends JpaRepository<PiggyGoalModel, UUID>
             "LEFT JOIN FETCH pg.accountModel a " +
             "WHERE pg.id = :goalId")
     PiggyGoalModel findByIdWithAccount(@Param("goalId") UUID goalId);
+
+    PiggyGoalModel findByIdAndUserModelId(UUID id, UUID userModelId);
 }

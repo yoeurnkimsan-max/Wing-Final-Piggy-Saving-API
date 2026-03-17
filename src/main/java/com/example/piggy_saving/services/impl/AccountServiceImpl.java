@@ -95,7 +95,11 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public ApiResponse<List<AccountResponseDto>> getAllAccountByUserIdAndType(UUID userId,AccountType accountType) {
-        List<AccountResponseDto> accountResponseDtoList = accountMapper.toAccountUserDataAsList(accountRepository.findAllAccountsByUserIdAndTypeIncludingPiggy(userId,accountType));
+
+
+        List<AccountResponseDto> accountResponseDtoList = accountMapper.toAccountUserDataAsList(accountRepository.findAllByUserModelIdAndAccountType(userId,accountType));
+
+
 
         ApiResponse<List<AccountResponseDto>> listApiResponse = ApiResponse.<List<AccountResponseDto>>builder()
                 .data(accountResponseDtoList)
