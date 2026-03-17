@@ -146,6 +146,7 @@ public class TransferServiceImpl implements TransferService {
             return TransferResponseDto.builder()
                     .transactionId(transaction.getId())
                     .fromAccountId(mainAccount.getId())
+                    .completedAt(transaction.getCreatedAt())
                     .toAccountId(piggyAccount.getId())
                     .amount(transferAmount)
                     .type(TransactionType.TRANSFER)
