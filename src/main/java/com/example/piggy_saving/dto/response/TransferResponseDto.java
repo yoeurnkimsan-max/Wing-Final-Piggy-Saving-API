@@ -31,4 +31,15 @@ public class TransferResponseDto {
     @JsonProperty("description")
     private String description;
 
+    @JsonProperty("new_main_balance")
+    private BigDecimal newMainBalance;
+
+    @JsonProperty("new_piggy_balance")
+    private BigDecimal newPiggyBalance;
+
+    @JsonProperty("goal_completed")
+    private Boolean goalCompleted;
+
+    @JsonProperty("completed_at")
+    private LocalDateTime completedAt;
 }

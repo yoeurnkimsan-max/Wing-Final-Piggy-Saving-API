@@ -6,9 +6,7 @@ import com.example.piggy_saving.exception.AccountNotFoundException;
 import com.example.piggy_saving.exception.InsufficientBalanceException;
 import com.example.piggy_saving.exception.UserNotFoundException;
 import com.example.piggy_saving.models.*;
-import com.example.piggy_saving.models.enums.AccountType;
-import com.example.piggy_saving.models.enums.TransactionStatus;
-import com.example.piggy_saving.models.enums.TransactionType;
+import com.example.piggy_saving.models.enums.*;
 import com.example.piggy_saving.repository.*;
 import com.example.piggy_saving.services.TransferService;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +14,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class TransferServiceImpl implements TransferService {
+
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
     private final LedgerEntryRepository ledgerEntryRepository;
@@ -33,19 +31,26 @@ public class TransferServiceImpl implements TransferService {
     public TransferResponseDto transferToPiggy(UUID userId, TransferToPiggyRequestDto transferRequestDto) {
 
         /**
-         * Find Exist User
+         * Find Existing User
          */
         UserModel user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         /**
-         * Find Main Account
+         * Find Main Account with pessimistic lock
          */
         AccountModel mainAccount = accountRepository
                 .findAccountModelsByUserModelIdAndAccountType(userId, AccountType.MAIN)
                 .orElseThrow(() -> new AccountNotFoundException("User main account not found"));
 
         BigDecimal transferAmount = transferRequestDto.getTransferAmount();
+
+        /**
+         * Validate transfer amount
+         */
+        if (transferAmount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Transfer amount must be positive");
+        }
 
         /**
          * Check balance
@@ -55,78 +60,107 @@ public class TransferServiceImpl implements TransferService {
         }
 
         /**
-         * Find PiggyGoal of PiggyModel with user ID where we want to credit
+         * Find PiggyGoal with correct parameter order
          */
-        PiggyGoalModel piggyGoalAccount = piggyGoalRepository
-                .findByIdAndUserModelId(userId, transferRequestDto.getPiggyAccountId())
-                .orElseThrow(() -> new AccountNotFoundException("Piggy account not found"));
+        PiggyGoalModel piggyGoal = piggyGoalRepository
+                .findByIdAndUserModelId(transferRequestDto.getPiggyAccountId(), userId)
+                .orElseThrow(() -> new AccountNotFoundException("Piggy goal not found"));
+
         /**
-         * Find Piggy Account  with piggy-id and user-id
+         * Validate piggy goal status
+         */
+        if (piggyGoal.getStatus() != GoalStatus.ACTIVE) {
+            throw new IllegalArgumentException("Piggy goal is not active");
+        }
+
+        /**
+         * Find Piggy Account
          */
         AccountModel piggyAccount = accountRepository
                 .findByPiggyGoalModelIdAndUserModelId(transferRequestDto.getPiggyAccountId(), userId)
-                .orElseThrow(() -> new AccountNotFoundException("Piggy Account not found"));
+                .orElseThrow(() -> new AccountNotFoundException("Piggy account not found"));
 
-        // 1️⃣ Create transaction
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("description", "Transfer to Piggy Goal: " + piggyGoal.getName());
+        // 1️⃣ Create transaction with proper metadata
         TransactionModel transaction = TransactionModel.builder()
                 .initiatedByUserModel(user)
                 .transactionType(TransactionType.TRANSFER)
                 .status(TransactionStatus.PENDING)
                 .referenceId(UUID.randomUUID().toString())
+                .metadata(metadata)
                 .build();
 
         transaction = transactionRepository.save(transaction);
 
         // 2️⃣ Create ledger entries
         LedgerEntryModel debitEntry = LedgerEntryModel.builder()
+                .transactionModel(transaction)
                 .accountModel(mainAccount)
                 .amount(transferAmount.negate())
-                .transactionModel(transaction)
+                .entryType(EntryType.DEBIT)
                 .build();
 
         LedgerEntryModel creditEntry = LedgerEntryModel.builder()
+                .transactionModel(transaction)
                 .accountModel(piggyAccount)
                 .amount(transferAmount)
-                .transactionModel(transaction)
+                .entryType(EntryType.CREDIT)
                 .build();
 
-        transaction.setLedgerEntries(List.of(debitEntry, creditEntry));
+        // Set bidirectional relationship
+        transaction.setLedgerEntries(new ArrayList<>(List.of(debitEntry, creditEntry)));
 
         try {
-            // 3️⃣ Update balances safely
-            mainAccount.setBalance(mainAccount.getBalance().subtract(transferAmount));
-            piggyAccount.setBalance(piggyAccount.getBalance().add(transferAmount));
-            piggyGoalAccount.setCurrentBalance(
-                    piggyGoalAccount.getCurrentBalance().add(transferAmount)
-            );
+            // 3️⃣ Update balances
+            BigDecimal newMainBalance = mainAccount.getBalance().subtract(transferAmount);
+            BigDecimal newPiggyBalance = piggyAccount.getBalance().add(transferAmount);
 
-            // 4️⃣ Save everything
+            mainAccount.setBalance(newMainBalance);
+            piggyAccount.setBalance(newPiggyBalance);
+
+            // Update piggy goal current balance to match account balance
+            piggyGoal.setCurrentBalance(newPiggyBalance);
+
+            // 4️⃣ Check if goal is completed
+            boolean goalCompleted = false;
+            if (newPiggyBalance.compareTo(piggyGoal.getTargetAmount()) >= 0) {
+                piggyGoal.setStatus(GoalStatus.COMPLETED);
+                piggyGoal.setCompletedAt(transaction.getCreatedAt());
+                goalCompleted = true;
+            }
+
+            // 5️⃣ Save everything
             accountRepository.save(mainAccount);
             accountRepository.save(piggyAccount);
-            piggyGoalRepository.save(piggyGoalAccount);
+            piggyGoalRepository.save(piggyGoal);
 
             ledgerEntryRepository.save(debitEntry);
             ledgerEntryRepository.save(creditEntry);
 
             // ✅ SUCCESS
             transaction.setStatus(TransactionStatus.COMPLETED);
+            transactionRepository.save(transaction);
+
+            // 6️⃣ Build response with all required fields
+            return TransferResponseDto.builder()
+                    .transactionId(transaction.getId())
+                    .fromAccountId(mainAccount.getId())
+                    .toAccountId(piggyAccount.getId())
+                    .amount(transferAmount)
+                    .type(TransactionType.TRANSFER)
+                    .description("Transfer to Piggy Goal: " + piggyGoal.getName())
+                    .newMainBalance(newMainBalance)
+                    .newPiggyBalance(newPiggyBalance)
+                    .goalCompleted(goalCompleted)
+                    .completedAt(goalCompleted ? piggyGoal.getCompletedAt() : null)
+                    .build();
 
         } catch (Exception e) {
+            // ❌ FAILURE - mark transaction as failed
             transaction.setStatus(TransactionStatus.FAILED);
-            throw e;
-        } finally {
             transactionRepository.save(transaction);
+            throw e;
         }
-
-        TransferResponseDto responseDto = TransferResponseDto.builder()
-                .transactionId(transaction.getId())
-                .type(TransactionType.TRANSFER)
-                .amount(transferAmount)
-                .description("Transfer")
-                .fromAccountId(mainAccount.getId())
-                .toAccountId(piggyAccount.getId())
-                .build();
-
-        return responseDto;
     }
 }

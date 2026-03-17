@@ -5,10 +5,13 @@ import com.example.piggy_saving.models.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Entity
@@ -49,8 +52,10 @@ public class TransactionModel {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    // JSONB column using native Hibernate 6 support
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "metadata", columnDefinition = "jsonb")
-    private String metadata; // or use a JSON type if supported
+    private Map<String, Object> metadata;
 
     @OneToMany(mappedBy = "transactionModel", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LedgerEntryModel> ledgerEntries;
