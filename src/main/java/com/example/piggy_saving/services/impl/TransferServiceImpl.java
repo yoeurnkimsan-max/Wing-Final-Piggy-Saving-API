@@ -4,6 +4,7 @@ import com.example.piggy_saving.dto.request.TransferP2PRequestDto;
 import com.example.piggy_saving.dto.request.TransferToPiggyRequestDto;
 import com.example.piggy_saving.dto.response.TransferP2PResponseDto;
 import com.example.piggy_saving.dto.response.TransferResponseDto;
+import com.example.piggy_saving.event.P2PTransferCompletedEvent;
 import com.example.piggy_saving.exception.AccountNotFoundException;
 import com.example.piggy_saving.exception.InsufficientBalanceException;
 import com.example.piggy_saving.exception.SelfTransferNotAllowedException;
@@ -13,13 +14,11 @@ import com.example.piggy_saving.models.enums.*;
 import com.example.piggy_saving.repository.*;
 import com.example.piggy_saving.services.TransferService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.*;
 
 @Service
@@ -31,6 +30,14 @@ public class TransferServiceImpl implements TransferService {
     private final LedgerEntryRepository ledgerEntryRepository;
     private final PiggyGoalRepository piggyGoalRepository;
     private final UserRepository userRepository;
+
+    /**
+     * Notfiy Event
+     * @param userId
+     * @param transferRequestDto
+     * @return
+     */
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -287,6 +294,18 @@ public class TransferServiceImpl implements TransferService {
             // ✅ SUCCESS: Save transaction
             transaction.setStatus(TransactionStatus.COMPLETED);
             transactionRepository.save(transaction);
+
+            applicationEventPublisher.publishEvent(
+                    new P2PTransferCompletedEvent(
+                            this,
+                            user,
+                            recipientUser,
+                            transferAmount,
+                            "Transfer to "+recipientUser.getEmail(),
+                            transaction.getId()
+                    )
+
+            );
 
             // 6️⃣ Build response with all required fields
             return TransferP2PResponseDto.builder()
