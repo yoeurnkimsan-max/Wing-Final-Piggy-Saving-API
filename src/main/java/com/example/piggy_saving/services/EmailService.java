@@ -1,7 +1,9 @@
 package com.example.piggy_saving.services;
 
 import com.example.piggy_saving.dto.request.P2PTransferDataDto;
+import com.example.piggy_saving.event.OwnTransferMainToPiggyCompletedEvent;
 import com.example.piggy_saving.models.enums.TransferType;
+import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,9 +14,13 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -32,6 +38,25 @@ public class EmailService {
 
     @Value("${spring.mail.username}")
     private String fromEmail;
+
+    @Value("${app.base-url}")
+    private String baseUrl;
+
+    // If you want individual link properties (optional)
+    @Value("${app.links.goals:${app.base-url}/goals}")
+    private String goalsLink;
+
+    @Value("${app.links.wallet:${app.base-url}/wallet}")
+    private String walletLink;
+
+    @Value("${app.links.transactions:${app.base-url}/transactions}")
+    private String transactionsLink;
+
+    @Value("${app.links.unsubscribe:${app.base-url}/unsubscribe}")
+    private String unsubscribeBaseLink;
+
+    @Value("${app.links.privacy:${app.base-url}/privacy}")
+    private String privacyLink;
 
     private static final String APP_NAME = "Piggy Saving";
     private static final String SUPPORT_EMAIL = "support@piggysaving.com";
@@ -183,5 +208,67 @@ public class EmailService {
             // ⚠️ IMPORTANT: still return future to avoid async crash
             return CompletableFuture.failedFuture(e);
         }
+    }
+
+    @Async
+    public void sendOwnTransferEmail(OwnTransferMainToPiggyCompletedEvent event) {
+        try {
+            Map<String, Object> variables = new HashMap<>();
+            variables.put("appName", APP_NAME);
+            variables.put("currentYear", LocalDateTime.now().getYear());
+            variables.put("supportEmail", SUPPORT_EMAIL);
+
+            // User & goal info
+            variables.put("userName", event.getOwner().getName());
+            variables.put("goalName", event.getPiggyGoal().getName());
+            variables.put("amount", formatCurrency(event.getAmount()));
+            variables.put("newMainBalance", formatCurrency(event.getNewMainBalance()));
+            variables.put("newPiggyBalance", formatCurrency(event.getNewPiggyBalance()));
+            variables.put("progressPercentage", event.getGoalProgressPercentage());
+            variables.put("goalCompleted", event.isGoalCompleted());
+            variables.put("transactionId", event.getTransactionId().toString());
+            variables.put("transactionDateTime", formatDateTime(event.getTransactionDate()));
+            variables.put("sourceAccountMask", event.getSourceAccountMask());
+            variables.put("destinationAccountMask", event.getDestinationAccountMask());
+            variables.put("goalTargetAmount", formatCurrency(event.getPiggyGoal().getTargetAmount()));
+
+            // Links – injected from properties (see below)
+            variables.put("goalLink", baseUrl + "/" + event.getPiggyGoal().getId());
+            variables.put("walletLink", walletLink);
+            variables.put("transactionHistoryLink", transactionsLink);
+            variables.put("unsubscribeLink", unsubscribeBaseLink + "?email=" + event.getOwner().getEmail());
+            variables.put("privacyPolicyLink", privacyLink);
+            variables.put("emailSubject", "You transferred money to your goal: " + event.getPiggyGoal().getName());
+
+            // Render and send
+            String htmlContent = templateService.renderTemplate("email/own-transfer", variables);
+            sendHtmlEmail(event.getOwner().getEmail(), (String) variables.get("emailSubject"), htmlContent);
+
+        } catch (Exception e) {
+            logger.error("Failed to send own transfer email to: {}", event.getOwner().getEmail(), e);
+            // Depending on your policy, you may rethrow or just log
+        }
+    }
+
+    // Helper methods
+    private String formatCurrency(BigDecimal amount) {
+        return NumberFormat.getCurrencyInstance(Locale.US).format(amount);
+    }
+
+
+    private void sendHtmlEmail(String to, String subject, String html) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+        helper.setFrom(fromEmail);
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(html, true);
+        mailSender.send(message);
+    }
+
+    private String formatDateTime(LocalDateTime dateTime) {
+        if (dateTime == null) return "N/A";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy, h:mm a");
+        return dateTime.format(formatter);
     }
 }

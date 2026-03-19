@@ -4,86 +4,102 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title th:text="'Piggy Saving - ' + ${emailSubject}">Piggy Saving - Transfer to Piggy</title>
+    <title th:text="'Piggy Saving - ' + ${emailSubject}">Piggy Saving - Transfer to Goal</title>
     <!--[if mso]>
     <style type="text/css">table {
         border-collapse: collapse;
     }</style>
     <![endif]-->
 </head>
-<body style="margin:0;padding:0;background-color:#f0ede8;-webkit-text-size-adjust:100%;">
+<body style="margin:0;padding:0;background-color:#f0ede8;-webkit-text-size-adjust:100%;font-family: Arial, Helvetica, sans-serif;">
 
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f0ede8"
        style="background-color:#f0ede8;">
     <tr>
         <td align="center" style="padding:36px 16px;">
 
-            <!-- ╔══════════════════════════╗ -->
-            <!-- ║        MAIN CARD         ║ -->
-            <!-- ╚══════════════════════════╝ -->
+            <!-- MAIN CARD -->
             <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="560"
                    style="width:100%;max-width:560px;background-color:#fffdf9;border-radius:24px;
-                    overflow:hidden;border:1px solid #e0d9cf;">
-
-                <!-- ════════════════════════ -->
-                <!-- HERO                    -->
-                <!-- ════════════════════════ -->
+                          overflow:hidden;border:1px solid #e0d9cf; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
 
                 <!-- Top gold stripe -->
                 <tr>
                     <td bgcolor="#c8a84b"
-                        style="background-color:#c8a84b;height:5px;font-size:0;line-height:0;">&nbsp;
+                        style="background-color:#c8a84b;height:6px;font-size:0;line-height:0;">&nbsp;
                     </td>
                 </tr>
 
-                <!-- Nav bar: logo left -->
+                <!-- Navbar – refined logo -->
                 <tr>
-                    <td bgcolor="#1c1814" style="background-color:#1c1814;padding:20px 36px;">
+                    <td bgcolor="#1c1814" style="background-color:#1c1814;padding:16px 36px;">
                         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                             <tr>
+                                <!-- Left: logo -->
                                 <td valign="middle">
                                     <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                                         <tr>
                                             <td valign="middle">
                                                 <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                                                     <tr>
-                                                        <td align="center" bgcolor="#c8a84b"
-                                                            style="background-color:#c8a84b;
-                                                                   width:36px;height:36px;
-                                                                   border-radius:8px;
-                                                                   font-size:20px;
-                                                                   line-height:36px;
-                                                                   text-align:center;
-                                                                   vertical-align:middle;">
-                                                            &#x1F4B0;
+                                                        <td align="center" bgcolor="#2c2218"
+                                                            style="background-color:#2c2218;
+                                                                   width:46px;height:46px;
+                                                                   border-radius:12px;
+                                                                   border:1.5px solid #c8a84b;
+                                                                   padding:5px;">
+                                                            <table role="presentation" cellpadding="0" cellspacing="0"
+                                                                   border="0">
+                                                                <tr>
+                                                                    <td align="center" bgcolor="#c8a84b"
+                                                                        style="background-color:#c8a84b;
+                                                                               width:32px;height:32px;
+                                                                               border-radius:8px;
+                                                                               font-size:18px;
+                                                                               line-height:32px;
+                                                                               text-align:center;
+                                                                               vertical-align:middle;">
+                                                                        &#x1F437;
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
                                                         </td>
                                                     </tr>
                                                 </table>
                                             </td>
-                                            <td valign="middle" style="padding-left:10px;">
+                                            <td valign="middle" style="padding-left:12px;">
                                                 <p th:text="${appName}"
-                                                   style="margin:0;font-family:Georgia,'Times New Roman',Times,serif;
-                                                          font-size:18px;font-weight:normal;color:#fffdf9;letter-spacing:0.3px;">
+                                                   style="margin:0 0 3px;
+                                                          font-family:Georgia,'Times New Roman',Times,serif;
+                                                          font-size:17px;font-weight:normal;
+                                                          color:#fffdf9;letter-spacing:0.4px;line-height:1.1;">
                                                     Piggy Saving
+                                                </p>
+                                                <p style="margin:0;
+                                                          font-family:Arial,Helvetica,sans-serif;
+                                                          font-size:10px;color:#c8a84b;
+                                                          letter-spacing:1.5px;text-transform:uppercase;">
+                                                    Trusted Saving Partner
                                                 </p>
                                             </td>
                                         </tr>
                                     </table>
                                 </td>
+                                <!-- Right: badge -->
                                 <td valign="middle" align="right">
                                     <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                                         <tr>
-                                            <td bgcolor="#2c2218"
-                                                style="background-color:#2c2218;
+                                            <td bgcolor="#2a2318"
+                                                style="background-color:#2a2318;
                                                        border-radius:40px;
-                                                       padding:5px 14px;
+                                                       padding:7px 16px;
                                                        border:1px solid #c8a84b;">
                                                 <p style="margin:0;
                                                           font-family:Arial,Helvetica,sans-serif;
                                                           font-size:10px;font-weight:bold;
                                                           color:#c8a84b;letter-spacing:1.5px;
                                                           text-transform:uppercase;">
-                                                    &#x1F4B8;&nbsp; Transfer Confirmed
+                                                    &#x1F4B0;&nbsp; Transfer to Piggy
                                                 </p>
                                             </td>
                                         </tr>
@@ -96,61 +112,65 @@
 
                 <!-- Hero banner -->
                 <tr>
-                    <td bgcolor="#1c1814" style="background-color:#1c1814;padding:48px 36px 52px;text-align:center;">
+                    <td bgcolor="#1c1814"
+                        style="background-color:#1c1814;padding:48px 36px 50px;text-align:center;">
 
-                        <!-- Piggy bank with money icon -->
-                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center"
-                               style="margin:0 auto 24px;">
+                        <!-- Double-ring icon with piggy emoji -->
+                        <table role="presentation" cellpadding="0" cellspacing="0" border="0"
+                               align="center" style="margin:0 auto 22px;">
                             <tr>
-                                <td align="center" bgcolor="#26200f"
-                                    style="background-color:#26200f;
-                                           width:80px;height:80px;
-                                           border-radius:50%;
-                                           border:1px solid #c8a84b;
-                                           font-size:40px;
-                                           line-height:80px;
-                                           text-align:center;
-                                           vertical-align:middle;">
-                                    &#x1F4B0;
+                                <td align="center" bgcolor="#2a2318"
+                                    style="background-color:#2a2318; width:96px; height:96px; border-radius:50%; border:1px solid #5a4a2a; padding:3px;">
+                                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"
+                                           height="100%">
+                                        <tr>
+                                            <td align="center" bgcolor="#332b1a"
+                                                style="background-color:#332b1a; border-radius:50%; width:88px; height:88px; border:1px solid #c8a84b; text-align:center; vertical-align:middle; padding:0; font-size:44px; line-height:88px;">
+                                                🐷
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </td>
                             </tr>
                         </table>
 
                         <!-- Headline -->
-                        <p style="margin:0 0 10px;
+                        <p style="margin:0 0 12px;
                                   font-family:Georgia,'Times New Roman',Times,serif;
-                                  font-size:32px;font-weight:normal;
-                                  color:#fffdf9;letter-spacing:-0.5px;line-height:1.2;">
-                            Money moved to Piggy
+                                  font-size:32px;font-weight:400;
+                                  color:#fffdf9;letter-spacing:-0.3px;line-height:1.2;">
+                            Money moved to your goal
                         </p>
 
-                        <!-- Dot divider -->
+                        <!-- Gold dot divider -->
                         <table role="presentation" cellpadding="0" cellspacing="0" border="0"
-                               align="center" style="margin:12px auto 12px;">
+                               align="center" style="margin:14px auto 16px;">
                             <tr>
                                 <td bgcolor="#c8a84b"
-                                    style="background-color:#c8a84b;width:5px;height:5px;border-radius:50%;font-size:0;line-height:0;">
+                                    style="background-color:#c8a84b;width:6px;height:6px;border-radius:50%;font-size:0;line-height:0;">
                                     &nbsp;
                                 </td>
-                                <td style="width:8px;font-size:0;">&nbsp;</td>
+                                <td style="width:10px;font-size:0;">&nbsp;</td>
                                 <td bgcolor="#c8a84b"
-                                    style="background-color:#c8a84b;width:5px;height:5px;border-radius:50%;font-size:0;line-height:0;">
+                                    style="background-color:#c8a84b;width:6px;height:6px;border-radius:50%;font-size:0;line-height:0;">
                                     &nbsp;
                                 </td>
-                                <td style="width:8px;font-size:0;">&nbsp;</td>
+                                <td style="width:10px;font-size:0;">&nbsp;</td>
                                 <td bgcolor="#c8a84b"
-                                    style="background-color:#c8a84b;width:5px;height:5px;border-radius:50%;font-size:0;line-height:0;">
+                                    style="background-color:#c8a84b;width:6px;height:6px;border-radius:50%;font-size:0;line-height:0;">
                                     &nbsp;
                                 </td>
                             </tr>
                         </table>
 
-                        <!-- Subline — dynamic -->
+                        <!-- Subline with goal name -->
                         <p style="margin:0;font-family:Arial,Helvetica,sans-serif;
-                                  font-size:14px;color:#9c8e82;line-height:1.6;">
-                            You've successfully transferred funds to your
-                            <span th:text="${goalName}" style="color:#c8a84b;font-weight:bold;">Emergency Fund</span>
-                            savings goal.
+                                  font-size:16px;color:#b8aa9c;line-height:1.7;">
+                            to goal&nbsp;
+                            <span th:text="${goalName}"
+                                  style="color:#c8a84b;font-weight:600;border-bottom:1px dashed #c8a84b;">
+                                Summer Vacation
+                            </span>
                         </p>
 
                     </td>
@@ -159,59 +179,46 @@
                 <!-- Bottom gold stripe -->
                 <tr>
                     <td bgcolor="#c8a84b"
-                        style="background-color:#c8a84b;height:4px;font-size:0;line-height:0;">&nbsp;
+                        style="background-color:#c8a84b;height:3px;font-size:0;line-height:0;">&nbsp;
                     </td>
                 </tr>
 
-                <!-- ════════════════════════ -->
-                <!-- GREETING                -->
-                <!-- ════════════════════════ -->
+                <!-- Greeting -->
                 <tr>
                     <td bgcolor="#fffdf9" style="background-color:#fffdf9;padding:32px 40px 4px;">
-
-                        <!-- Recipient name -->
-                        <p style="margin:0 0 8px;font-family:Arial,Helvetica,sans-serif;font-size:16px;color:#1c1814;">
-                            Hello, <strong th:text="${recipientName}">Alex</strong> 👋
+                        <p style="margin:0 0 8px;font-family:Arial,Helvetica,sans-serif;
+                                  font-size:16px;color:#1c1814;">
+                            Hello, <strong th:text="${userName}">Alex</strong> 👋
                         </p>
-
-                        <!-- Intro sentence -->
                         <p style="margin:0 0 28px;font-family:Arial,Helvetica,sans-serif;
                                   font-size:14px;color:#6b6058;line-height:1.8;">
-                            Your transfer of
-                            <strong th:text="${amount}" style="color:#1c1814;font-size:16px;">$100.00</strong>
-                            to your <strong th:text="${goalName}" style="color:#1c1814;">Emergency Fund</strong>
-                            goal has been completed successfully.
+                            You've successfully transferred
+                            <strong th:text="${amount}" style="color:#1c1814;font-size:16px;">$75.00</strong>
+                            to your goal
+                            <strong th:text="${goalName}" style="color:#1c1814;">Summer Vacation</strong>.
                         </p>
-
                     </td>
                 </tr>
 
-                <!-- ════════════════════════ -->
-                <!-- AMOUNT CARD             -->
-                <!-- ════════════════════════ -->
+                <!-- Amount Card -->
                 <tr>
                     <td bgcolor="#fffdf9" style="background-color:#fffdf9;padding:0 40px 28px;">
                         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                             <tr>
                                 <td align="center" bgcolor="#1c1814"
                                     style="background-color:#1c1814;border-radius:20px;padding:28px 24px;">
-
                                     <p style="margin:0 0 10px;font-family:Arial,Helvetica,sans-serif;
                                               font-size:10px;font-weight:bold;color:#7c7168;
                                               letter-spacing:3px;text-transform:uppercase;">
                                         Transfer Amount
                                     </p>
-
-                                    <!-- Transfer amount -->
                                     <p th:text="${amount}"
                                        style="margin:0 0 14px;
                                               font-family:Georgia,'Times New Roman',Times,serif;
                                               font-size:54px;color:#c8a84b;
                                               line-height:1;letter-spacing:2px;">
-                                        $100.00
+                                        $75.00
                                     </p>
-
-                                    <!-- Success badge -->
                                     <table role="presentation" cellpadding="0" cellspacing="0" border="0"
                                            align="center" style="margin:0 auto;">
                                         <tr>
@@ -225,179 +232,37 @@
                                             </td>
                                         </tr>
                                     </table>
-
                                 </td>
                             </tr>
                         </table>
                     </td>
                 </tr>
 
-                <!-- ════════════════════════ -->
-                <!-- TRANSACTION DETAILS     -->
-                <!-- ════════════════════════ -->
-                <tr>
+                <!-- Progress Card (shows if goal not completed) -->
+                <tr th:if="${!goalCompleted}">
                     <td bgcolor="#fffdf9" style="background-color:#fffdf9;padding:0 40px 24px;">
                         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
-                               bgcolor="#f7f4ef" style="background-color:#f7f4ef;border-radius:16px;">
-                            <tr>
-                                <td style="padding:20px 22px 4px;">
-                                    <p style="margin:0;font-family:Arial,Helvetica,sans-serif;
-                                              font-size:10px;font-weight:bold;color:#a89a8c;
-                                              letter-spacing:2.5px;text-transform:uppercase;">
-                                        Transfer Details
-                                    </p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="padding:0 22px 18px;">
-                                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-
-                                        <!-- Row: From Account -->
-                                        <tr>
-                                            <td width="34%" valign="top"
-                                                style="padding:10px 0;font-family:Arial,Helvetica,sans-serif;
-                                                       font-size:13px;color:#a89a8c;border-bottom:1px solid #ede8df;">
-                                                From Account
-                                            </td>
-                                            <td valign="top"
-                                                style="padding:10px 0 10px 14px;font-family:Arial,Helvetica,sans-serif;
-                                                       font-size:13px;color:#1c1814;font-weight:bold;
-                                                       border-bottom:1px solid #ede8df;">
-                                                <!-- Source account name -->
-                                                <span th:text="${sourceAccountName}">Main Wallet</span><br/>
-                                                <!-- Source account number (masked) -->
-                                                <span th:text="${sourceAccountMask}"
-                                                      style="font-size:12px;color:#6b6058;font-weight:normal;">
-                                                    •••• 1234
-                                                </span>
-                                            </td>
-                                        </tr>
-
-                                        <!-- Row: To Goal -->
-                                        <tr>
-                                            <td width="34%" valign="top"
-                                                style="padding:10px 0;font-family:Arial,Helvetica,sans-serif;
-                                                       font-size:13px;color:#a89a8c;border-bottom:1px solid #ede8df;">
-                                                To Goal
-                                            </td>
-                                            <!-- Goal name -->
-                                            <td valign="top" th:text="${goalName}"
-                                                style="padding:10px 0 10px 14px;font-family:Arial,Helvetica,sans-serif;
-                                                       font-size:13px;color:#1c1814;font-weight:bold;
-                                                       border-bottom:1px solid #ede8df;">
-                                                Emergency Fund
-                                            </td>
-                                        </tr>
-
-                                        <!-- Row: Date & Time -->
-                                        <tr>
-                                            <td width="34%" valign="top"
-                                                style="padding:10px 0;font-family:Arial,Helvetica,sans-serif;
-                                                       font-size:13px;color:#a89a8c;border-bottom:1px solid #ede8df;">
-                                                Date & Time
-                                            </td>
-                                            <!-- Transaction date/time -->
-                                            <td valign="top" th:text="${transactionDateTime}"
-                                                style="padding:10px 0 10px 14px;font-family:Arial,Helvetica,sans-serif;
-                                                       font-size:13px;color:#1c1814;font-weight:bold;
-                                                       border-bottom:1px solid #ede8df;">
-                                                19 Mar 2026, 10:42 AM
-                                            </td>
-                                        </tr>
-
-                                        <!-- Row: Transaction ID -->
-                                        <tr>
-                                            <td width="34%" valign="top"
-                                                style="padding:10px 0;font-family:Arial,Helvetica,sans-serif;
-                                                       font-size:13px;color:#a89a8c;border-bottom:1px solid #ede8df;">
-                                                Reference
-                                            </td>
-                                            <!-- Transaction ID -->
-                                            <td valign="top" th:text="${transactionId}"
-                                                style="padding:10px 0 10px 14px;font-size:12px;color:#6b6058;
-                                                       font-family:'Courier New',Courier,monospace;
-                                                       border-bottom:1px solid #ede8df;">
-                                                TRF-2026-ABC123XYZ
-                                            </td>
-                                        </tr>
-
-                                        <!-- Row: New Balance -->
-                                        <tr>
-                                            <td width="34%" valign="top"
-                                                style="padding:10px 0 0;font-family:Arial,Helvetica,sans-serif;
-                                                       font-size:13px;color:#a89a8c;">
-                                                New Goal Balance
-                                            </td>
-                                            <!-- New goal balance -->
-                                            <td valign="top" th:text="${newGoalBalance}"
-                                                style="padding:10px 0 0 14px;font-family:Arial,Helvetica,sans-serif;
-                                                       font-size:13px;color:#1c1814;font-weight:bold;">
-                                                $1,250.00
-                                            </td>
-                                        </tr>
-
-                                    </table>
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-
-                <!-- ════════════════════════ -->
-                <!-- PROGRESS UPDATE         -->
-                <!-- ════════════════════════ -->
-                <tr>
-                    <td bgcolor="#fffdf9" style="background-color:#fffdf9;padding:0 40px 24px;">
-                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
-                               bgcolor="#f7f4ef" style="background-color:#f7f4ef;border-radius:16px;">
+                               bgcolor="#f7f4ef"
+                               style="background-color:#f7f4ef;border-radius:16px;">
                             <tr>
                                 <td style="padding:20px 22px 12px;">
-                                    <p style="margin:0 0 14px;font-family:Arial,Helvetica,sans-serif;
+                                    <p style="margin:0 0 10px;font-family:Arial,Helvetica,sans-serif;
                                               font-size:10px;font-weight:bold;color:#a89a8c;
                                               letter-spacing:2.5px;text-transform:uppercase;">
                                         Goal Progress
                                     </p>
-
-                                    <!-- Progress stats -->
-                                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-                                        <tr>
-                                            <td width="50%" style="padding:0 0 12px;">
-                                                <p style="margin:0;font-family:Arial,Helvetica,sans-serif;
-                                                          font-size:11px;color:#a89a8c;text-transform:uppercase;">
-                                                    Target Amount
-                                                </p>
-                                                <p style="margin:4px 0 0;font-family:Georgia,'Times New Roman',Times,serif;
-                                                          font-size:18px;color:#1c1814;font-weight:bold;"
-                                                   th:text="${goalTarget}">
-                                                    $5,000
-                                                </p>
-                                            </td>
-                                            <td width="50%" style="padding:0 0 12px;">
-                                                <p style="margin:0;font-family:Arial,Helvetica,sans-serif;
-                                                          font-size:11px;color:#a89a8c;text-transform:uppercase;">
-                                                    Progress
-                                                </p>
-                                                <p style="margin:4px 0 0;font-family:Georgia,'Times New Roman',Times,serif;
-                                                          font-size:18px;color:#c8a84b;font-weight:bold;"
-                                                   th:text="${goalProgressPercentage}">
-                                                    25%
-                                                </p>
-                                            </td>
-                                        </tr>
-                                    </table>
-
-                                    <!-- Simple progress bar (using tables for email compatibility) -->
+                                    <!-- Progress bar (simple table-based) -->
                                     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
-                                           style="margin:8px 0 4px;">
+                                           style="margin:10px 0 12px;">
                                         <tr>
                                             <td bgcolor="#ede8df"
-                                                style="background-color:#ede8df;border-radius:10px;padding:0;">
-                                                <table role="presentation" width="25%" cellpadding="0" cellspacing="0"
+                                                style="background-color:#ede8df;border-radius:20px;padding:0;">
+                                                <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
                                                        border="0">
                                                     <tr>
                                                         <td bgcolor="#c8a84b"
-                                                            style="background-color:#c8a84b;border-radius:10px;height:8px;font-size:0;line-height:0;"
-                                                            th:attr="width=${goalProgressPercentageValue}">
+                                                            style="background-color:#c8a84b;border-radius:20px;height:12px;font-size:0;line-height:0;"
+                                                            th:attr="width=${progressPercentage + '%'}">
                                                             &nbsp;
                                                         </td>
                                                     </tr>
@@ -405,11 +270,11 @@
                                             </td>
                                         </tr>
                                     </table>
-
-                                    <!-- Remaining amount -->
-                                    <p style="margin:12px 0 0;font-family:Arial,Helvetica,sans-serif;
-                                              font-size:12px;color:#6b6058;text-align:center;">
-                                        <span th:text="${remainingAmount}">$3,750</span> left to reach your goal
+                                    <p style="margin:0;font-family:Arial,Helvetica,sans-serif;
+                                              font-size:13px;color:#1c1814;text-align:center;">
+                                        <span th:text="${progressPercentage}">75</span>% complete –
+                                        <span th:text="${newPiggyBalance}">$375.00</span> of
+                                        <span th:text="${goalTargetAmount}">$500.00</span>
                                     </p>
                                 </td>
                             </tr>
@@ -417,9 +282,136 @@
                     </td>
                 </tr>
 
-                <!-- ════════════════════════ -->
-                <!-- CTA BUTTON              -->
-                <!-- ════════════════════════ -->
+                <!-- Goal Completed Card -->
+                <tr th:if="${goalCompleted}">
+                    <td bgcolor="#fffdf9" style="background-color:#fffdf9;padding:0 40px 24px;">
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                               bgcolor="#e8f5e9"
+                               style="background-color:#e8f5e9;border-radius:16px;border:1px solid #a5d6a7;">
+                            <tr>
+                                <td style="padding:16px 22px;text-align:center;">
+                                    <p style="margin:0 0 4px;font-size:24px;">🎉</p>
+                                    <p style="margin:0;font-family:Arial,Helvetica,sans-serif;
+                                              font-size:14px;font-weight:bold;color:#2e7d32;">
+                                        Congratulations! You've completed your goal
+                                        <span th:text="${goalName}">Summer Vacation</span>!
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- Transaction Details -->
+                <tr>
+                    <td bgcolor="#fffdf9" style="background-color:#fffdf9;padding:0 40px 24px;">
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                               bgcolor="#f7f4ef"
+                               style="background-color:#f7f4ef;border-radius:16px;">
+                            <tr>
+                                <td style="padding:20px 22px 4px;">
+                                    <p style="margin:0;font-family:Arial,Helvetica,sans-serif;
+                                              font-size:10px;font-weight:bold;color:#a89a8c;
+                                              letter-spacing:2.5px;text-transform:uppercase;">
+                                        Transaction Details
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:0 22px 18px;">
+                                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+
+                                        <!-- From -->
+                                        <tr>
+                                            <td width="34%" valign="top"
+                                                style="padding:10px 0;font-family:Arial,Helvetica,sans-serif;
+                                                       font-size:13px;color:#a89a8c;border-bottom:1px solid #ede8df;">
+                                                From
+                                            </td>
+                                            <td valign="top"
+                                                style="padding:10px 0 10px 14px;font-family:Arial,Helvetica,sans-serif;
+                                                       font-size:13px;color:#1c1814;font-weight:bold;
+                                                       border-bottom:1px solid #ede8df;">
+                                                Main Wallet<br/>
+                                                <span th:text="${sourceAccountMask}"
+                                                      style="font-size:12px;color:#6b6058;font-weight:normal;">
+                                                    •••• 1234
+                                                </span>
+                                            </td>
+                                        </tr>
+
+                                        <!-- To -->
+                                        <tr>
+                                            <td width="34%" valign="top"
+                                                style="padding:10px 0;font-family:Arial,Helvetica,sans-serif;
+                                                       font-size:13px;color:#a89a8c;border-bottom:1px solid #ede8df;">
+                                                To
+                                            </td>
+                                            <td valign="top"
+                                                style="padding:10px 0 10px 14px;font-family:Arial,Helvetica,sans-serif;
+                                                       font-size:13px;color:#1c1814;font-weight:bold;
+                                                       border-bottom:1px solid #ede8df;">
+                                                <span th:text="${goalName}">Summer Vacation</span><br/>
+                                                <span th:text="${destinationAccountMask}"
+                                                      style="font-size:12px;color:#6b6058;font-weight:normal;">
+                                                    •••• 5678
+                                                </span>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Date & Time -->
+                                        <tr>
+                                            <td width="34%" valign="top"
+                                                style="padding:10px 0;font-family:Arial,Helvetica,sans-serif;
+                                                       font-size:13px;color:#a89a8c;border-bottom:1px solid #ede8df;">
+                                                Date & Time
+                                            </td>
+                                            <td valign="top" th:text="${transactionDateTime}"
+                                                style="padding:10px 0 10px 14px;font-family:Arial,Helvetica,sans-serif;
+                                                       font-size:13px;color:#1c1814;font-weight:bold;
+                                                       border-bottom:1px solid #ede8df;">
+                                                20 Mar 2026, 10:30 AM
+                                            </td>
+                                        </tr>
+
+                                        <!-- Transaction ID -->
+                                        <tr>
+                                            <td width="34%" valign="top"
+                                                style="padding:10px 0;font-family:Arial,Helvetica,sans-serif;
+                                                       font-size:13px;color:#a89a8c;border-bottom:1px solid #ede8df;">
+                                                Reference
+                                            </td>
+                                            <td valign="top" th:text="${transactionId}"
+                                                style="padding:10px 0 10px 14px;font-size:12px;color:#6b6058;
+                                                       font-family:'Courier New',Courier,monospace;
+                                                       border-bottom:1px solid #ede8df;">
+                                                OWN-2026-ABC123
+                                            </td>
+                                        </tr>
+
+                                        <!-- New Balances -->
+                                        <tr>
+                                            <td width="34%" valign="top"
+                                                style="padding:10px 0 0;font-family:Arial,Helvetica,sans-serif;
+                                                       font-size:13px;color:#a89a8c;">
+                                                New Balances
+                                            </td>
+                                            <td valign="top"
+                                                style="padding:10px 0 0 14px;font-family:Arial,Helvetica,sans-serif;
+                                                       font-size:13px;color:#1c1814;font-weight:bold;">
+                                                Main: <span th:text="${newMainBalance}">$925.00</span><br/>
+                                                Goal: <span th:text="${newPiggyBalance}">$375.00</span>
+                                            </td>
+                                        </tr>
+
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- CTA Buttons -->
                 <tr>
                     <td bgcolor="#fffdf9"
                         style="background-color:#fffdf9;padding:8px 40px 16px;text-align:center;">
@@ -428,14 +420,13 @@
                             <tr>
                                 <td align="center" bgcolor="#1c1814"
                                     style="background-color:#1c1814;border-radius:50px;border:2px solid #c8a84b;">
-                                    <!-- Goal dashboard link -->
                                     <a th:href="${goalLink}"
                                        style="display:inline-block;padding:13px 36px;
                                               font-family:Arial,Helvetica,sans-serif;
                                               font-size:14px;font-weight:bold;
                                               color:#c8a84b;text-decoration:none;
                                               letter-spacing:0.5px;border-radius:50px;">
-                                        View Goal Progress →
+                                        View Goal →
                                     </a>
                                 </td>
                             </tr>
@@ -450,18 +441,22 @@
                         <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center">
                             <tr>
                                 <td style="padding:0 10px;">
-                                    <a th:href="${transferMoreLink}"
-                                       style="color:#6b6058;text-decoration:none;font-family:Arial,Helvetica,sans-serif;
+                                    <a th:href="${walletLink}"
+                                       style="color:#6b6058;text-decoration:none;
+                                              font-family:Arial,Helvetica,sans-serif;
                                               font-size:13px;border-bottom:1px solid #c8a84b;padding-bottom:2px;">
-                                        Transfer More
+                                        View Wallet
                                     </a>
                                 </td>
-                                <td style="color:#c8a84b;">•</td>
+                                <td style="color:#c8a84b;font-family:Arial,Helvetica,sans-serif;">
+                                    •
+                                </td>
                                 <td style="padding:0 10px;">
-                                    <a th:href="${allGoalsLink}"
-                                       style="color:#6b6058;text-decoration:none;font-family:Arial,Helvetica,sans-serif;
+                                    <a th:href="${transactionHistoryLink}"
+                                       style="color:#6b6058;text-decoration:none;
+                                              font-family:Arial,Helvetica,sans-serif;
                                               font-size:13px;border-bottom:1px solid #c8a84b;padding-bottom:2px;">
-                                        View All Goals
+                                        Transaction History
                                     </a>
                                 </td>
                             </tr>
@@ -469,13 +464,13 @@
                     </td>
                 </tr>
 
-                <!-- Support link -->
+                <!-- Support -->
                 <tr>
                     <td bgcolor="#fffdf9"
                         style="background-color:#fffdf9;padding:6px 40px 32px;text-align:center;">
-                        <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#b0a89c;">
-                            Questions about this transfer?&nbsp;
-                            <!-- Support email — dynamic -->
+                        <p style="margin:0;font-family:Arial,Helvetica,sans-serif;
+                                  font-size:12px;color:#b0a89c;">
+                            Questions?&nbsp;
                             <a th:href="'mailto:' + ${supportEmail}"
                                th:text="${supportEmail}"
                                style="color:#c8a84b;text-decoration:none;font-weight:bold;">
@@ -485,26 +480,21 @@
                     </td>
                 </tr>
 
-                <!-- ════════════════════════ -->
-                <!-- FOOTER                  -->
-                <!-- ════════════════════════ -->
+                <!-- Footer -->
                 <tr>
                     <td bgcolor="#f7f4ef"
                         style="background-color:#f7f4ef;border-top:1px solid #e8e2d8;
                                padding:20px 40px;text-align:center;">
                         <p style="margin:0 0 7px;font-family:Arial,Helvetica,sans-serif;
                                   font-size:12px;color:#a89a8c;">
-                            <!-- App name + year dynamic -->
                             &copy; <span th:text="${currentYear}">2026</span>
                             <span th:text="${appName}">Piggy Saving</span>
                             &middot; Your trusted saving partner
                         </p>
                         <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:11px;">
-                            <!-- Unsubscribe link -->
                             <a th:href="${unsubscribeLink}"
                                style="color:#c4b8ab;text-decoration:none;">Unsubscribe</a>
                             &nbsp;&middot;&nbsp;
-                            <!-- Privacy policy link -->
                             <a th:href="${privacyPolicyLink}"
                                style="color:#c4b8ab;text-decoration:none;">Privacy Policy</a>
                         </p>
@@ -516,15 +506,13 @@
 
             <p style="margin:18px 0 0;font-family:Arial,Helvetica,sans-serif;
                       font-size:11px;color:#b0a89c;text-align:center;">
-                <!-- App name dynamic -->
                 This is an automated transfer confirmation from
                 <span th:text="${appName}">Piggy Saving</span>.
-                Please do not reply directly to this email.
+                Please do not reply to this email.
             </p>
 
         </td>
     </tr>
 </table>
-
 </body>
 </html>

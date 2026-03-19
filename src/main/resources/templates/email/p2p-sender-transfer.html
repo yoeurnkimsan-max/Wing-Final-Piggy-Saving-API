@@ -11,7 +11,7 @@
     }</style>
     <![endif]-->
 </head>
-<body style="margin:0;padding:0;background-color:#f0ede8;-webkit-text-size-adjust:100%;">
+<body style="margin:0;padding:0;background-color:#f0ede8;-webkit-text-size-adjust:100%;font-family: Arial, Helvetica, sans-serif;">
 
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f0ede8"
        style="background-color:#f0ede8;">
@@ -21,56 +21,84 @@
             <!-- MAIN CARD -->
             <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="560"
                    style="width:100%;max-width:560px;background-color:#fffdf9;border-radius:24px;
-                    overflow:hidden;border:1px solid #e0d9cf;">
+                          overflow:hidden;border:1px solid #e0d9cf; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
 
-                <!-- Top gold stripe -->
+                <!-- ═══════════════════════════════════ -->
+                <!-- TOP GOLD STRIPE                     -->
+                <!-- ═══════════════════════════════════ -->
                 <tr>
                     <td bgcolor="#c8a84b"
-                        style="background-color:#c8a84b;height:5px;font-size:0;line-height:0;">&nbsp;
+                        style="background-color:#c8a84b;height:6px;font-size:0;line-height:0;">&nbsp;
                     </td>
                 </tr>
 
-                <!-- Navbar -->
+                <!-- ═══════════════════════════════════ -->
+                <!-- NAVBAR — refined logo              -->
+                <!-- ═══════════════════════════════════ -->
                 <tr>
-                    <td bgcolor="#1c1814" style="background-color:#1c1814;padding:20px 36px;">
+                    <td bgcolor="#1c1814" style="background-color:#1c1814;padding:16px 36px;">
                         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                             <tr>
+                                <!-- Left: logo -->
                                 <td valign="middle">
                                     <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                                         <tr>
+                                            <!-- Icon: dark bordered square → gold inner square → pig -->
                                             <td valign="middle">
                                                 <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                                                     <tr>
-                                                        <td align="center" bgcolor="#c8a84b"
-                                                            style="background-color:#c8a84b;
-                                                                   width:36px;height:36px;
-                                                                   border-radius:8px;
-                                                                   font-size:20px;
-                                                                   line-height:36px;
-                                                                   text-align:center;
-                                                                   vertical-align:middle;">
-                                                            &#x1F4B8;
+                                                        <td align="center" bgcolor="#2c2218"
+                                                            style="background-color:#2c2218;
+                                                                   width:46px;height:46px;
+                                                                   border-radius:12px;
+                                                                   border:1.5px solid #c8a84b;
+                                                                   padding:5px;">
+                                                            <table role="presentation" cellpadding="0" cellspacing="0"
+                                                                   border="0">
+                                                                <tr>
+                                                                    <td align="center" bgcolor="#c8a84b"
+                                                                        style="background-color:#c8a84b;
+                                                                               width:32px;height:32px;
+                                                                               border-radius:8px;
+                                                                               font-size:18px;
+                                                                               line-height:32px;
+                                                                               text-align:center;
+                                                                               vertical-align:middle;">
+                                                                        &#x1F437;
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
                                                         </td>
                                                     </tr>
                                                 </table>
                                             </td>
-                                            <td valign="middle" style="padding-left:10px;">
+                                            <!-- Brand name + tagline -->
+                                            <td valign="middle" style="padding-left:12px;">
                                                 <p th:text="${appName}"
-                                                   style="margin:0;font-family:Georgia,'Times New Roman',Times,serif;
-                                                          font-size:18px;font-weight:normal;color:#fffdf9;letter-spacing:0.3px;">
+                                                   style="margin:0 0 3px;
+                                                          font-family:Georgia,'Times New Roman',Times,serif;
+                                                          font-size:17px;font-weight:normal;
+                                                          color:#fffdf9;letter-spacing:0.4px;line-height:1.1;">
                                                     Piggy Saving
+                                                </p>
+                                                <p style="margin:0;
+                                                          font-family:Arial,Helvetica,sans-serif;
+                                                          font-size:10px;color:#c8a84b;
+                                                          letter-spacing:1.5px;text-transform:uppercase;">
+                                                    Trusted Saving Partner
                                                 </p>
                                             </td>
                                         </tr>
                                     </table>
                                 </td>
+                                <!-- Right: badge -->
                                 <td valign="middle" align="right">
                                     <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                                         <tr>
-                                            <td bgcolor="#2c2218"
-                                                style="background-color:#2c2218;
+                                            <td bgcolor="#2a2318"
+                                                style="background-color:#2a2318;
                                                        border-radius:40px;
-                                                       padding:5px 14px;
+                                                       padding:7px 16px;
                                                        border:1px solid #c8a84b;">
                                                 <p style="margin:0;
                                                           font-family:Arial,Helvetica,sans-serif;
@@ -88,52 +116,57 @@
                     </td>
                 </tr>
 
-                <!-- Hero banner -->
+                <!-- ═══════════════════════════════════ -->
+                <!-- HERO BANNER                         -->
+                <!-- ═══════════════════════════════════ -->
                 <tr>
-                    <td bgcolor="#1c1814" style="background-color:#1c1814;padding:48px 36px 52px;text-align:center;">
+                    <td bgcolor="#1c1814"
+                        style="background-color:#1c1814;padding:48px 36px 50px;text-align:center;">
 
-                        <!-- Up arrow icon -->
-                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center"
-                               style="margin:0 auto 24px;">
+                        <!-- Double-ring icon with up arrow emoji (100% reliable) -->
+                        <table role="presentation" cellpadding="0" cellspacing="0" border="0"
+                               align="center" style="margin:0 auto 22px;">
                             <tr>
-                                <td align="center" bgcolor="#26200f"
-                                    style="background-color:#26200f;
-                                           width:80px;height:80px;
-                                           border-radius:50%;
-                                           border:1px solid #c8a84b;
-                                           font-size:40px;
-                                           line-height:80px;
-                                           text-align:center;
-                                           vertical-align:middle;">
-                                    ⬆️
+                                <td align="center" bgcolor="#2a2318"
+                                    style="background-color:#2a2318; width:96px; height:96px; border-radius:50%; border:1px solid #5a4a2a; padding:3px;">
+                                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"
+                                           height="100%">
+                                        <tr>
+                                            <td align="center" bgcolor="#332b1a"
+                                                style="background-color:#332b1a; border-radius:50%; width:88px; height:88px; border:1px solid #c8a84b; text-align:center; vertical-align:middle; padding:0; font-size:44px; line-height:88px;">
+                                                <!-- Reliable up arrow emoji - works in all email clients -->
+                                                ⬆️
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </td>
                             </tr>
                         </table>
 
                         <!-- Headline -->
-                        <p style="margin:0 0 10px;
+                        <p style="margin:0 0 12px;
                                   font-family:Georgia,'Times New Roman',Times,serif;
-                                  font-size:32px;font-weight:normal;
-                                  color:#fffdf9;letter-spacing:-0.5px;line-height:1.2;">
+                                  font-size:32px;font-weight:400;
+                                  color:#fffdf9;letter-spacing:-0.3px;line-height:1.2;">
                             You sent money
                         </p>
 
-                        <!-- Dot divider -->
+                        <!-- Gold dot divider -->
                         <table role="presentation" cellpadding="0" cellspacing="0" border="0"
-                               align="center" style="margin:12px auto 12px;">
+                               align="center" style="margin:14px auto 16px;">
                             <tr>
                                 <td bgcolor="#c8a84b"
-                                    style="background-color:#c8a84b;width:5px;height:5px;border-radius:50%;font-size:0;line-height:0;">
+                                    style="background-color:#c8a84b;width:6px;height:6px;border-radius:50%;font-size:0;line-height:0;">
                                     &nbsp;
                                 </td>
-                                <td style="width:8px;font-size:0;">&nbsp;</td>
+                                <td style="width:10px;font-size:0;">&nbsp;</td>
                                 <td bgcolor="#c8a84b"
-                                    style="background-color:#c8a84b;width:5px;height:5px;border-radius:50%;font-size:0;line-height:0;">
+                                    style="background-color:#c8a84b;width:6px;height:6px;border-radius:50%;font-size:0;line-height:0;">
                                     &nbsp;
                                 </td>
-                                <td style="width:8px;font-size:0;">&nbsp;</td>
+                                <td style="width:10px;font-size:0;">&nbsp;</td>
                                 <td bgcolor="#c8a84b"
-                                    style="background-color:#c8a84b;width:5px;height:5px;border-radius:50%;font-size:0;line-height:0;">
+                                    style="background-color:#c8a84b;width:6px;height:6px;border-radius:50%;font-size:0;line-height:0;">
                                     &nbsp;
                                 </td>
                             </tr>
@@ -141,8 +174,12 @@
 
                         <!-- Subline -->
                         <p style="margin:0;font-family:Arial,Helvetica,sans-serif;
-                                  font-size:14px;color:#9c8e82;line-height:1.6;">
-                            to <span th:text="${receiverName}" style="color:#c8a84b;font-weight:bold;">Sarah Chen</span>
+                                  font-size:16px;color:#b8aa9c;line-height:1.7;">
+                            to&nbsp;
+                            <span th:text="${receiverName}"
+                                  style="color:#c8a84b;font-weight:600;border-bottom:1px dashed #c8a84b;">
+                                Sarah Chen
+                            </span>
                         </p>
 
                     </td>
@@ -151,14 +188,17 @@
                 <!-- Bottom gold stripe -->
                 <tr>
                     <td bgcolor="#c8a84b"
-                        style="background-color:#c8a84b;height:4px;font-size:0;line-height:0;">&nbsp;
+                        style="background-color:#c8a84b;height:3px;font-size:0;line-height:0;">&nbsp;
                     </td>
                 </tr>
 
-                <!-- Greeting -->
+                <!-- ═══════════════════════════════════ -->
+                <!-- GREETING                            -->
+                <!-- ═══════════════════════════════════ -->
                 <tr>
                     <td bgcolor="#fffdf9" style="background-color:#fffdf9;padding:32px 40px 4px;">
-                        <p style="margin:0 0 8px;font-family:Arial,Helvetica,sans-serif;font-size:16px;color:#1c1814;">
+                        <p style="margin:0 0 8px;font-family:Arial,Helvetica,sans-serif;
+                                  font-size:16px;color:#1c1814;">
                             Hello, <strong th:text="${senderName}">Alex</strong> 👋
                         </p>
                         <p style="margin:0 0 28px;font-family:Arial,Helvetica,sans-serif;
@@ -171,7 +211,9 @@
                     </td>
                 </tr>
 
-                <!-- Amount Card -->
+                <!-- ═══════════════════════════════════ -->
+                <!-- AMOUNT CARD                         -->
+                <!-- ═══════════════════════════════════ -->
                 <tr>
                     <td bgcolor="#fffdf9" style="background-color:#fffdf9;padding:0 40px 28px;">
                         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -209,11 +251,14 @@
                     </td>
                 </tr>
 
-                <!-- Transaction Details -->
+                <!-- ═══════════════════════════════════ -->
+                <!-- TRANSACTION DETAILS                 -->
+                <!-- ═══════════════════════════════════ -->
                 <tr>
                     <td bgcolor="#fffdf9" style="background-color:#fffdf9;padding:0 40px 24px;">
                         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
-                               bgcolor="#f7f4ef" style="background-color:#f7f4ef;border-radius:16px;">
+                               bgcolor="#f7f4ef"
+                               style="background-color:#f7f4ef;border-radius:16px;">
                             <tr>
                                 <td style="padding:20px 22px 4px;">
                                     <p style="margin:0;font-family:Arial,Helvetica,sans-serif;
@@ -316,7 +361,9 @@
                     </td>
                 </tr>
 
-                <!-- Optional Message Card -->
+                <!-- ═══════════════════════════════════ -->
+                <!-- OPTIONAL MESSAGE CARD               -->
+                <!-- ═══════════════════════════════════ -->
                 <tr th:if="${personalMessage != null and !#strings.isEmpty(personalMessage)}">
                     <td bgcolor="#fffdf9" style="background-color:#fffdf9;padding:0 40px 24px;">
                         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
@@ -351,7 +398,9 @@
                     </td>
                 </tr>
 
-                <!-- CTA Buttons -->
+                <!-- ═══════════════════════════════════ -->
+                <!-- CTA BUTTON                          -->
+                <!-- ═══════════════════════════════════ -->
                 <tr>
                     <td bgcolor="#fffdf9"
                         style="background-color:#fffdf9;padding:8px 40px 16px;text-align:center;">
@@ -374,7 +423,7 @@
                     </td>
                 </tr>
 
-                <!-- Quick Actions -->
+                <!-- Quick actions -->
                 <tr>
                     <td bgcolor="#fffdf9"
                         style="background-color:#fffdf9;padding:0 40px 24px;text-align:center;">
@@ -382,15 +431,19 @@
                             <tr>
                                 <td style="padding:0 10px;">
                                     <a th:href="${sendMoneyLink}"
-                                       style="color:#6b6058;text-decoration:none;font-family:Arial,Helvetica,sans-serif;
+                                       style="color:#6b6058;text-decoration:none;
+                                              font-family:Arial,Helvetica,sans-serif;
                                               font-size:13px;border-bottom:1px solid #c8a84b;padding-bottom:2px;">
                                         Send Money Again
                                     </a>
                                 </td>
-                                <td style="color:#c8a84b;">•</td>
+                                <td style="color:#c8a84b;font-family:Arial,Helvetica,sans-serif;">
+                                    •
+                                </td>
                                 <td style="padding:0 10px;">
                                     <a th:href="${walletLink}"
-                                       style="color:#6b6058;text-decoration:none;font-family:Arial,Helvetica,sans-serif;
+                                       style="color:#6b6058;text-decoration:none;
+                                              font-family:Arial,Helvetica,sans-serif;
                                               font-size:13px;border-bottom:1px solid #c8a84b;padding-bottom:2px;">
                                         View Wallet
                                     </a>
@@ -400,11 +453,14 @@
                     </td>
                 </tr>
 
-                <!-- Support Link -->
+                <!-- ═══════════════════════════════════ -->
+                <!-- SUPPORT                             -->
+                <!-- ═══════════════════════════════════ -->
                 <tr>
                     <td bgcolor="#fffdf9"
                         style="background-color:#fffdf9;padding:6px 40px 32px;text-align:center;">
-                        <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#b0a89c;">
+                        <p style="margin:0;font-family:Arial,Helvetica,sans-serif;
+                                  font-size:12px;color:#b0a89c;">
                             Questions about this transfer?&nbsp;
                             <a th:href="'mailto:' + ${supportEmail}"
                                th:text="${supportEmail}"
@@ -415,7 +471,9 @@
                     </td>
                 </tr>
 
-                <!-- Footer -->
+                <!-- ═══════════════════════════════════ -->
+                <!-- FOOTER                              -->
+                <!-- ═══════════════════════════════════ -->
                 <tr>
                     <td bgcolor="#f7f4ef"
                         style="background-color:#f7f4ef;border-top:1px solid #e8e2d8;
@@ -437,16 +495,17 @@
                 </tr>
 
             </table>
+            <!-- /MAIN CARD -->
 
             <p style="margin:18px 0 0;font-family:Arial,Helvetica,sans-serif;
                       font-size:11px;color:#b0a89c;text-align:center;">
                 This is an automated payment confirmation from
                 <span th:text="${appName}">Piggy Saving</span>.
+                Please do not reply to this email.
             </p>
 
         </td>
     </tr>
 </table>
-
 </body>
 </html>

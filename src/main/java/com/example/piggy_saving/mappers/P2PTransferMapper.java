@@ -11,6 +11,13 @@ public class P2PTransferMapper {
     @Value("${app.base-url:https://app.piggysaving.com}")
     private String baseUrl;
 
+    // ADD ICON URL CONFIGURATION
+    @Value("${app.icons.sender:https://cdn-icons-png.flaticon.com/256/13207/13207616.png}")
+    private String senderIconUrl;
+
+    @Value("${app.icons.receiver:https://cdn-icons-png.flaticon.com/256/13207/13207616.png}")
+    private String receiverIconUrl;
+
     public P2PTransferDataDto toTransferData(P2PTransferCompletedEvent event) {
         return P2PTransferDataDto.builder()
                 // Sender info
@@ -41,6 +48,26 @@ public class P2PTransferMapper {
                 .unsubscribeLink(baseUrl + "/unsubscribe")
                 .privacyPolicyLink(baseUrl + "/privacy")
                 .appBaseUrl(baseUrl)
+
+                // ICON URL - SET HERE (you can make it dynamic based on event if needed)
+                .headerIconUrl(senderIconUrl) // or receiverIconUrl based on context
+                .build();
+    }
+
+    // Optional: If you need different icons for sender/receiver
+    public P2PTransferDataDto toSenderData(P2PTransferCompletedEvent event) {
+        P2PTransferDataDto dto = toTransferData(event);
+        return P2PTransferDataDto.builder()
+                .headerIconUrl(senderIconUrl)
+                // copy all other fields from dto
+                .build();
+    }
+
+    public P2PTransferDataDto toReceiverData(P2PTransferCompletedEvent event) {
+        P2PTransferDataDto dto = toTransferData(event);
+        return P2PTransferDataDto.builder()
+                .headerIconUrl(receiverIconUrl)
+                // copy all other fields from dto
                 .build();
     }
 }

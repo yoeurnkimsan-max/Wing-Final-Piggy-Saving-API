@@ -2,7 +2,6 @@ package com.example.piggy_saving.dto.request;
 
 import lombok.Builder;
 import lombok.Data;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -41,6 +40,9 @@ public class P2PTransferDataDto {
     private final String privacyPolicyLink;
     private final String appBaseUrl;
 
+    // ICON URL - ADD THIS FIELD
+    private final String headerIconUrl;
+
     public String getFormattedAmount() {
         return amount == null ? "$0.00" : "$" + String.format("%,.2f", amount);
     }
@@ -55,7 +57,7 @@ public class P2PTransferDataDto {
 
     public String getFormattedDateTime() {
         if (transactionDateTime == null) {
-            return "N/A"; // or LocalDateTime.now()
+            return "N/A";
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy, h:mm a");
         return transactionDateTime.format(formatter);
@@ -86,6 +88,10 @@ public class P2PTransferDataDto {
         vars.put("walletLink", walletLink);
         vars.put("unsubscribeLink", unsubscribeLink + "?email=" + (senderEmail != null ? senderEmail : ""));
         vars.put("privacyPolicyLink", privacyPolicyLink);
+
+        // ADD ICON URL TO VARIABLES
+        vars.put("headerIconUrl", headerIconUrl);
+
         vars.put("emailSubject", "You sent " + getFormattedAmount() + " to " + receiverName);
 
         return vars;
@@ -116,6 +122,10 @@ public class P2PTransferDataDto {
         vars.put("transactionHistoryLink", transactionHistoryLink);
         vars.put("unsubscribeLink", unsubscribeLink + "?email=" + receiverEmail);
         vars.put("privacyPolicyLink", privacyPolicyLink);
+
+        // ADD ICON URL TO VARIABLES
+        vars.put("headerIconUrl", headerIconUrl);
+
         vars.put("emailSubject", "You received " + getFormattedAmount() + " from " + senderName);
 
         return vars;

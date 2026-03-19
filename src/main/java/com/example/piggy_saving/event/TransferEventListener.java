@@ -7,6 +7,7 @@ import com.example.piggy_saving.services.EmailService;
 import com.example.piggy_saving.services.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.text.NumberFormat;
@@ -23,6 +24,7 @@ public class TransferEventListener {
     /**
      * Handle P2P transfers
      */
+    @Async
     @EventListener
     public void handleP2PTransfer(P2PTransferCompletedEvent event) {
 
@@ -83,6 +85,7 @@ public class TransferEventListener {
     /**
      * Handle contributions (Main → Piggy/Goal)
      */
+    @Async
     @EventListener
     public void handleContributeTransfer(ContributeTransferCompletedEvent event) {
 
@@ -135,5 +138,25 @@ public class TransferEventListener {
                 event.getPiggyGoal().getName(),
                 event.getNotes() != null ? event.getNotes() : ""
         );
+    }
+
+    @Async
+    @EventListener
+    public void handleOwnTransfer(OwnTransferMainToPiggyCompletedEvent event) {
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.US);
+        String formattedAmount = currencyFormat.format(event.getAmount());
+
+        // Send in-app/push notification
+        notificationService.notify(
+                event.getOwner(),
+                String.format("You transferred %s to your goal '%s'. New balance: %s",
+                        formattedAmount,
+                        event.getPiggyGoal().getName(),
+                        currencyFormat.format(event.getNewPiggyBalance())
+                )
+        );
+
+        // Send email
+        emailService.sendOwnTransferEmail(event);
     }
 }

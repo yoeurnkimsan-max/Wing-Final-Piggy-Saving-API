@@ -7,12 +7,16 @@ import com.example.piggy_saving.dto.response.TransferContributeResponseDto;
 import com.example.piggy_saving.dto.response.TransferP2PResponseDto;
 import com.example.piggy_saving.dto.response.TransferResponseDto;
 import com.example.piggy_saving.event.ContributeTransferCompletedEvent;
+import com.example.piggy_saving.event.OwnTransferMainToPiggyCompletedEvent;
 import com.example.piggy_saving.event.P2PTransferCompletedEvent;
 import com.example.piggy_saving.exception.AccountNotFoundException;
 import com.example.piggy_saving.exception.InsufficientBalanceException;
 import com.example.piggy_saving.exception.SelfTransferNotAllowedException;
 import com.example.piggy_saving.exception.UserNotFoundException;
-import com.example.piggy_saving.models.*;
+import com.example.piggy_saving.models.AccountModel;
+import com.example.piggy_saving.models.LedgerEntryModel;
+import com.example.piggy_saving.models.TransactionModel;
+import com.example.piggy_saving.models.UserModel;
 import com.example.piggy_saving.models.enums.*;
 import com.example.piggy_saving.repository.*;
 import com.example.piggy_saving.services.TransferService;
@@ -44,6 +48,14 @@ public class TransferServiceImpl implements TransferService {
      */
     private final ApplicationEventPublisher applicationEventPublisher;
 
+
+    /**
+     * Own: Transfer to piggy account
+     *
+     * @param userId
+     * @param transferRequestDto
+     * @return
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public TransferResponseDto transferToPiggy(UUID userId, TransferToPiggyRequestDto transferRequestDto) {
@@ -94,8 +106,6 @@ public class TransferServiceImpl implements TransferService {
         /**
          * Find Piggy Account
          */
-
-
         Map<String, Object> metadata = new HashMap<>();
         metadata.put("description", "Transfer to Piggy Goal: " + piggyAccount.getPiggyGoalModel().getName());
         // 1️⃣ Create transaction with proper metadata
@@ -157,6 +167,26 @@ public class TransferServiceImpl implements TransferService {
             transaction.setStatus(TransactionStatus.COMPLETED);
             transactionRepository.save(transaction);
 
+            // After updating balances and before returning response
+            applicationEventPublisher.publishEvent(
+                    new OwnTransferMainToPiggyCompletedEvent(
+                            this,
+                            ownerUser,                                      // owner (UserModel)
+                            mainAccount,                                    // sourceAccount (AccountModel) - FIXED
+                            piggyAccount,                                   // destinationAccount (AccountModel)
+                            piggyAccount.getPiggyGoalModel(),               // piggyGoal (PiggyGoalModel)
+                            transferAmount,                                 // amount
+                            "Transfer to Piggy Goal: " + piggyAccount.getPiggyGoalModel().getName(), // description
+                            transaction.getId(),                            // transactionId
+                            transaction.getCreatedAt(),                     // transactionDate
+                            newMainBalance,                                  // newMainBalance
+                            newPiggyBalance,                                 // newPiggyBalance
+                            maskAccountNumber(mainAccount.getAccountNumber()),           // sourceAccountMask
+                            maskAccountNumber(piggyAccount.getAccountNumber()),          // destinationAccountMask
+                            goalCompleted                                     // goalCompleted
+                    )
+            );
+
             // 6️⃣ Build response with all required fields
             return TransferResponseDto.builder()
                     .transactionId(transaction.getId())
@@ -183,6 +213,7 @@ public class TransferServiceImpl implements TransferService {
 
     /**
      * P2P Transfer
+     *
      * @param userId
      * @param transferRequestDto
      * @return
@@ -337,6 +368,7 @@ public class TransferServiceImpl implements TransferService {
 
     /**
      * Hidden Balance response
+     *
      * @param accountNumber
      * @return
      */
@@ -347,6 +379,7 @@ public class TransferServiceImpl implements TransferService {
 
     /**
      * Contribute transfer
+     *
      * @param userId
      * @param transferRequestDto
      * @return TransferContributeResponseDto
@@ -387,8 +420,7 @@ public class TransferServiceImpl implements TransferService {
          */
 
         AccountModel recipientPiggyAccount = accountRepository.findByAccountNumberAndIsPublicTrue(transferRequestDto.getPiggyAccountNumber(), true)
-                .orElseThrow(()-> new AccountNotFoundException("Piggy Account not found or Piggy account is private."));
-
+                .orElseThrow(() -> new AccountNotFoundException("Piggy Account not found or Piggy account is private."));
 
 
         Map<String, Object> metadata = new HashMap<>();
