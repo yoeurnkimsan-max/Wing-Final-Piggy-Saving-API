@@ -1,8 +1,8 @@
 package com.example.piggy_saving.services;
 
 import com.example.piggy_saving.dto.request.P2PTransferDataDto;
+import com.example.piggy_saving.event.ContributeTransferCompletedEvent;
 import com.example.piggy_saving.event.OwnTransferMainToPiggyCompletedEvent;
-import com.example.piggy_saving.models.enums.TransferType;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
@@ -22,7 +22,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -93,61 +92,80 @@ public class EmailService {
 
     // ================= TRANSFER EMAIL (for contributions and own transfers) =================
     @Async
-    public void sendTransferEmail(
-            String recipientName,
-            String recipientEmail,
-            String amount,
-            String counterPartyName,
-            String counterPartyEmail,
-            TransferType type,
-            UUID transactionId,
-            LocalDateTime transactionDate,
-            String goalName,
-            String description
-    ) {
+    public void sendContributeTransferEmail(ContributeTransferCompletedEvent event, boolean isForContributor) {
         try {
+            // Determine recipient and counterparty based on role
+            String recipientName;
+            String recipientEmail;
+            String counterPartyName;
+            String counterPartyEmail;
+            String subject;
+            String templateName; // <-- ADD THIS
+
+            if (isForContributor) {
+                // Email goes to the person who contributed (SENDER template)
+                recipientName = event.getUser().getName();
+                recipientEmail = event.getUser().getEmail();
+                counterPartyName = event.getPiggyGoal().getUserModel().getName(); // goal owner
+                counterPartyEmail = event.getPiggyGoal().getUserModel().getEmail();
+                subject = "You contributed to " + event.getPiggyGoal().getName();
+                templateName = "email/contribute-sender-transfer"; // <-- SENDER template
+            } else {
+                // Email goes to the goal owner (RECEIVER template)
+                recipientName = event.getPiggyGoal().getUserModel().getName();
+                recipientEmail = event.getPiggyGoal().getUserModel().getEmail();
+                counterPartyName = event.getUser().getName(); // contributor
+                counterPartyEmail = event.getUser().getEmail();
+                subject = "Someone contributed to your goal: " + event.getPiggyGoal().getName();
+                templateName = "email/contribution-receiver-transfer"; // <-- RECEIVER template
+            }
+
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
             helper.setFrom(fromEmail);
             helper.setTo(recipientEmail);
-
-            String subject = type.name() + " Transaction Notification";
             helper.setSubject(subject);
 
-            String formattedDate = transactionDate.format(
-                    DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm")
-            );
+            // Format date safely
+            String formattedDate = event.getTransactionDate() != null
+                    ? event.getTransactionDate().format(DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm"))
+                    : "Date not available";
+
+            // Format amounts
+            String formattedAmount = formatCurrency(event.getAmount());
+            String formattedTarget = formatCurrency(event.getPiggyGoal().getTargetAmount());
 
             Map<String, Object> variables = Map.ofEntries(
                     Map.entry("appName", APP_NAME),
-                    Map.entry("emailSubject", "Contribution Received"),
+                    Map.entry("emailSubject", subject),
                     Map.entry("recipientName", recipientName),
                     Map.entry("senderName", counterPartyName),
                     Map.entry("senderEmail", counterPartyEmail),
-                    Map.entry("goalName", goalName),
-                    Map.entry("amount", amount),
+                    Map.entry("goalName", event.getPiggyGoal().getName()),
+                    Map.entry("amount", formattedAmount),
+                    Map.entry("goalTargetAmount", formattedTarget),
                     Map.entry("transactionDate", formattedDate),
-                    Map.entry("transactionId", transactionId.toString()),
-                    Map.entry("goalLink", "https://yourapp.com/goals"),
+                    Map.entry("transactionId", event.getTransactionId().toString()),
+                    Map.entry("goalLink", baseUrl + "/" + event.getPiggyGoal().getId()),
                     Map.entry("supportEmail", SUPPORT_EMAIL),
-                    Map.entry("unsubscribeLink", "#"),
-                    Map.entry("privacyPolicyLink", "#"),
+                    Map.entry("unsubscribeLink", unsubscribeBaseLink + "?email=" + recipientEmail),
+                    Map.entry("privacyPolicyLink", privacyLink),
                     Map.entry("currentYear", Year.now().getValue()),
-                    Map.entry("description", description != null ? description : "")
+                    Map.entry("description", event.getNotes() != null ? event.getNotes() : "")
             );
 
-            String templateName = templateService.resolveTemplate(type);
+            // Use the selected template name
             String htmlContent = templateService.renderTemplate(templateName, variables);
 
             helper.setText(htmlContent, true);
 
             mailSender.send(message);
-            logger.info("Transfer email sent successfully to: {}", recipientEmail);
+            logger.info("Contribute email sent successfully to: {} using template: {}", recipientEmail, templateName);
 
         } catch (Exception e) {
-            logger.error("Failed to send transfer email to: {}", recipientEmail, e);
-            throw new RuntimeException("Failed to send transfer email", e);
+            logger.error("Failed to send contribute email", e);
+            throw new RuntimeException("Failed to send contribute email", e);
         }
     }
 
@@ -181,7 +199,7 @@ public class EmailService {
 
             // Template selection
             String templateName = isSender
-                    ? "email/p2p-sender-transfer"
+                    ? "t"
                     : "email/p2p-receiver-transfer";
 
             logger.info("Using template: {}", templateName);

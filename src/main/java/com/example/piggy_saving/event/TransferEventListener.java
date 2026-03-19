@@ -2,7 +2,6 @@ package com.example.piggy_saving.event;
 
 import com.example.piggy_saving.dto.request.P2PTransferDataDto;
 import com.example.piggy_saving.mappers.P2PTransferMapper;
-import com.example.piggy_saving.models.enums.TransferType;
 import com.example.piggy_saving.services.EmailService;
 import com.example.piggy_saving.services.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -102,18 +101,9 @@ public class TransferEventListener {
                         event.getTransactionId())
         );
 
-        emailService.sendTransferEmail(
-                event.getUser().getName(), // 👈 user is recipient of this email
-                event.getUser().getEmail(),
-                formattedAmount,
-                event.getPiggyGoal().getName(), // 👈 treat as "goalName" later in template
-                event.getPiggyGoal().getUserModel().getEmail(),
-                TransferType.CONTRIBUTION,
-                event.getTransactionId(),
-                event.getTransactionDate(),
-                event.getPiggyGoal().getName(),
-                event.getNotes()
-        );
+        // Send email to contributor
+        emailService.sendContributeTransferEmail(event, true); // true = contributor
+        emailService.sendContributeTransferEmail(event, false);
 
         // ================= GOAL OWNER =================
         notificationService.notify(
@@ -126,18 +116,8 @@ public class TransferEventListener {
                         event.getTransactionId())
         );
 
-        emailService.sendTransferEmail(
-                event.getPiggyGoal().getUserModel().getName(), // ✅ FIXED
-                event.getPiggyGoal().getUserModel().getEmail(),
-                formattedAmount,
-                event.getUser().getName(),
-                event.getUser().getEmail(),
-                TransferType.CONTRIBUTION,
-                event.getTransactionId(),
-                event.getTransactionDate(),
-                event.getPiggyGoal().getName(),
-                event.getNotes() != null ? event.getNotes() : ""
-        );
+        // Send email to goal owner
+        emailService.sendContributeTransferEmail(event, false); // false = goal owner
     }
 
     @Async
