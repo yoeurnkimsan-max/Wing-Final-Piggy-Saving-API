@@ -50,7 +50,7 @@ public class TransferServiceImpl implements TransferService {
 
 
     /**
-     * Own: Transfer to piggy account
+     * OWN: Transfer to piggy account
      *
      * @param userId
      * @param transferRequestDto
@@ -328,6 +328,7 @@ public class TransferServiceImpl implements TransferService {
 
             // ✅ SUCCESS: Save transaction
             transaction.setStatus(TransactionStatus.COMPLETED);
+            transaction.setCreatedAt(LocalDateTime.now());
             transactionRepository.save(transaction);
 
             applicationEventPublisher.publishEvent(
@@ -350,7 +351,9 @@ public class TransferServiceImpl implements TransferService {
             return TransferP2PResponseDto.builder()
                     .transactionId(transaction.getId())
                     .fromAccountId(mainAccount.getId())
+                    .fromAccountNumber(mainAccount.getAccountNumber())
                     .toAccountId(recipientUserAccount.getId())
+                    .toAccountNumber(recipientUserAccount.getAccountNumber())
                     .amount(transferAmount)
                     .type(TransferType.P2P)
                     .recipientName(recipientUserAccount.getUserModel().getName())

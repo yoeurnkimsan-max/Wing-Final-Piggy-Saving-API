@@ -25,8 +25,14 @@ public class TransferP2PResponseDto {
     @JsonProperty("from_account_id")
     private UUID fromAccountId;
 
+    @JsonProperty("from_account_number")
+    private String fromAccountNumber;
+
     @JsonProperty("to_account_id")
     private UUID toAccountId;
+
+    @JsonProperty("to_account_number")
+    private String toAccountNumber;
 
     private BigDecimal amount;
 
