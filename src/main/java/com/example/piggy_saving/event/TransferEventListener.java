@@ -139,4 +139,10 @@ public class TransferEventListener {
         // Send email
         emailService.sendOwnTransferEmail(event);
     }
+
+    @Async
+    @EventListener
+    public void handleBreakPiggyTransfer(PiggyBrokenCompleteEvent event){
+
+    }
 }

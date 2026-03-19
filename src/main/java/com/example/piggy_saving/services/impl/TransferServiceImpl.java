@@ -1,22 +1,22 @@
 package com.example.piggy_saving.services.impl;
 
+import com.example.piggy_saving.dto.request.TransferBreakRequestDto;
 import com.example.piggy_saving.dto.request.TransferContributeRequestDto;
 import com.example.piggy_saving.dto.request.TransferP2PRequestDto;
 import com.example.piggy_saving.dto.request.TransferToPiggyRequestDto;
+import com.example.piggy_saving.dto.response.TransferBreakPiggyResponseDto;
 import com.example.piggy_saving.dto.response.TransferContributeResponseDto;
 import com.example.piggy_saving.dto.response.TransferP2PResponseDto;
 import com.example.piggy_saving.dto.response.TransferResponseDto;
 import com.example.piggy_saving.event.ContributeTransferCompletedEvent;
 import com.example.piggy_saving.event.OwnTransferMainToPiggyCompletedEvent;
 import com.example.piggy_saving.event.P2PTransferCompletedEvent;
+import com.example.piggy_saving.event.PiggyBrokenCompleteEvent;
 import com.example.piggy_saving.exception.AccountNotFoundException;
 import com.example.piggy_saving.exception.InsufficientBalanceException;
 import com.example.piggy_saving.exception.SelfTransferNotAllowedException;
 import com.example.piggy_saving.exception.UserNotFoundException;
-import com.example.piggy_saving.models.AccountModel;
-import com.example.piggy_saving.models.LedgerEntryModel;
-import com.example.piggy_saving.models.TransactionModel;
-import com.example.piggy_saving.models.UserModel;
+import com.example.piggy_saving.models.*;
 import com.example.piggy_saving.models.enums.*;
 import com.example.piggy_saving.repository.*;
 import com.example.piggy_saving.services.TransferService;
@@ -527,6 +527,134 @@ public class TransferServiceImpl implements TransferService {
             transactionRepository.save(transaction);
             throw e;
         }
+    }
+
+    /**
+     * Break Piggy Transfer
+     *
+     * @param userId
+     * @param transferRequestDto
+     * @return
+     */
+    @Override
+    @Transactional
+    public TransferBreakPiggyResponseDto transferBreak(UUID userId, TransferBreakRequestDto transferRequestDto) {
+
+        // 1. Find user
+        UserModel userOwner = userRepository.findById(userId)
+                .orElseThrow(() -> new AccountNotFoundException("User Account not found."));
+
+        // 2. Validate PIN (implement your logic)
+        // if (!pinService.validatePin(userId, transferRequestDto.getPin())) {
+        //     throw new InvalidPinException("Invalid PIN");
+        // }
+
+        // 3. Find piggy account by account number
+        AccountModel piggyAccount = accountRepository
+                .findByAccountNumberAndUserModelId(transferRequestDto.getPiggyAccountNumber(), userOwner.getId())
+                .orElseThrow(() -> new AccountNotFoundException("Piggy Account not found."));
+
+        // 4. Get associated piggy goal and verify it's active
+        PiggyGoalModel piggyGoal = piggyAccount.getPiggyGoalModel();
+        if (piggyGoal == null) {
+            throw new IllegalStateException("Account is not a piggy goal account");
+        }
+        if (piggyGoal.getStatus() != GoalStatus.ACTIVE) {
+            throw new IllegalStateException("Piggy goal is not active");
+        }
+
+        // 5. Find main account
+        AccountModel mainAccount = accountRepository
+                .findAccountModelsByUserModelIdAndAccountType(userId, AccountType.MAIN)
+                .orElseThrow(() -> new AccountNotFoundException("Main account not found"));
+
+        BigDecimal currentBalance = piggyAccount.getBalance();
+
+        // 6. Fetch penalty rate
+        BigDecimal penaltyRate = getPenaltyRate(); // e.g., 0.10 for 10%
+        BigDecimal penaltyAmount = currentBalance.multiply(penaltyRate);
+        BigDecimal amountToCredit = currentBalance.subtract(penaltyAmount);
+
+        // 7. Create main transaction
+        Map<String, Object> mainMetadata = new HashMap<>();
+        mainMetadata.put("description", "Early break of piggy goal: " + piggyGoal.getName());
+        mainMetadata.put("penaltyAmount", penaltyAmount);
+        mainMetadata.put("penaltyRate", penaltyRate);
+
+        TransactionModel mainTransaction = TransactionModel.builder()
+                .initiatedByUserModel(userOwner)
+                .transactionType(TransactionType.BREAK)
+                .status(TransactionStatus.PENDING)
+                .referenceId(UUID.randomUUID().toString())
+                .metadata(mainMetadata)
+                .build();
+        mainTransaction = transactionRepository.save(mainTransaction);
+
+        // 8. Create ledger entries (debit piggy, credit main)
+        LedgerEntryModel debitPiggy = LedgerEntryModel.builder()
+                .transactionModel(mainTransaction)
+                .accountModel(piggyAccount)
+                .amount(currentBalance.negate())
+                .entryType(EntryType.DEBIT)
+                .build();
+
+        LedgerEntryModel creditMain = LedgerEntryModel.builder()
+                .transactionModel(mainTransaction)
+                .accountModel(mainAccount)
+                .amount(amountToCredit)
+                .entryType(EntryType.CREDIT)
+                .build();
+
+        mainTransaction.setLedgerEntries(new ArrayList<>(List.of(debitPiggy, creditMain)));
+
+        try {
+            // 9. Update balances
+            mainAccount.setBalance(mainAccount.getBalance().add(amountToCredit));
+            piggyAccount.setBalance(BigDecimal.ZERO);
+
+            // 10. Update piggy goal status
+            piggyGoal.setStatus(GoalStatus.BROKEN);
+            piggyGoal.setBrokenAt(mainTransaction.getCreatedAt());
+
+            // 11. Save all
+            accountRepository.save(mainAccount);
+            accountRepository.save(piggyAccount);
+            piggyGoalRepository.save(piggyGoal);
+
+            ledgerEntryRepository.save(debitPiggy);
+            ledgerEntryRepository.save(creditMain);
+
+            mainTransaction.setStatus(TransactionStatus.COMPLETED);
+            transactionRepository.save(mainTransaction);
+
+            // 12. Publish event
+            applicationEventPublisher.publishEvent(new PiggyBrokenCompleteEvent(
+                    this, userOwner, piggyGoal, penaltyAmount, amountToCredit, mainTransaction.getId()));
+
+            // 13. Build response matching TransferBreakPiggyResponseDto
+            return TransferBreakPiggyResponseDto.builder()
+                    .transactionId(mainTransaction.getId())
+                    .piggyGoalId(piggyGoal.getId())
+                    .goalName(piggyGoal.getName())
+                    .originalBalance(currentBalance)
+                    .penaltyPercentage(penaltyRate)
+                    .penaltyAmount(penaltyAmount)
+                    .returnAmount(amountToCredit)
+                    .newMainBalance(mainAccount.getBalance())
+                    .wasEarlyBreak(true)
+                    .completedAt(mainTransaction.getCreatedAt())
+                    .build();
+
+        } catch (Exception e) {
+            mainTransaction.setStatus(TransactionStatus.FAILED);
+            transactionRepository.save(mainTransaction);
+            throw e;
+        }
+    }
+
+    @Override
+    public BigDecimal getPenaltyRate() {
+        return new BigDecimal("0.10");
     }
 
 

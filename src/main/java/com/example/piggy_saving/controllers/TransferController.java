@@ -1,12 +1,10 @@
 package com.example.piggy_saving.controllers;
 
+import com.example.piggy_saving.dto.request.TransferBreakRequestDto;
 import com.example.piggy_saving.dto.request.TransferContributeRequestDto;
 import com.example.piggy_saving.dto.request.TransferP2PRequestDto;
 import com.example.piggy_saving.dto.request.TransferToPiggyRequestDto;
-import com.example.piggy_saving.dto.response.ApiResponse;
-import com.example.piggy_saving.dto.response.TransferContributeResponseDto;
-import com.example.piggy_saving.dto.response.TransferP2PResponseDto;
-import com.example.piggy_saving.dto.response.TransferResponseDto;
+import com.example.piggy_saving.dto.response.*;
 import com.example.piggy_saving.security.CustomUserDetails;
 import com.example.piggy_saving.services.TransferService;
 import jakarta.validation.Valid;
@@ -77,9 +75,9 @@ public class TransferController {
     public ResponseEntity<ApiResponse<TransferContributeResponseDto>> transferToPiggy(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @Valid @RequestBody TransferContributeRequestDto transferRequestDto
-    ){
+    ) {
 
-        TransferContributeResponseDto transferResponse = transferService.transferContribute(customUserDetails.getUserId(),transferRequestDto);
+        TransferContributeResponseDto transferResponse = transferService.transferContribute(customUserDetails.getUserId(), transferRequestDto);
 
         ApiResponse<TransferContributeResponseDto> apiResponse = ApiResponse.<TransferContributeResponseDto>builder()
                 .success(true)
@@ -89,6 +87,24 @@ public class TransferController {
                 .data(transferResponse)
                 .build();
 
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @PostMapping("/break-piggy")
+    public ResponseEntity<ApiResponse<TransferBreakPiggyResponseDto>> breakPiggy(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody TransferBreakRequestDto transferBreakRequestDto
+    ) {
+
+        TransferBreakPiggyResponseDto transferBreakPiggyService = transferService.transferBreak(userDetails.getUserId(), transferBreakRequestDto);
+        ApiResponse<TransferBreakPiggyResponseDto> apiResponse = ApiResponse.<TransferBreakPiggyResponseDto>builder()
+                .success(true)
+                .message("Transfer successfully")
+                .statusCode(200)
+                .statusMessage("OK")
+                .data(transferBreakPiggyService)
+                .timestamp(LocalDateTime.now())
+                .build();
         return ResponseEntity.ok(apiResponse);
     }
 }
