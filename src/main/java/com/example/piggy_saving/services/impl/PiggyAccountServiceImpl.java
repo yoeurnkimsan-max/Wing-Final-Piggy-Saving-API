@@ -8,12 +8,14 @@ import com.example.piggy_saving.dto.response.PiggyGoalResponseDto;
 import com.example.piggy_saving.exception.AccountNotFoundException;
 import com.example.piggy_saving.exception.NotFoundExceptionHandler;
 import com.example.piggy_saving.exception.UserNotFoundException;
+import com.example.piggy_saving.mappers.AccountMapper;
 import com.example.piggy_saving.mappers.PiggyAccountMapper;
 import com.example.piggy_saving.models.AccountModel;
 import com.example.piggy_saving.models.PiggyGoalModel;
 import com.example.piggy_saving.models.UserModel;
 import com.example.piggy_saving.models.enums.AccountType;
 import com.example.piggy_saving.models.enums.GoalStatus;
+import com.example.piggy_saving.repository.AccountRepository;
 import com.example.piggy_saving.repository.PiggyGoalRepository;
 import com.example.piggy_saving.repository.UserRepository;
 import com.example.piggy_saving.services.PiggyAccountService;
@@ -32,6 +34,8 @@ public class PiggyAccountServiceImpl implements PiggyAccountService {
     private final PiggyAccountMapper piggyAccountMapper;
     private final PiggyGoalRepository piggyGoalRepository;
     private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
+    private final AccountMapper accountMapper;
 
     @Override
     public ApiResponse<CreatePiggyGoalResponseDto> createPiggyAccount(UUID userId, CreatePiggyRequestDto createPiggyRequestDto) {
@@ -89,26 +93,31 @@ public class PiggyAccountServiceImpl implements PiggyAccountService {
     }
 
     @Override
-    public ResponseEntity<ApiResponse<PiggyGoalResponseDto>> getPiggyAccountById(UUID userId, UUID piggyId) {
+    public ResponseEntity<ApiResponse<PiggyGoalResponseDto>> getPiggyAccountByPiggyAccountNumber(UUID userId, String piggyAccountNumber) {
 
+        return null;
 
-        PiggyGoalModel piggyGoalModel = piggyGoalRepository.findByIdAndUserModelId(piggyId, userId)
-                .orElseThrow(() -> new AccountNotFoundException("Piggy Goal not found"));
-
-        if (piggyGoalModel == null) {
-            throw new NotFoundExceptionHandler("Piggy goal not found");
-        }
-
-        PiggyGoalResponseDto toDto = piggyAccountMapper.toPiggyGoalResponse(piggyGoalModel);
-
-        ApiResponse<PiggyGoalResponseDto> dataResponse = ApiResponse.<PiggyGoalResponseDto>builder()
-                .success(true)
-                .message("Get PiggyGoal successfully")
-                .statusCode(200)
-                .statusMessage("SUCCESS")
-                .data(toDto)
-                .build();
-
-        return ResponseEntity.ok(dataResponse);
+//        AccountModel piggyAccount = accountRepository.findByAccountNumberAndUserModelId(piggyAccountNumber, userId).orElseThrow(() -> new AccountNotFoundException("Account not found"));
+//
+//
+//
+//        PiggyGoalModel piggyGoalModel = piggyGoalRepository.findByIdAndUserModelId(piggyId, userId)
+//                .orElseThrow(() -> new AccountNotFoundException("Piggy Goal not found"));
+//
+//        if (piggyGoalModel == null) {
+//            throw new NotFoundExceptionHandler("Piggy goal not found");
+//        }
+//
+//        PiggyGoalResponseDto toDto = piggyAccountMapper.toPiggyGoalResponse(piggyGoalModel);
+//
+//        ApiResponse<PiggyGoalResponseDto> dataResponse = ApiResponse.<PiggyGoalResponseDto>builder()
+//                .success(true)
+//                .message("Get PiggyGoal successfully")
+//                .statusCode(200)
+//                .statusMessage("SUCCESS")
+//                .data(toDto)
+//                .build();
+//
+//        return ResponseEntity.ok(dataResponse);
     }
 }

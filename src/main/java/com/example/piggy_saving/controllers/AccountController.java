@@ -64,7 +64,6 @@ public class AccountController {
             @PathVariable AccountType accountType,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-
         ApiResponse<List<AccountResponseDto>> accounts = accountService.getAllAccountByUserIdAndType(
                 userDetails.getUserId(), accountType
         );
@@ -87,15 +86,13 @@ public class AccountController {
     }
 
     /**
-     * Get Detail Specific piggy-account by id
+     * Get Detail Specific piggy-account by piggy-account number
      */
-    @GetMapping("/piggy-account/{piggy_id}")
+    @GetMapping("/piggy-account/{piggy_account_number}")
     public ResponseEntity<ApiResponse<PiggyGoalResponseDto>> getPiggyAccountById(
-            @PathVariable UUID piggy_id,
+            @PathVariable String piggy_account_number,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ){
-
-        return piggyAccountService.getPiggyAccountById(userDetails.getUserId(), piggy_id);
+        return piggyAccountService.getPiggyAccountByPiggyAccountNumber(userDetails.getUserId(), piggy_account_number);
     }
-
 }

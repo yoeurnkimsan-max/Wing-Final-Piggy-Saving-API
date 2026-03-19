@@ -23,5 +23,6 @@ public interface AccountMapper {
     AccountResponseDto toAccountUserData(AccountModel accountModel);
 
     @Mapping(target = "accountNumber", source = "accountNumber")
+    @Mapping(target = "isPublic", source = "isPublic")
     List<AccountResponseDto> toAccountUserDataAsList(List<AccountModel> accountModels);
 }

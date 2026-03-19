@@ -55,8 +55,8 @@ public class AccountServiceImpl implements AccountService {
 
         List<AccountResponseDto> accountResponseDtoList = accountMapper.toAccountUserDataAsList(accountRepository.findAllAccountsByUserId(userId));
 
-        ApiResponse<List<AccountResponseDto>> accountResponseDto= ApiResponse.<List<AccountResponseDto>>builder()
-                .message("success")
+        ApiResponse<List<AccountResponseDto>> accountResponseDto = ApiResponse.<List<AccountResponseDto>>builder()
+                .message("SUCCESS")
                 .success(true)
                 .data(accountResponseDtoList)
                 .build();
@@ -67,8 +67,8 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     public ApiResponse<AccountResponseDto> getAccountByAccountNumber(String accountNumber) {
 
-        AccountModel account = accountRepository.findByAccountNumber(accountNumber)
-                .orElseThrow(()-> new AccountNotFoundException("Account with Account Number " + accountNumber + " not found"));
+        AccountModel account = accountRepository.findByAccountNumberAndIsPublicTrue(accountNumber, true)
+                .orElseThrow(()-> new AccountNotFoundException("Account with Account number: " + accountNumber + " not found or Account is private."));
 
         AccountResponseDto accountDataResponseMapper= accountMapper.toAccountUserData(account);
 
@@ -89,6 +89,7 @@ public class AccountServiceImpl implements AccountService {
                 .accountType(AccountType.MAIN)
                 .userModel(user)
                 .balance(BigDecimal.ZERO)
+                .isPublic(true)
                 .accountNumber(AccountNumberGenerator.generateAccountNumber())
                 .currency("USD")
                 .build();

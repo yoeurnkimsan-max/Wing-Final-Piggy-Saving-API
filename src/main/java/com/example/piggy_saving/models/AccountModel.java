@@ -35,6 +35,10 @@ public class AccountModel {
     @Column(name = "account_number", nullable = false, unique = true, length = 20)
     private String accountNumber;
 
+
+    @Column(name = "is_public")
+    private boolean isPublic ; // default: private
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "piggy_goal_id", unique = true)
     private PiggyGoalModel piggyGoalModel; // optional, only for PIGGY accounts
@@ -73,5 +77,6 @@ public class AccountModel {
         if (this.accountNumber == null) {
             this.accountNumber = AccountNumberGenerator.generateAccountNumber(1); // branch code
         }
+
     }
 }

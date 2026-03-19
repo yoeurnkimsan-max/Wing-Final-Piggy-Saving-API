@@ -11,5 +11,5 @@ import java.util.UUID;
 
 public interface PiggyAccountService {
     ApiResponse<CreatePiggyGoalResponseDto> createPiggyAccount(UUID userId, CreatePiggyRequestDto createPiggyRequestDto);
-    ResponseEntity<ApiResponse<PiggyGoalResponseDto>> getPiggyAccountById(UUID userId, UUID piggyId);
+    ResponseEntity<ApiResponse<PiggyGoalResponseDto>> getPiggyAccountByPiggyAccountNumber(UUID userId, String piggyAccountNumber);
 }
