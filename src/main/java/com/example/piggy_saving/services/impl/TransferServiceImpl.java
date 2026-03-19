@@ -180,6 +180,13 @@ public class TransferServiceImpl implements TransferService {
         }
     }
 
+
+    /**
+     * P2P Transfer
+     * @param userId
+     * @param transferRequestDto
+     * @return
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public TransferP2PResponseDto transferP2P(UUID userId, TransferP2PRequestDto transferRequestDto) {
@@ -345,6 +352,7 @@ public class TransferServiceImpl implements TransferService {
      * @return TransferContributeResponseDto
      */
     @Override
+    @Transactional
     public TransferContributeResponseDto transferContribute(UUID userId, TransferContributeRequestDto transferRequestDto) {
         /**
          * Find Existing User
@@ -457,7 +465,6 @@ public class TransferServiceImpl implements TransferService {
                             transaction.getCreatedAt(),
                             transaction.getNote()
                     )
-
             );
 
             // 6️⃣ Build response with all required fields

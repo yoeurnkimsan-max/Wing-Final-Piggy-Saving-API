@@ -25,31 +25,47 @@ public class TransferEventListener {
      */
     @EventListener
     public void handleP2PTransfer(P2PTransferCompletedEvent event) {
+
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.US);
         String formattedAmount = currencyFormat.format(event.getAmount());
 
-        // In-app notification for sender
-        notificationService.notify(event.getSender(), "You sent " + formattedAmount + " to " + event.getReceiver().getEmail());
+        // Notifications
+        notificationService.notify(
+                event.getSender(),
+                "You sent " + formattedAmount + " to " + event.getReceiver().getEmail()
+        );
 
-        // In-app notification for receiver
-        notificationService.notify(event.getReceiver(), "You received " + formattedAmount + " from " + event.getSender().getEmail());
+        notificationService.notify(
+                event.getReceiver(),
+                "You received " + formattedAmount + " from " + event.getSender().getEmail()
+        );
 
-        // Build P2PTransferData (you may want to use a mapper here)
+        // Build DTO safely
         P2PTransferDataDto data = P2PTransferDataDto.builder()
                 .senderName(event.getSender().getName())
                 .senderEmail(event.getSender().getEmail())
-                .senderNewBalance(event.getSenderNewBalance().doubleValue())
+                .senderNewBalance(
+                        event.getSenderNewBalance() != null
+                                ? event.getSenderNewBalance().doubleValue()
+                                : 0.0
+                )
                 .sourceAccountName("Main Wallet")
                 .sourceAccountMask(event.getSenderAccountMask())
                 .receiverName(event.getReceiver().getName())
                 .receiverEmail(event.getReceiver().getEmail())
-                .receiverNewBalance(event.getReceiverNewBalance().doubleValue())
+                .receiverNewBalance(
+                        event.getReceiverNewBalance() != null
+                                ? event.getReceiverNewBalance().doubleValue()
+                                : 0.0
+                )
                 .destinationWalletName("Main Wallet")
                 .destinationAccountMask(event.getReceiverAccountMask())
                 .amount(event.getAmount().doubleValue())
                 .transactionId(event.getTransactionId().toString())
                 .transactionDateTime(event.getTransactionDate())
-                .personalMessage(event.getDescription())
+                .personalMessage(
+                        event.getDescription() != null ? event.getDescription() : ""
+                )
                 .currency("USD")
                 .transactionHistoryLink("https://app.piggysaving.com/transactions")
                 .sendMoneyLink("https://app.piggysaving.com/send")
@@ -59,9 +75,9 @@ public class TransferEventListener {
                 .appBaseUrl("https://app.piggysaving.com")
                 .build();
 
-        // Send emails via the new method
-        emailService.sendP2PTransferEmail(data, true);  // sender
-        emailService.sendP2PTransferEmail(data, false); // receiver
+        // Send emails
+        emailService.sendP2PTransferEmail(data, true);
+        emailService.sendP2PTransferEmail(data, false);
     }
 
     /**

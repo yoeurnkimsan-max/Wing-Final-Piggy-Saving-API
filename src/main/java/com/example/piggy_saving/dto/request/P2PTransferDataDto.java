@@ -42,18 +42,21 @@ public class P2PTransferDataDto {
     private final String appBaseUrl;
 
     public String getFormattedAmount() {
-        return "$" + String.format("%,.2f", amount);
+        return amount == null ? "$0.00" : "$" + String.format("%,.2f", amount);
     }
 
     public String getFormattedSenderBalance() {
-        return "$" + String.format("%,.2f", senderNewBalance);
+        return senderNewBalance == null ? "$0.00" : "$" + String.format("%,.2f", senderNewBalance);
     }
 
     public String getFormattedReceiverBalance() {
-        return "$" + String.format("%,.2f", receiverNewBalance);
+        return receiverNewBalance == null ? "$0.00" : "$" + String.format("%,.2f", receiverNewBalance);
     }
 
     public String getFormattedDateTime() {
+        if (transactionDateTime == null) {
+            return "N/A"; // or LocalDateTime.now()
+        }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy, h:mm a");
         return transactionDateTime.format(formatter);
     }
@@ -76,12 +79,12 @@ public class P2PTransferDataDto {
         vars.put("amount", getFormattedAmount());
         vars.put("transactionId", transactionId);
         vars.put("transactionDateTime", getFormattedDateTime());
-        vars.put("personalMessage", personalMessage);
+        vars.put("personalMessage", personalMessage != null ? personalMessage : "");
 
         vars.put("transactionHistoryLink", transactionHistoryLink);
         vars.put("sendMoneyLink", sendMoneyLink);
         vars.put("walletLink", walletLink);
-        vars.put("unsubscribeLink", unsubscribeLink + "?email=" + senderEmail);
+        vars.put("unsubscribeLink", unsubscribeLink + "?email=" + (senderEmail != null ? senderEmail : ""));
         vars.put("privacyPolicyLink", privacyPolicyLink);
         vars.put("emailSubject", "You sent " + getFormattedAmount() + " to " + receiverName);
 

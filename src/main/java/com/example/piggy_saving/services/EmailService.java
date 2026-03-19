@@ -128,31 +128,60 @@ public class EmailService {
 
     // ================= NEW: P2P TRANSFER EMAIL (supports both sender and receiver) =================
     @Async
-    public void sendP2PTransferEmail(P2PTransferDataDto data, boolean isSender) {
+    public CompletableFuture<Void> sendP2PTransferEmail(P2PTransferDataDto data, boolean isSender) {
+
+        String toEmail = isSender ? data.getSenderEmail() : data.getReceiverEmail();
+
         try {
+            logger.info("Preparing P2P {} email to {}", isSender ? "sender" : "receiver", toEmail);
+
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
             helper.setFrom(fromEmail);
-            String toEmail = isSender ? data.getSenderEmail() : data.getReceiverEmail();
             helper.setTo(toEmail);
 
-            // Get the pre-built variables from the DTO
-            Map<String, Object> variables = isSender ? data.toSenderVariables() : data.toReceiverVariables();
-            helper.setSubject((String) variables.get("emailSubject"));
+            // Variables from DTO
+            Map<String, Object> variables = isSender
+                    ? data.toSenderVariables()
+                    : data.toReceiverVariables();
 
-            // Choose the correct template
-            String templateName = isSender ? "email/p2p-sender" : "email/p2p-receiver";
+            // ✅ Safe subject fallback
+            String subject = (String) variables.getOrDefault(
+                    "emailSubject",
+                    isSender ? "Money Sent Successfully" : "Money Received Successfully"
+            );
+
+            helper.setSubject(subject);
+
+            // Template selection
+            String templateName = isSender
+                    ? "email/p2p-sender-transfer"
+                    : "email/p2p-receiver-transfer";
+
+            logger.info("Using template: {}", templateName);
+
             String htmlContent = templateService.renderTemplate(templateName, variables);
 
             helper.setText(htmlContent, true);
 
             mailSender.send(message);
-            logger.info("P2P {} email sent successfully to: {}", isSender ? "sender" : "receiver", toEmail);
+
+            logger.info("✅ P2P {} email sent successfully to: {}",
+                    isSender ? "sender" : "receiver", toEmail);
+
+            return CompletableFuture.completedFuture(null);
 
         } catch (Exception e) {
-            logger.error("Failed to send P2P email to: {}", isSender ? data.getSenderEmail() : data.getReceiverEmail(), e);
-            throw new RuntimeException("Failed to send P2P email", e);
+
+            logger.error("❌ Failed to send P2P {} email to: {}",
+                    isSender ? "sender" : "receiver",
+                    toEmail,
+                    e
+            );
+
+            // ⚠️ IMPORTANT: still return future to avoid async crash
+            return CompletableFuture.failedFuture(e);
         }
     }
 }
