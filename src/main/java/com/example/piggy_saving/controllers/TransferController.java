@@ -48,7 +48,6 @@ public class TransferController {
                 .timestamp(LocalDateTime.now())
                 .build();
         return ResponseEntity.ok(apiResponse);
-//        return null;
     }
 
     /**

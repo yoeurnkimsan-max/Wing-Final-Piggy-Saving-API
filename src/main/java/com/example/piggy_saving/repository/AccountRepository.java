@@ -41,4 +41,6 @@ public interface AccountRepository extends JpaRepository<AccountModel, UUID> {
     Optional<AccountModel> findByAccountNumberAndIsPublicTrue(String accountNumber, boolean isPublic);
 
     Optional<AccountModel> findByAccountNumberAndUserModelId(String accountNumber, UUID userModelId);
+
+
 }

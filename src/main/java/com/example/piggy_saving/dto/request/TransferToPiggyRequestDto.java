@@ -11,7 +11,7 @@ import java.util.UUID;
 public class TransferToPiggyRequestDto {
 
     @NotNull(message = "Piggy account ID must not be null")
-    private UUID piggyAccountId;
+    private String accountPiggyNumber;
 
     @NotNull(message = "Transfer Amount must not be null")
     @Positive(message = "Transfer Amount must be greater than zero")

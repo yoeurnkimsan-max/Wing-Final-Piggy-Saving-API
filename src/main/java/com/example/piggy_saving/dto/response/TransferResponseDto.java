@@ -1,6 +1,7 @@
 package com.example.piggy_saving.dto.response;
 
 import com.example.piggy_saving.models.enums.TransactionType;
+import com.example.piggy_saving.models.enums.TransferType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
@@ -26,7 +27,7 @@ public class TransferResponseDto {
     private BigDecimal amount;
 
     @JsonProperty("type")
-    private TransactionType type;
+    private TransferType type;
 
     @JsonProperty("description")
     private String description;

@@ -51,7 +51,7 @@ public class TransferServiceImpl implements TransferService {
         /**
          * Find Existing User
          */
-        UserModel user = userRepository.findById(userId)
+        UserModel ownerUser = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         /**
@@ -80,29 +80,27 @@ public class TransferServiceImpl implements TransferService {
         /**
          * Find PiggyGoal with correct parameter order
          */
-        PiggyGoalModel piggyGoal = piggyGoalRepository
-                .findByIdAndUserModelId(transferRequestDto.getPiggyAccountId(), userId)
-                .orElseThrow(() -> new AccountNotFoundException("Piggy goal not found"));
+        AccountModel piggyAccount = accountRepository
+                .findByAccountNumberAndUserModelId(transferRequestDto.getAccountPiggyNumber(), ownerUser.getId())
+                .orElseThrow(() -> new AccountNotFoundException("Your Piggy Account not found"));
 
         /**
          * Validate piggy goal status
          */
-        if (piggyGoal.getStatus() != GoalStatus.ACTIVE) {
+        if (piggyAccount.getPiggyGoalModel().getStatus() != GoalStatus.ACTIVE) {
             throw new IllegalArgumentException("Piggy goal is not active");
         }
 
         /**
          * Find Piggy Account
          */
-        AccountModel piggyAccount = accountRepository
-                .findByPiggyGoalModelIdAndUserModelId(transferRequestDto.getPiggyAccountId(), userId)
-                .orElseThrow(() -> new AccountNotFoundException("Piggy account not found"));
+
 
         Map<String, Object> metadata = new HashMap<>();
-        metadata.put("description", "Transfer to Piggy Goal: " + piggyGoal.getName());
+        metadata.put("description", "Transfer to Piggy Goal: " + piggyAccount.getPiggyGoalModel().getName());
         // 1️⃣ Create transaction with proper metadata
         TransactionModel transaction = TransactionModel.builder()
-                .initiatedByUserModel(user)
+                .initiatedByUserModel(ownerUser)
                 .transactionType(TransactionType.TRANSFER)
                 .status(TransactionStatus.PENDING)
                 .referenceId(UUID.randomUUID().toString())
@@ -138,20 +136,19 @@ public class TransferServiceImpl implements TransferService {
             piggyAccount.setBalance(newPiggyBalance);
 
             // Update piggy goal current balance to match account balance
-            piggyGoal.setCurrentBalance(newPiggyBalance);
+            piggyAccount.getPiggyGoalModel().setCurrentBalance(newPiggyBalance);
 
             // 4️⃣ Check if goal is completed
             boolean goalCompleted = false;
-            if (newPiggyBalance.compareTo(piggyGoal.getTargetAmount()) >= 0) {
-                piggyGoal.setStatus(GoalStatus.COMPLETED);
-                piggyGoal.setCompletedAt(transaction.getCreatedAt());
+            if (newPiggyBalance.compareTo(piggyAccount.getPiggyGoalModel().getTargetAmount()) >= 0) {
+                piggyAccount.getPiggyGoalModel().setStatus(GoalStatus.COMPLETED);
+                piggyAccount.getPiggyGoalModel().setCompletedAt(transaction.getCreatedAt());
                 goalCompleted = true;
             }
 
             // 5️⃣ Save everything
             accountRepository.save(mainAccount);
             accountRepository.save(piggyAccount);
-            piggyGoalRepository.save(piggyGoal);
 
             ledgerEntryRepository.save(debitEntry);
             ledgerEntryRepository.save(creditEntry);
@@ -167,12 +164,12 @@ public class TransferServiceImpl implements TransferService {
                     .completedAt(transaction.getCreatedAt())
                     .toAccountId(piggyAccount.getId())
                     .amount(transferAmount)
-                    .type(TransactionType.TRANSFER)
-                    .description("Transfer to Piggy Goal: " + piggyGoal.getName())
+                    .type(TransferType.OWN)
+                    .description("Transfer to Piggy Goal: " + piggyAccount.getPiggyGoalModel().getName())
                     .newMainBalance(newMainBalance)
                     .newPiggyBalance(newPiggyBalance)
                     .goalCompleted(goalCompleted)
-                    .completedAt(goalCompleted ? piggyGoal.getCompletedAt() : null)
+                    .completedAt(goalCompleted ? piggyAccount.getPiggyGoalModel().getCompletedAt() : null)
                     .build();
 
         } catch (Exception e) {
@@ -348,7 +345,6 @@ public class TransferServiceImpl implements TransferService {
          */
         UserModel senderUser = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Sender User not found"));
-
 
         /**
          * Find Main Account with pessimistic lock
