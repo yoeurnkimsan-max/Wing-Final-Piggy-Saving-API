@@ -23,6 +23,11 @@ public class TransferResponseDto {
     @JsonProperty("to_account_id")
     private UUID toAccountId;
 
+    @JsonProperty("from_account_number")
+    private String fromAccountNumber;
+    @JsonProperty("to_account_number")
+    private String toAccountNumber;
+
     @JsonProperty("amount")
     private BigDecimal amount;
 
