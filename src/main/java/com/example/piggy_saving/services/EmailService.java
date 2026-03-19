@@ -1,7 +1,7 @@
 package com.example.piggy_saving.services;
 
+import com.example.piggy_saving.dto.request.P2PTransferDataDto;
 import com.example.piggy_saving.models.enums.TransferType;
-import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,13 +60,13 @@ public class EmailService {
 
             return CompletableFuture.completedFuture(true);
 
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             logger.error("Failed to send OTP email to: {}", toEmail, e);
             return CompletableFuture.completedFuture(false);
         }
     }
 
-    // ================= TRANSFER EMAIL =================
+    // ================= TRANSFER EMAIL (for contributions and own transfers) =================
     @Async
     public void sendTransferEmail(
             String recipientName,
@@ -79,7 +79,6 @@ public class EmailService {
             LocalDateTime transactionDate,
             String goalName,
             String description
-
     ) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -91,35 +90,26 @@ public class EmailService {
             String subject = type.name() + " Transaction Notification";
             helper.setSubject(subject);
 
-            // Format date nicely for email
             String formattedDate = transactionDate.format(
                     DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm")
             );
 
-            // 👇 IMPORTANT: match EXACT Thymeleaf variable names
             Map<String, Object> variables = Map.ofEntries(
                     Map.entry("appName", APP_NAME),
                     Map.entry("emailSubject", "Contribution Received"),
-
                     Map.entry("recipientName", recipientName),
                     Map.entry("senderName", counterPartyName),
                     Map.entry("senderEmail", counterPartyEmail),
-
                     Map.entry("goalName", goalName),
-
                     Map.entry("amount", amount),
                     Map.entry("transactionDate", formattedDate),
                     Map.entry("transactionId", transactionId.toString()),
-
                     Map.entry("goalLink", "https://yourapp.com/goals"),
                     Map.entry("supportEmail", SUPPORT_EMAIL),
-
                     Map.entry("unsubscribeLink", "#"),
                     Map.entry("privacyPolicyLink", "#"),
-
                     Map.entry("currentYear", Year.now().getValue()),
-
-                    Map.entry("description", description) // avoid null
+                    Map.entry("description", description != null ? description : "")
             );
 
             String templateName = templateService.resolveTemplate(type);
@@ -133,6 +123,36 @@ public class EmailService {
         } catch (Exception e) {
             logger.error("Failed to send transfer email to: {}", recipientEmail, e);
             throw new RuntimeException("Failed to send transfer email", e);
+        }
+    }
+
+    // ================= NEW: P2P TRANSFER EMAIL (supports both sender and receiver) =================
+    @Async
+    public void sendP2PTransferEmail(P2PTransferDataDto data, boolean isSender) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom(fromEmail);
+            String toEmail = isSender ? data.getSenderEmail() : data.getReceiverEmail();
+            helper.setTo(toEmail);
+
+            // Get the pre-built variables from the DTO
+            Map<String, Object> variables = isSender ? data.toSenderVariables() : data.toReceiverVariables();
+            helper.setSubject((String) variables.get("emailSubject"));
+
+            // Choose the correct template
+            String templateName = isSender ? "email/p2p-sender" : "email/p2p-receiver";
+            String htmlContent = templateService.renderTemplate(templateName, variables);
+
+            helper.setText(htmlContent, true);
+
+            mailSender.send(message);
+            logger.info("P2P {} email sent successfully to: {}", isSender ? "sender" : "receiver", toEmail);
+
+        } catch (Exception e) {
+            logger.error("Failed to send P2P email to: {}", isSender ? data.getSenderEmail() : data.getReceiverEmail(), e);
+            throw new RuntimeException("Failed to send P2P email", e);
         }
     }
 }

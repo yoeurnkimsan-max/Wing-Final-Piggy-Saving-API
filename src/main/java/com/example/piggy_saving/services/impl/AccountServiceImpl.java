@@ -12,6 +12,7 @@ import com.example.piggy_saving.models.enums.AccountType;
 import com.example.piggy_saving.repository.AccountRepository;
 import com.example.piggy_saving.repository.UserRepository;
 import com.example.piggy_saving.services.AccountService;
+import com.example.piggy_saving.util.AccountNumberGenerator;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,10 +65,10 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public ApiResponse<AccountResponseDto> getAccountById(UUID id) {
+    public ApiResponse<AccountResponseDto> getAccountByAccountNumber(String accountNumber) {
 
-        AccountModel account = accountRepository.findById(id)
-                .orElseThrow(()-> new AccountNotFoundException("Account with ID " + id + " not found"));
+        AccountModel account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(()-> new AccountNotFoundException("Account with Account Number " + accountNumber + " not found"));
 
         AccountResponseDto accountDataResponseMapper= accountMapper.toAccountUserData(account);
 
@@ -88,6 +89,7 @@ public class AccountServiceImpl implements AccountService {
                 .accountType(AccountType.MAIN)
                 .userModel(user)
                 .balance(BigDecimal.ZERO)
+                .accountNumber(AccountNumberGenerator.generateAccountNumber())
                 .currency("USD")
                 .build();
         accountRepository.save(accountModel);

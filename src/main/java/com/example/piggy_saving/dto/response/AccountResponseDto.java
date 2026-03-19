@@ -15,6 +15,10 @@ import java.util.UUID;
 @Data
 @Builder
 public class AccountResponseDto {
+
+    @JsonProperty("account_number")
+    private String accountNumber;
+
     @JsonProperty("id")
     private UUID id;
 

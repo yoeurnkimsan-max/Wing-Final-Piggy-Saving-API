@@ -1,6 +1,7 @@
 package com.example.piggy_saving.models;
 
 import com.example.piggy_saving.models.enums.AccountType;
+import com.example.piggy_saving.util.AccountNumberGenerator;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -31,6 +32,9 @@ public class AccountModel {
     @JoinColumn(name = "user_id")
     private UserModel userModel; // required for main accounts, optional for piggy accounts
 
+    @Column(name = "account_number", nullable = false, unique = true, length = 20)
+    private String accountNumber;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "piggy_goal_id", unique = true)
     private PiggyGoalModel piggyGoalModel; // optional, only for PIGGY accounts
@@ -50,17 +54,24 @@ public class AccountModel {
     private LocalDateTime createdAt;
 
     /**
-     * Validation: a main account must have a user,
-     * a PIGGY account must have either a user or a piggyGoal.
+     * Combined PrePersist / PreUpdate listener
+     * - Validates account
+     * - Generates account number if null
      */
     @PrePersist
     @PreUpdate
-    private void validate() {
+    private void beforeSave() {
+        // --- Validation ---
         if (accountType == AccountType.MAIN && userModel == null) {
             throw new IllegalStateException("Main account must be linked to a user");
         }
         if (accountType == AccountType.PIGGY && piggyGoalModel == null) {
             throw new IllegalStateException("Piggy account must be linked to a PiggyGoal");
+        }
+
+        // --- Generate account number if null ---
+        if (this.accountNumber == null) {
+            this.accountNumber = AccountNumberGenerator.generateAccountNumber(1); // branch code
         }
     }
 }

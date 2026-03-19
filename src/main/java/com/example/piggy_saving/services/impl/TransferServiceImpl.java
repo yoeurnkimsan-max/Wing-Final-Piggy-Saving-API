@@ -302,14 +302,17 @@ public class TransferServiceImpl implements TransferService {
             applicationEventPublisher.publishEvent(
                     new P2PTransferCompletedEvent(
                             this,
-                            user,
-                            recipientUser,
-                            transferAmount,
-                            "Transfer to " + recipientUser.getEmail(),
-                            transaction.getId(),
-                            transaction.getCreatedAt()
+                            user,                                   // sender
+                            recipientUser,                          // receiver
+                            transferAmount,                         // amount
+                            "Transfer to " + recipientUser.getEmail(), // description
+                            transaction.getId(),                     // transaction ID
+                            transaction.getCreatedAt(),              // date
+                            newSenderMainBalance,                    // sender's new balance
+                            newRecipientMainBalance,                  // receiver's new balance
+                            maskAccountNumber(mainAccount.getAccountNumber()),           // sender account mask
+                            maskAccountNumber(recipientMainAccount.getAccountNumber())   // receiver account mask
                     )
-
             );
 
             // 6️⃣ Build response with all required fields
@@ -331,6 +334,11 @@ public class TransferServiceImpl implements TransferService {
             transactionRepository.save(transaction);
             throw e;
         }
+    }
+
+    private String maskAccountNumber(String accountNumber) {
+        if (accountNumber == null || accountNumber.length() < 4) return "••••";
+        return "•••• " + accountNumber.substring(accountNumber.length() - 4);
     }
 
     @Override

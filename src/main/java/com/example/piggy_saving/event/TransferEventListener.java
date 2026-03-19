@@ -1,5 +1,7 @@
 package com.example.piggy_saving.event;
 
+import com.example.piggy_saving.dto.request.P2PTransferDataDto;
+import com.example.piggy_saving.mappers.P2PTransferMapper;
 import com.example.piggy_saving.models.enums.TransferType;
 import com.example.piggy_saving.services.EmailService;
 import com.example.piggy_saving.services.NotificationService;
@@ -16,60 +18,50 @@ public class TransferEventListener {
 
     private final NotificationService notificationService;
     private final EmailService emailService;
+    private final P2PTransferMapper p2PTransferMapper;
 
     /**
      * Handle P2P transfers
      */
     @EventListener
-    public void handleTransfer(P2PTransferCompletedEvent event) {
+    public void handleP2PTransfer(P2PTransferCompletedEvent event) {
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.US);
         String formattedAmount = currencyFormat.format(event.getAmount());
 
-        // ================= SENDER =================
-        notificationService.notify(
-                event.getSender(),
-                String.format("You sent %s to %s. %s Transaction ID: %s",
-                        formattedAmount,
-                        event.getRecipient().getEmail(),
-                        event.getDescription() != null ? "Description: " + event.getDescription() + "." : "",
-                        event.getTransactionId())
-        );
+        // In-app notification for sender
+        notificationService.notify(event.getSender(), "You sent " + formattedAmount + " to " + event.getReceiver().getEmail());
 
-        emailService.sendTransferEmail(
-                event.getSender().getName(),
-                event.getSender().getEmail(),
-                formattedAmount, // ✅ use formatted
-                event.getRecipient().getName(),
-                event.getRecipient().getEmail(),
-                TransferType.P2P,
-                event.getTransactionId(),
-                event.getTransactionDate(),
-                "",
-                event.getDescription() != null ? event.getDescription() : ""
-        );
+        // In-app notification for receiver
+        notificationService.notify(event.getReceiver(), "You received " + formattedAmount + " from " + event.getSender().getEmail());
 
-        // ================= RECEIVER =================
-        notificationService.notify(
-                event.getRecipient(),
-                String.format("You received %s from %s. %s Transaction ID: %s",
-                        formattedAmount,
-                        event.getSender().getEmail(),
-                        event.getDescription() != null ? "Description: " + event.getDescription() + "." : "",
-                        event.getTransactionId())
-        );
+        // Build P2PTransferData (you may want to use a mapper here)
+        P2PTransferDataDto data = P2PTransferDataDto.builder()
+                .senderName(event.getSender().getName())
+                .senderEmail(event.getSender().getEmail())
+                .senderNewBalance(event.getSenderNewBalance().doubleValue())
+                .sourceAccountName("Main Wallet")
+                .sourceAccountMask(event.getSenderAccountMask())
+                .receiverName(event.getReceiver().getName())
+                .receiverEmail(event.getReceiver().getEmail())
+                .receiverNewBalance(event.getReceiverNewBalance().doubleValue())
+                .destinationWalletName("Main Wallet")
+                .destinationAccountMask(event.getReceiverAccountMask())
+                .amount(event.getAmount().doubleValue())
+                .transactionId(event.getTransactionId().toString())
+                .transactionDateTime(event.getTransactionDate())
+                .personalMessage(event.getDescription())
+                .currency("USD")
+                .transactionHistoryLink("https://app.piggysaving.com/transactions")
+                .sendMoneyLink("https://app.piggysaving.com/send")
+                .walletLink("https://app.piggysaving.com/wallet")
+                .unsubscribeLink("https://app.piggysaving.com/unsubscribe")
+                .privacyPolicyLink("https://piggysaving.com/privacy")
+                .appBaseUrl("https://app.piggysaving.com")
+                .build();
 
-        emailService.sendTransferEmail(
-                event.getRecipient().getName(),
-                event.getRecipient().getEmail(),
-                formattedAmount,
-                event.getSender().getName(),
-                event.getSender().getEmail(),
-                TransferType.P2P,
-                event.getTransactionId(),
-                event.getTransactionDate(),
-                "",
-                event.getDescription() != null ? event.getDescription() : ""
-        );
+        // Send emails via the new method
+        emailService.sendP2PTransferEmail(data, true);  // sender
+        emailService.sendP2PTransferEmail(data, false); // receiver
     }
 
     /**
@@ -101,7 +93,7 @@ public class TransferEventListener {
                 event.getTransactionId(),
                 event.getTransactionDate(),
                 event.getPiggyGoal().getName(),
-                event.getNotes() != null ? event.getNotes() : ""
+                event.getNotes()
         );
 
         // ================= GOAL OWNER =================

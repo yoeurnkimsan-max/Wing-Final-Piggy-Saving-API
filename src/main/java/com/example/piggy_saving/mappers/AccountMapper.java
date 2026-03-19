@@ -11,6 +11,7 @@ import java.util.List;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface AccountMapper {
 
+//    @Mapping(target = "account_number", source = "accountNumber")
     @Mapping(target = "id", source = "id")
     @Mapping(target = "userId", source = "userModel.id")
     @Mapping(target = "accountType", source = "accountType") // Map enum to string automatically
@@ -21,5 +22,6 @@ public interface AccountMapper {
 //    @Mapping(target = "updatedAt", source = "updatedAt")
     AccountResponseDto toAccountUserData(AccountModel accountModel);
 
+    @Mapping(target = "accountNumber", source = "accountNumber")
     List<AccountResponseDto> toAccountUserDataAsList(List<AccountModel> accountModels);
 }
