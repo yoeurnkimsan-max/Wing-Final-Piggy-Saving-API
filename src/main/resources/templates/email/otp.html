@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piggy Saving - OTP Verification</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+
+<!-- Full-width container -->
+<table width="100%" cellpadding="0" cellspacing="0" style="padding:24px; background-color:#f1f5f9;">
+    <tr>
+        <td align="center">
+
+            <!-- Card -->
+            <table width="100%" cellpadding="0" cellspacing="0"
+                   style="max-width:560px; margin:0 auto; background-color:#ffffff; border-radius:24px; overflow:hidden; box-shadow:0 12px 28px rgba(0,0,0,0.08);">
+
+                <!-- Header -->
+                <tr>
+                    <td style="background: linear-gradient(135deg,#4f46e5,#3b82f6); padding:36px 32px; text-align:center;">
+                        <h1 style="color:#ffffff; font-size:32px; font-weight:700; margin:0; letter-spacing:-0.5px;">🐷 Piggy Saving</h1>
+                        <p style="color:#dbeafe; font-size:16px; margin:8px 0 0; font-weight:400;">Secure your account with OTP verification</p>
+                    </td>
+                </tr>
+
+                <!-- Body -->
+                <tr>
+                    <td style="padding:40px 36px 32px 36px;">
+                        <!-- Greeting -->
+                        <p style="font-size:17px; color:#0f172a; font-weight:500; margin:0 0 16px;">
+                            Hello <strong th:text="${userName}">User</strong>,
+                        </p>
+
+                        <!-- Instruction -->
+                        <p style="font-size:15px; color:#475569; line-height:1.75; margin:0 0 32px;">
+                            Please use the following <strong style="color:#0f172a;">one-time password (OTP)</strong> to verify your account. The code is valid for <strong style="color:#0f172a;">5 minutes</strong>.
+                        </p>
+
+                        <!-- OTP container -->
+                        <div style="text-align:center; margin:32px 0 36px;">
+                            <!-- Label -->
+                            <div style="display:inline-block; background-color:#eef2ff; padding:10px 24px; border-radius:50px; margin-bottom:12px;">
+                                <span style="font-size:13px; font-weight:600; letter-spacing:0.5px; color:#1e40af;">VERIFICATION CODE</span>
+                            </div>
+
+                            <!-- OTP Code -->
+                            <div style="
+                                background: linear-gradient(90deg,#3b82f6,#60a5fa);
+                                padding:22px 38px;
+                                font-size:46px;
+                                font-weight:700;
+                                letter-spacing:10px;
+                                color:#ffffff;
+                                border-radius:20px;
+                                display:inline-block;
+                                box-shadow:0 6px 18px rgba(0,0,0,0.15);
+                                font-family:'SF Mono','Fira Code','Courier New',monospace;
+                            " th:text="${otpCode}">123456
+                            </div>
+                        </div>
+
+                        <!-- Instruction note -->
+                        <p style="font-size:14px; color:#64748b; margin:0 0 16px; line-height:1.6; border-top:1px solid #e2e8f0; padding-top:20px;">
+                            If you did not request this code, you can safely ignore this email. No action is needed.
+                        </p>
+
+                        <!-- Support -->
+                        <p style="font-size:14px; color:#64748b; margin:12px 0 0;">
+                            Need help? <a href="mailto:support@piggysaving.com" style="color:#3b82f6; text-decoration:none; border-bottom:1px dotted #3b82f6;">Contact Support</a>
+                        </p>
+                    </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                    <td style="background:#f9fafb; padding:20px 36px; text-align:center; border-top:1px solid #e2e8f0;">
+                        <p style="margin:0; font-size:12px; color:#94a3b8;">© 2026 Piggy Saving — Your Trusted Saving Partner</p>
+                    </td>
+                </tr>
+
+            </table>
+
+        </td>
+    </tr>
+</table>
+</body>
+</html>

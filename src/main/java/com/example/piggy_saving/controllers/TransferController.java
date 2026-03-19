@@ -1,8 +1,10 @@
 package com.example.piggy_saving.controllers;
 
+import com.example.piggy_saving.dto.request.TransferContributeRequestDto;
 import com.example.piggy_saving.dto.request.TransferP2PRequestDto;
 import com.example.piggy_saving.dto.request.TransferToPiggyRequestDto;
 import com.example.piggy_saving.dto.response.ApiResponse;
+import com.example.piggy_saving.dto.response.TransferContributeResponseDto;
 import com.example.piggy_saving.dto.response.TransferP2PResponseDto;
 import com.example.piggy_saving.dto.response.TransferResponseDto;
 import com.example.piggy_saving.security.CustomUserDetails;
@@ -66,6 +68,28 @@ public class TransferController {
                 .data(transferP2PRequestDto)
                 .timestamp(LocalDateTime.now())
                 .build();
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    /**
+     * Transfer Contribute
+     */
+    @PostMapping("/contribute")
+    public ResponseEntity<ApiResponse<TransferContributeResponseDto>> transferToPiggy(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @Valid @RequestBody TransferContributeRequestDto transferRequestDto
+    ){
+
+        TransferContributeResponseDto transferResponse = transferService.transferContribute(customUserDetails.getUserId(),transferRequestDto);
+
+        ApiResponse<TransferContributeResponseDto> apiResponse = ApiResponse.<TransferContributeResponseDto>builder()
+                .success(true)
+                .message("Transfer successfully")
+                .statusCode(200)
+                .statusMessage("OK")
+                .data(transferResponse)
+                .build();
+
         return ResponseEntity.ok(apiResponse);
     }
 }

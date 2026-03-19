@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<h2>P2P Transfer</h2>
+
+<p>Hello <strong th:text="${name}"></strong></p>
+
+<p>
+    You sent <strong>$<span th:text="${amount}"></span></strong>
+    to <strong th:text="${counterPartyName}"></strong>
+</p>
+
+<p>Email: <span th:text="${counterPartyEmail}"></span></p>
+
+<p>Transaction ID: <span th:text="${transactionId}"></span></p>
+
+</body>
+</html>

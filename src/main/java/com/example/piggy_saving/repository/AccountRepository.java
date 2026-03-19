@@ -32,5 +32,8 @@ public interface AccountRepository extends JpaRepository<AccountModel, UUID> {
 
     Optional<AccountModel> findByPiggyGoalModelIdAndUserModelId(UUID piggyGoalModelId, UUID userModelId);
 
+
+    Optional<AccountModel> findByPiggyGoalModelId(UUID piggyGoalModelId);
+
     Optional<AccountModel> findByUserModelIdAndAccountType(UUID userModelId, AccountType accountType);
 }

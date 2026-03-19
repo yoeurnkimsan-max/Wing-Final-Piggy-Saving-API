@@ -44,6 +44,9 @@ public class TransactionModel {
     @Column(name = "reference_id")
     private String referenceId;
 
+    @Column(name = "note", nullable = true, length = 255)
+    private String note;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

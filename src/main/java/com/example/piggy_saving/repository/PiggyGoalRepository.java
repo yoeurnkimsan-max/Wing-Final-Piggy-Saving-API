@@ -12,4 +12,9 @@ public interface PiggyGoalRepository extends JpaRepository<PiggyGoalModel, UUID>
 
 
     Optional<PiggyGoalModel> findByIdAndUserModelId(UUID id, UUID userModelId);
+
+    Optional<PiggyGoalModel> findById(UUID id);
+
+    @Query("SELECT p FROM PiggyGoalModel p WHERE p.id = :id AND p.status = 'ACTIVE'")
+    Optional<PiggyGoalModel> findPiggyGoalActiveById(@Param("id") UUID id);
 }

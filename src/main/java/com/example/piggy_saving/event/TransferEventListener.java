@@ -1,5 +1,6 @@
 package com.example.piggy_saving.event;
 
+import com.example.piggy_saving.models.enums.TransferType;
 import com.example.piggy_saving.services.EmailService;
 import com.example.piggy_saving.services.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -12,16 +13,19 @@ import java.util.Locale;
 @Component
 @RequiredArgsConstructor
 public class TransferEventListener {
+
     private final NotificationService notificationService;
     private final EmailService emailService;
 
+    /**
+     * Handle P2P transfers
+     */
     @EventListener
     public void handleTransfer(P2PTransferCompletedEvent event) {
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.US);
         String formattedAmount = currencyFormat.format(event.getAmount());
-        /**
-         * Notify sender
-         */
+
+        // ================= SENDER =================
         notificationService.notify(
                 event.getSender(),
                 String.format("You sent %s to %s. %s Transaction ID: %s",
@@ -30,22 +34,21 @@ public class TransferEventListener {
                         event.getDescription() != null ? "Description: " + event.getDescription() + "." : "",
                         event.getTransactionId())
         );
-        emailService.sendEmail(
-                event.getSender().getName(),             // recipientName
-                event.getSender().getEmail(),            // recipientEmail
-                event.getAmount().toString(),            // amount
-                event.getRecipient().getName(),          // counterPartyName
-                event.getRecipient().getEmail(),         // counterPartyEmail
-                "SENT",                                  // type
-                event.getTransactionId()                 // transactionId
+
+        emailService.sendTransferEmail(
+                event.getSender().getName(),
+                event.getSender().getEmail(),
+                formattedAmount, // ✅ use formatted
+                event.getRecipient().getName(),
+                event.getRecipient().getEmail(),
+                TransferType.P2P,
+                event.getTransactionId(),
+                event.getTransactionDate(),
+                "",
+                event.getDescription() != null ? event.getDescription() : ""
         );
 
-//        emailService.se
-
-
-        /**
-         * Notify recipient
-         */
+        // ================= RECEIVER =================
         notificationService.notify(
                 event.getRecipient(),
                 String.format("You received %s from %s. %s Transaction ID: %s",
@@ -54,15 +57,75 @@ public class TransferEventListener {
                         event.getDescription() != null ? "Description: " + event.getDescription() + "." : "",
                         event.getTransactionId())
         );
-        emailService.sendEmail(
-                event.getRecipient().getName(),          // recipientName
-                event.getRecipient().getEmail(),         // recipientEmail
-                event.getAmount().toString(),            // amount
-                event.getSender().getName(),             // counterPartyName
-                event.getSender().getEmail(),            // counterPartyEmail
-                "RECEIVED",                              // type
-                event.getTransactionId()                 // transactionId
+
+        emailService.sendTransferEmail(
+                event.getRecipient().getName(),
+                event.getRecipient().getEmail(),
+                formattedAmount,
+                event.getSender().getName(),
+                event.getSender().getEmail(),
+                TransferType.P2P,
+                event.getTransactionId(),
+                event.getTransactionDate(),
+                "",
+                event.getDescription() != null ? event.getDescription() : ""
+        );
+    }
+
+    /**
+     * Handle contributions (Main → Piggy/Goal)
+     */
+    @EventListener
+    public void handleContributeTransfer(ContributeTransferCompletedEvent event) {
+
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.US);
+        String formattedAmount = currencyFormat.format(event.getAmount());
+
+        // ================= CONTRIBUTOR =================
+        notificationService.notify(
+                event.getUser(),
+                String.format("You contributed %s to goal %s. %s Transaction ID: %s",
+                        formattedAmount,
+                        event.getPiggyGoal().getName(),
+                        event.getDescription() != null ? "Description: " + event.getDescription() + "." : "",
+                        event.getTransactionId())
         );
 
+        emailService.sendTransferEmail(
+                event.getUser().getName(), // 👈 user is recipient of this email
+                event.getUser().getEmail(),
+                formattedAmount,
+                event.getPiggyGoal().getName(), // 👈 treat as "goalName" later in template
+                event.getPiggyGoal().getUserModel().getEmail(),
+                TransferType.CONTRIBUTION,
+                event.getTransactionId(),
+                event.getTransactionDate(),
+                event.getPiggyGoal().getName(),
+                event.getNotes() != null ? event.getNotes() : ""
+        );
+
+        // ================= GOAL OWNER =================
+        notificationService.notify(
+                event.getPiggyGoal().getUserModel(),
+                String.format("You received %s from %s for goal %s. %s Transaction ID: %s",
+                        formattedAmount,
+                        event.getUser().getEmail(),
+                        event.getPiggyGoal().getName(),
+                        event.getNotes() != null ? event.getNotes() : "",
+                        event.getTransactionId())
+        );
+
+        emailService.sendTransferEmail(
+                event.getPiggyGoal().getUserModel().getName(), // ✅ FIXED
+                event.getPiggyGoal().getUserModel().getEmail(),
+                formattedAmount,
+                event.getUser().getName(),
+                event.getUser().getEmail(),
+                TransferType.CONTRIBUTION,
+                event.getTransactionId(),
+                event.getTransactionDate(),
+                event.getPiggyGoal().getName(),
+                event.getNotes() != null ? event.getNotes() : ""
+        );
     }
 }
