@@ -1,6 +1,7 @@
 package com.example.piggy_saving.dto.request;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -20,7 +21,8 @@ import java.util.UUID;
 public class TransferContributeRequestDto {
 
     @NotNull(message = "Piggy goal ID is required")
-    private UUID piggyGoalId;   // maps to "piggy_goal_id"
+    @JsonProperty("piggy_account_number")
+    private String piggyAccountNumber;   // maps to "piggy_goal_id"
 
     @NotNull(message = "Amount is required")
     @DecimalMin(value = "0.01", message = "Amount must be greater than 0")

@@ -327,11 +327,23 @@ public class TransferServiceImpl implements TransferService {
         }
     }
 
+
+    /**
+     * Hidden Balance response
+     * @param accountNumber
+     * @return
+     */
     private String maskAccountNumber(String accountNumber) {
         if (accountNumber == null || accountNumber.length() < 4) return "••••";
         return "•••• " + accountNumber.substring(accountNumber.length() - 4);
     }
 
+    /**
+     * Contribute transfer
+     * @param userId
+     * @param transferRequestDto
+     * @return TransferContributeResponseDto
+     */
     @Override
     public TransferContributeResponseDto transferContribute(UUID userId, TransferContributeRequestDto transferRequestDto) {
         /**
@@ -363,18 +375,13 @@ public class TransferServiceImpl implements TransferService {
         }
 
         /**
-         * Find Recipient active piggy goal
+         * Find Recipient piggy account public
          */
 
-        PiggyGoalModel recipientPiggy = piggyGoalRepository.findPiggyGoalActiveById(transferRequestDto.getPiggyGoalId())
-                .orElseThrow(() -> new AccountNotFoundException("Piggy account not found"));
+        AccountModel recipientPiggyAccount = accountRepository.findByAccountNumberAndIsPublicTrue(transferRequestDto.getPiggyAccountNumber(), true)
+                .orElseThrow(()-> new AccountNotFoundException("Piggy Account not found or Piggy account is private."));
 
-        /**
-         * Find Recipient active piggy account
-         */
-        AccountModel recipientPiggyAccount = accountRepository.findByPiggyGoalModelId(transferRequestDto.getPiggyGoalId())
-                .orElseThrow(() -> new AccountNotFoundException("Piggy account not found"));
-        ;
+
 
         Map<String, Object> metadata = new HashMap<>();
         metadata.put("description", "Transfer to Piggy Account: " + recipientPiggyAccount.getPiggyGoalModel().getName());
@@ -425,13 +432,11 @@ public class TransferServiceImpl implements TransferService {
              * Credit recipient main balance
              */
             recipientPiggyAccount.setBalance(newRecipientMainBalance);
-            recipientPiggy.setCurrentBalance(newRecipientMainBalance);
-
+            recipientPiggyAccount.getPiggyGoalModel().setCurrentBalance(newRecipientMainBalance);
 
             //4️⃣ Save Sender main account and recipient
             accountRepository.save(senderMainAccount);
             accountRepository.save(recipientPiggyAccount);
-            piggyGoalRepository.save(recipientPiggy);
 
             //5️⃣ Save debit entry and credit entry
             ledgerEntryRepository.save(debitEntry);
@@ -445,9 +450,9 @@ public class TransferServiceImpl implements TransferService {
                     new ContributeTransferCompletedEvent(
                             this,
                             senderUser,
-                            recipientPiggy, /*Recipient account*/
+                            recipientPiggyAccount.getPiggyGoalModel(), /*Recipient account*/
                             transferAmount,
-                            "Transfer to Piggy Goal: " + recipientPiggy.getName(),
+                            "Transfer to Piggy Goal: " + recipientPiggyAccount.getPiggyGoalModel().getName(),
                             transaction.getId(),
                             transaction.getCreatedAt(),
                             transaction.getNote()
@@ -461,12 +466,12 @@ public class TransferServiceImpl implements TransferService {
                     .senderAccountId(senderMainAccount.getId())
                     .recipientAccountId(recipientPiggyAccount.getId())
                     .amount(transferAmount)
-                    .goalName(recipientPiggy.getName())
+                    .goalName(recipientPiggyAccount.getPiggyGoalModel().getName())
                     .goalOwner(recipientPiggyAccount.getUserModel().getName())
-                    .description("Transfer Contribute to " + recipientPiggy.getName())
+                    .description("Transfer Contribute to " + recipientPiggyAccount.getPiggyGoalModel().getName())
                     .newMainBalance(senderMainAccount.getBalance())
                     .transactionType(TransactionType.CONTRIBUTION)
-                    .status(recipientPiggy.getStatus())
+                    .status(recipientPiggyAccount.getPiggyGoalModel().getStatus())
                     .completedAt(LocalDateTime.now())
                     .build();
 
