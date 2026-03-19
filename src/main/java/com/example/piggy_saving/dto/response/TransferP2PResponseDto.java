@@ -1,6 +1,7 @@
 package com.example.piggy_saving.dto.response;
 
 import com.example.piggy_saving.models.enums.TransactionType;
+import com.example.piggy_saving.models.enums.TransferType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,7 +30,7 @@ public class TransferP2PResponseDto {
 
     private BigDecimal amount;
 
-    private TransactionType type;
+    private TransferType type;
 
     @JsonProperty("recipient_name")
     private String recipientName;

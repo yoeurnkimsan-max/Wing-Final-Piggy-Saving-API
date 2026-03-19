@@ -11,8 +11,8 @@ import java.util.UUID;
 @Getter
 public class TransferP2PRequestDto {
     @NotNull(message = "Piggy account ID must not be null")
-    @JsonProperty("recipient_user_id")
-    private UUID recipientUserId;
+    @JsonProperty("recipient_account_number")
+    private String recipientAccountNumber;
 
     @NotNull(message = "Transfer Amount must not be null")
     @Positive(message = "Transfer Amount must be greater than zero")

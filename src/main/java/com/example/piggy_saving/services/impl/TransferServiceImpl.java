@@ -216,26 +216,20 @@ public class TransferServiceImpl implements TransferService {
         /**
          * Find Recipient Account
          */
-        UserModel recipientUser = userRepository.findById(transferRequestDto.getRecipientUserId())
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
+        AccountModel recipientUserAccount = accountRepository.findByAccountNumberAndIsPublicTrue(transferRequestDto.getRecipientAccountNumber(), true)
+                .orElseThrow(() -> new AccountNotFoundException("Receiver Account number not found"));
 
-        /**
-         * Find Recipient account
-         */
-        AccountModel recipientMainAccount = accountRepository
-                .findAccountModelsByUserModelIdAndAccountType(recipientUser.getId(), AccountType.MAIN)
-                .orElseThrow(() -> new AccountNotFoundException("User main account not found"));
 
         /**
          * Validate Sender account, Recipient account does it belongs to singe user?
          */
-        if (mainAccount.getId().equals(recipientMainAccount.getId())) {
+        if (mainAccount.getId().equals(recipientUserAccount.getId())) {
             throw new SelfTransferNotAllowedException("You cannot transfer money to your own account");
         }
 
         Map<String, Object> metadata = new HashMap<>();
-        metadata.put("description", "Transfer to Account: " + recipientUser.getName());
+        metadata.put("description", "Transfer to Account: " + recipientUserAccount.getUserModel().getName());
         // 1️⃣ Create transaction with proper metadata
         TransactionModel transaction = TransactionModel.builder()
                 .initiatedByUserModel(user)
@@ -257,7 +251,7 @@ public class TransferServiceImpl implements TransferService {
 
         LedgerEntryModel creditEntry = LedgerEntryModel.builder()
                 .transactionModel(transaction)
-                .accountModel(recipientMainAccount)
+                .accountModel(recipientUserAccount)
                 .amount(transferAmount)
                 .entryType(EntryType.CREDIT)
                 .build();
@@ -271,7 +265,7 @@ public class TransferServiceImpl implements TransferService {
             /**
              * Update new Recipient Main account Balance
              */
-            BigDecimal newRecipientMainBalance = recipientMainAccount.getBalance().add(transferAmount);
+            BigDecimal newRecipientMainBalance = recipientUserAccount.getBalance().add(transferAmount);
 
             /**
              * Debit sender main balance
@@ -281,12 +275,12 @@ public class TransferServiceImpl implements TransferService {
             /**
              * Credit recipient main balance
              */
-            recipientMainAccount.setBalance(newRecipientMainBalance);
+            recipientUserAccount.setBalance(newRecipientMainBalance);
 
 
             //4️⃣ Save Sender main account and recipient
             accountRepository.save(mainAccount);
-            accountRepository.save(recipientMainAccount);
+            accountRepository.save(recipientUserAccount);
 
             //5️⃣ Save debit entry and credit entry
             ledgerEntryRepository.save(debitEntry);
@@ -300,15 +294,15 @@ public class TransferServiceImpl implements TransferService {
                     new P2PTransferCompletedEvent(
                             this,
                             user,                                   // sender
-                            recipientUser,                          // receiver
+                            recipientUserAccount.getUserModel(),                          // receiver
                             transferAmount,                         // amount
-                            "Transfer to " + recipientUser.getEmail(), // description
+                            "Transfer to " + recipientUserAccount.getUserModel().getEmail(), // description
                             transaction.getId(),                     // transaction ID
                             transaction.getCreatedAt(),              // date
                             newSenderMainBalance,                    // sender's new balance
                             newRecipientMainBalance,                  // receiver's new balance
                             maskAccountNumber(mainAccount.getAccountNumber()),           // sender account mask
-                            maskAccountNumber(recipientMainAccount.getAccountNumber())   // receiver account mask
+                            maskAccountNumber(recipientUserAccount.getAccountNumber())   // receiver account mask
                     )
             );
 
@@ -316,11 +310,11 @@ public class TransferServiceImpl implements TransferService {
             return TransferP2PResponseDto.builder()
                     .transactionId(transaction.getId())
                     .fromAccountId(mainAccount.getId())
-                    .toAccountId(recipientMainAccount.getId())
+                    .toAccountId(recipientUserAccount.getId())
                     .amount(transferAmount)
-                    .type(TransactionType.P2P)
-                    .recipientName(recipientUser.getName())
-                    .description("Transfer P2P to " + recipientUser.getName())
+                    .type(TransferType.P2P)
+                    .recipientName(recipientUserAccount.getUserModel().getName())
+                    .description("Transfer P2P to " + recipientUserAccount.getUserModel().getName())
                     .newMainBalance(newSenderMainBalance)
                     .completedAt(transaction.getCreatedAt())
                     .build();
