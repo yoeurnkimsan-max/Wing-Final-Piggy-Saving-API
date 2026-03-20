@@ -19,6 +19,9 @@ public class PiggyBrokenCompleteEvent extends ApplicationEvent {
     private final BigDecimal amountCredited;
     private final UUID transactionId;
     private final LocalDateTime transactionDate;
+    private final BigDecimal newMainBalance;   // new main balance after credit
+    private final BigDecimal originalBalance;  // original piggy balance before break
+    private final BigDecimal penaltyRate;      // rate as fraction (e.g., 0.10)
 
     public PiggyBrokenCompleteEvent(
             Object source,
@@ -26,7 +29,11 @@ public class PiggyBrokenCompleteEvent extends ApplicationEvent {
             PiggyGoalModel piggyGoal,
             BigDecimal penaltyAmount,
             BigDecimal amountCredited,
-            UUID transactionId
+            UUID transactionId,
+            LocalDateTime transactionDate,
+            BigDecimal newMainBalance,
+            BigDecimal originalBalance,
+            BigDecimal penaltyRate
     ) {
         super(source);
         this.user = user;
@@ -34,6 +41,9 @@ public class PiggyBrokenCompleteEvent extends ApplicationEvent {
         this.penaltyAmount = penaltyAmount;
         this.amountCredited = amountCredited;
         this.transactionId = transactionId;
-        this.transactionDate = LocalDateTime.now(); // or pass from service if needed
+        this.transactionDate = transactionDate;
+        this.newMainBalance = newMainBalance;
+        this.originalBalance = originalBalance;
+        this.penaltyRate = penaltyRate;
     }
 }

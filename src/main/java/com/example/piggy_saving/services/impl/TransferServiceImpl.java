@@ -12,10 +12,7 @@ import com.example.piggy_saving.event.ContributeTransferCompletedEvent;
 import com.example.piggy_saving.event.OwnTransferMainToPiggyCompletedEvent;
 import com.example.piggy_saving.event.P2PTransferCompletedEvent;
 import com.example.piggy_saving.event.PiggyBrokenCompleteEvent;
-import com.example.piggy_saving.exception.AccountNotFoundException;
-import com.example.piggy_saving.exception.InsufficientBalanceException;
-import com.example.piggy_saving.exception.SelfTransferNotAllowedException;
-import com.example.piggy_saving.exception.UserNotFoundException;
+import com.example.piggy_saving.exception.*;
 import com.example.piggy_saving.models.*;
 import com.example.piggy_saving.models.enums.*;
 import com.example.piggy_saving.repository.*;
@@ -26,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -427,6 +425,10 @@ public class TransferServiceImpl implements TransferService {
         AccountModel recipientPiggyAccount = accountRepository.findByAccountNumberAndIsPublicTrue(transferRequestDto.getPiggyAccountNumber(), true)
                 .orElseThrow(() -> new AccountNotFoundException("Piggy Account not found or Piggy account is private."));
 
+        if(recipientPiggyAccount.getPiggyGoalModel().getStatus() == GoalStatus.BROKEN){
+            throw new PiggyAccountBrokenException("Piggy goal " + recipientPiggyAccount.getPiggyGoalModel().getName() + " is already broken. Contribution is not allowed.");
+        }
+
 
         Map<String, Object> metadata = new HashMap<>();
         metadata.put("description", "Transfer to Piggy Account: " + recipientPiggyAccount.getPiggyGoalModel().getName());
@@ -560,7 +562,7 @@ public class TransferServiceImpl implements TransferService {
             throw new IllegalStateException("Account is not a piggy goal account");
         }
         if (piggyGoal.getStatus() != GoalStatus.ACTIVE) {
-            throw new IllegalStateException("Piggy goal is not active");
+            throw new PiggyGoalNotActiveException();
         }
 
         // 5. Find main account
@@ -572,7 +574,15 @@ public class TransferServiceImpl implements TransferService {
 
         // 6. Fetch penalty rate
         BigDecimal penaltyRate = getPenaltyRate(); // e.g., 0.10 for 10%
-        BigDecimal penaltyAmount = currentBalance.multiply(penaltyRate);
+
+        BigDecimal penaltyAmount = currentBalance
+                .multiply(penaltyRate)
+                .setScale(2, RoundingMode.HALF_UP);
+
+        if (penaltyAmount.compareTo(currentBalance) > 0) {
+            penaltyAmount = currentBalance;
+        }
+
         BigDecimal amountToCredit = currentBalance.subtract(penaltyAmount);
 
         // 7. Create main transaction
@@ -614,6 +624,7 @@ public class TransferServiceImpl implements TransferService {
 
             // 10. Update piggy goal status
             piggyGoal.setStatus(GoalStatus.BROKEN);
+            piggyGoal.setBrokenAt(LocalDateTime.now());
             piggyGoal.setBrokenAt(mainTransaction.getCreatedAt());
 
             // 11. Save all
@@ -628,8 +639,19 @@ public class TransferServiceImpl implements TransferService {
             transactionRepository.save(mainTransaction);
 
             // 12. Publish event
+            // 12. Publish event with full data
             applicationEventPublisher.publishEvent(new PiggyBrokenCompleteEvent(
-                    this, userOwner, piggyGoal, penaltyAmount, amountToCredit, mainTransaction.getId()));
+                    this,
+                    userOwner,
+                    piggyGoal,
+                    penaltyAmount,
+                    amountToCredit,
+                    mainTransaction.getId(),
+                    mainTransaction.getCreatedAt(),
+                    mainAccount.getBalance(),   // newMainBalance after credit
+                    currentBalance,             // originalBalance
+                    penaltyRate                 // penaltyRate (fraction)
+            ));
 
             // 13. Build response matching TransferBreakPiggyResponseDto
             return TransferBreakPiggyResponseDto.builder()

@@ -1,6 +1,7 @@
 package com.example.piggy_saving.mappers;
 
 import com.example.piggy_saving.dto.response.AccountResponseDto;
+import com.example.piggy_saving.dto.response.PiggyAccountResponseDto;
 import com.example.piggy_saving.models.AccountModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -25,4 +26,25 @@ public interface AccountMapper {
     @Mapping(target = "accountNumber", source = "accountNumber")
     @Mapping(target = "isPublic", source = "isPublic")
     List<AccountResponseDto> toAccountUserDataAsList(List<AccountModel> accountModels);
+
+
+
+    /**
+     * Fetch Piggy account
+     * @param accountModel
+     * @return
+     */
+    @Mapping(source = "id", target = "accountId")
+    @Mapping(source = "userModel.id", target = "userId")
+    @Mapping(source = "piggyGoalModel.id", target = "piggyGoalId")
+    @Mapping(source = "piggyGoalModel.name", target = "goalName")
+    @Mapping(source = "piggyGoalModel.status", target = "goalStatus")
+    @Mapping(source = "piggyGoalModel.currentBalance", target = "currentBalance")
+    @Mapping(source = "piggyGoalModel.targetAmount", target = "targetAmount")
+    @Mapping(source = "piggyGoalModel.lockedAt", target = "lockedAt")
+    @Mapping(source = "piggyGoalModel.lockExpiresAt", target = "lockExpiresAt")
+    @Mapping(source = "public", target = "isPublic")
+    PiggyAccountResponseDto toPiggyAccountResponseDto(AccountModel accountModel);
+
+    List<PiggyAccountResponseDto> toPiggyAccountResponseListDto(List<AccountModel> accountModelList);
 }

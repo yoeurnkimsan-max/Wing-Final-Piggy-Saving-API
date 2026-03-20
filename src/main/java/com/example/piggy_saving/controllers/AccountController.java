@@ -1,10 +1,7 @@
 package com.example.piggy_saving.controllers;
 
 import com.example.piggy_saving.dto.request.CreatePiggyRequestDto;
-import com.example.piggy_saving.dto.response.AccountResponseDto;
-import com.example.piggy_saving.dto.response.ApiResponse;
-import com.example.piggy_saving.dto.response.CreatePiggyGoalResponseDto;
-import com.example.piggy_saving.dto.response.PiggyGoalResponseDto;
+import com.example.piggy_saving.dto.response.*;
 import com.example.piggy_saving.models.enums.AccountType;
 import com.example.piggy_saving.security.CustomUserDetails;
 import com.example.piggy_saving.services.AccountService;
@@ -15,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -83,6 +81,22 @@ public class AccountController {
             ){
 
         return ResponseEntity.ok(piggyAccountService.createPiggyAccount(userDetails.getUserId(), requestDto));
+    }
+
+    @GetMapping("/piggy-account")
+    public ResponseEntity<ApiResponse<List<PiggyAccountResponseDto>>> getPiggyAccountById(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ){
+        List<PiggyAccountResponseDto> serviceResponse= accountService.getPiggyAccountByUserId(userDetails.getUserId());
+        ApiResponse<List<PiggyAccountResponseDto>> apiResponse = ApiResponse.<List<PiggyAccountResponseDto>>builder()
+                .message("PiggyAccount successfully fetched!")
+                .statusCode(200)
+                .data(serviceResponse)
+                .statusMessage("OK")
+                .success(true)
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.ok(apiResponse);
     }
 
     /**

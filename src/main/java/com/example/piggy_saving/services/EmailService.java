@@ -3,6 +3,7 @@ package com.example.piggy_saving.services;
 import com.example.piggy_saving.dto.request.P2PTransferDataDto;
 import com.example.piggy_saving.event.ContributeTransferCompletedEvent;
 import com.example.piggy_saving.event.OwnTransferMainToPiggyCompletedEvent;
+import com.example.piggy_saving.event.PiggyBrokenCompleteEvent;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
@@ -288,5 +289,46 @@ public class EmailService {
         if (dateTime == null) return "N/A";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy, h:mm a");
         return dateTime.format(formatter);
+    }
+
+    @Async
+    public void sendBreakPiggyEmail(PiggyBrokenCompleteEvent event) {
+        try {
+            Map<String, Object> variables = new HashMap<>();
+            variables.put("appName", APP_NAME);
+            variables.put("currentYear", Year.now().getValue());
+            variables.put("supportEmail", SUPPORT_EMAIL);
+
+            variables.put("userName", event.getUser().getName());
+            variables.put("goalName", event.getPiggyGoal().getName());
+            variables.put("originalBalance", formatCurrency(event.getOriginalBalance()));
+
+            // Convert penalty rate fraction to percentage (e.g., 0.10 → 10)
+            int penaltyPercent = event.getPenaltyRate().multiply(BigDecimal.valueOf(100)).intValue();
+            variables.put("penaltyPercentage", penaltyPercent);
+
+            variables.put("penaltyAmount", formatCurrency(event.getPenaltyAmount()));
+            variables.put("returnAmount", formatCurrency(event.getAmountCredited()));
+            variables.put("newMainBalance", formatCurrency(event.getNewMainBalance()));
+            variables.put("transactionId", event.getTransactionId().toString());
+            variables.put("transactionDate", formatDateTime(event.getTransactionDate()));
+
+            // Links (injected via @Value)
+            variables.put("walletLink", walletLink);
+            variables.put("goalsLink", baseUrl + "/" + event.getPiggyGoal().getId());
+            variables.put("transactionHistoryLink", transactionsLink);
+            variables.put("unsubscribeLink", unsubscribeBaseLink + "?email=" + event.getUser().getEmail());
+            variables.put("privacyPolicyLink", privacyLink);
+            variables.put("emailSubject", "Your piggy goal '" + event.getPiggyGoal().getName() + "' has been broken");
+
+            String html = templateService.renderTemplate("email/piggy-broken", variables);
+            sendHtmlEmail(event.getUser().getEmail(), (String) variables.get("emailSubject"), html);
+
+            logger.info("Break piggy email sent to: {}", event.getUser().getEmail());
+
+        } catch (Exception e) {
+            logger.error("Failed to send break piggy email", e);
+            throw new RuntimeException("Failed to send break piggy email", e);
+        }
     }
 }

@@ -49,4 +49,10 @@ public interface AccountRepository extends JpaRepository<AccountModel, UUID> {
      */
     Optional<AccountModel> findByAccountNumber(String accountNumber);
 
+
+    @Query("SELECT a FROM AccountModel a " +
+            "LEFT JOIN FETCH a.piggyGoalModel g " +
+            "LEFT JOIN FETCH a.userModel u " +
+            "WHERE u.id = :userId AND a.accountType = 'PIGGY'")
+    List<AccountModel> findPiggyAccountsByUserId(@Param("userId") UUID userId);
 }

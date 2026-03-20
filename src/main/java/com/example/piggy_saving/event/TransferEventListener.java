@@ -142,7 +142,21 @@ public class TransferEventListener {
 
     @Async
     @EventListener
-    public void handleBreakPiggyTransfer(PiggyBrokenCompleteEvent event){
+    public void handleBreakPiggyTransfer(PiggyBrokenCompleteEvent event) {
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.US);
+        String formattedAmount = currencyFormat.format(event.getAmountCredited());
+        String formattedPenalty = currencyFormat.format(event.getPenaltyAmount());
 
+        // In-app notification
+        notificationService.notify(
+                event.getUser(),
+                String.format("Your piggy goal '%s' has been broken. You received %s after a penalty of %s.",
+                        event.getPiggyGoal().getName(),
+                        formattedAmount,
+                        formattedPenalty)
+        );
+
+        // Send email
+        emailService.sendBreakPiggyEmail(event);
     }
 }

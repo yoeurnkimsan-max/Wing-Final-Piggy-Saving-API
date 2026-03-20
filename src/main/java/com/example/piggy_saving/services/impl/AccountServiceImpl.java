@@ -2,6 +2,7 @@ package com.example.piggy_saving.services.impl;
 
 import com.example.piggy_saving.dto.response.AccountResponseDto;
 import com.example.piggy_saving.dto.response.ApiResponse;
+import com.example.piggy_saving.dto.response.PiggyAccountResponseDto;
 import com.example.piggy_saving.dto.response.statusEnum.AccountStatus;
 import com.example.piggy_saving.exception.AccountNotFoundException;
 import com.example.piggy_saving.exception.UserNotFoundException;
@@ -114,5 +115,12 @@ public class AccountServiceImpl implements AccountService {
                 .build();
 
         return listApiResponse;
+    }
+
+    @Override
+    public List<PiggyAccountResponseDto> getPiggyAccountByUserId(UUID userId) {
+//        Account
+        List<AccountModel> accountModelList = accountRepository.findPiggyAccountsByUserId(userId);
+        return accountMapper.toPiggyAccountResponseListDto(accountModelList);
     }
 }

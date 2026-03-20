@@ -289,5 +289,52 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
+    /**
+     * Piggy Account has been Broken
+     * @param ex
+     * @return
+     */
+    @ExceptionHandler(PiggyAccountBrokenException.class)
+    public ResponseEntity<ErrorResponse> handlePiggyBroken(
+            PiggyAccountBrokenException ex,
+            HttpServletRequest request) {
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .success(false)
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error("Piggy Goal Invalid State")
+                .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .validationErrors(null)
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Exception Piggy Goal Not Active
+     * @param ex
+     * @param request
+     * @return
+     */
+    @ExceptionHandler(PiggyGoalNotActiveException.class)
+    public ResponseEntity<ErrorResponse> handlePiggyGoalNotActive(
+            PiggyGoalNotActiveException ex,
+            HttpServletRequest request) {
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .success(false)
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.CONFLICT.value()) // ⭐ better than 400
+                .error("Piggy Goal Not Active")
+                .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .validationErrors(null)
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
 
 }

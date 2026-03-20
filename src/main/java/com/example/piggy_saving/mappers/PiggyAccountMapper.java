@@ -2,7 +2,9 @@ package com.example.piggy_saving.mappers;
 
 import com.example.piggy_saving.dto.request.CreatePiggyRequestDto;
 import com.example.piggy_saving.dto.response.CreatePiggyGoalResponseDto;
+import com.example.piggy_saving.dto.response.PiggyAccountResponseDto;
 import com.example.piggy_saving.dto.response.PiggyGoalResponseDto;
+import com.example.piggy_saving.models.AccountModel;
 import com.example.piggy_saving.models.PiggyGoalModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -19,4 +21,6 @@ public interface PiggyAccountMapper {
     PiggyGoalModel toPiggyGoal(CreatePiggyRequestDto createPiggyRequestDto);
 
     PiggyGoalResponseDto toPiggyGoalResponse(PiggyGoalModel piggyGoalModel);
+
+
 }
