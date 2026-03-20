@@ -1,9 +1,9 @@
 package com.example.piggy_saving.services.impl;
 
+import com.example.piggy_saving.dto.request.PiggyAccountChangeIsPublic;
 import com.example.piggy_saving.dto.response.AccountResponseDto;
 import com.example.piggy_saving.dto.response.ApiResponse;
 import com.example.piggy_saving.dto.response.PiggyAccountResponseDto;
-import com.example.piggy_saving.dto.response.statusEnum.AccountStatus;
 import com.example.piggy_saving.exception.AccountNotFoundException;
 import com.example.piggy_saving.exception.UserNotFoundException;
 import com.example.piggy_saving.mappers.AccountMapper;
@@ -29,16 +29,17 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final AccountMapper accountMapper;
     private final UserRepository userRepository;
+
     @Override
     public ApiResponse<List<AccountResponseDto>> getAllAccount() {
 
         List<AccountResponseDto> userData = accountMapper.toAccountUserDataAsList(accountRepository.findAll());
 
-            ApiResponse<List<AccountResponseDto>> accountResponseDto= ApiResponse.<List<AccountResponseDto>>builder()
-                    .message("success")
-                    .success(true)
-                    .data(userData)
-                    .build();
+        ApiResponse<List<AccountResponseDto>> accountResponseDto = ApiResponse.<List<AccountResponseDto>>builder()
+                .message("success")
+                .success(true)
+                .data(userData)
+                .build();
 
         return accountResponseDto;
     }
@@ -50,7 +51,7 @@ public class AccountServiceImpl implements AccountService {
 
         boolean isUserExist = userRepository.existsUserModelById(userId);
 
-        if(!isUserExist){
+        if (!isUserExist) {
             throw new UserNotFoundException("User not found");
         }
 
@@ -69,9 +70,9 @@ public class AccountServiceImpl implements AccountService {
     public ApiResponse<AccountResponseDto> getAccountByAccountNumber(String accountNumber) {
 
         AccountModel account = accountRepository.findByAccountNumberAndIsPublicTrue(accountNumber, true)
-                .orElseThrow(()-> new AccountNotFoundException("Account with Account number: " + accountNumber + " not found or Account is private."));
+                .orElseThrow(() -> new AccountNotFoundException("Account with Account number: " + accountNumber + " not found or Account is private."));
 
-        AccountResponseDto accountDataResponseMapper= accountMapper.toAccountUserData(account);
+        AccountResponseDto accountDataResponseMapper = accountMapper.toAccountUserData(account);
 
         ApiResponse<AccountResponseDto> accountDataApiResponse = ApiResponse.<AccountResponseDto>builder()
                 .message("SUCCESS")
@@ -98,11 +99,10 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public ApiResponse<List<AccountResponseDto>> getAllAccountByUserIdAndType(UUID userId,AccountType accountType) {
+    public ApiResponse<List<AccountResponseDto>> getAllAccountByUserIdAndType(UUID userId, AccountType accountType) {
 
 
-        List<AccountResponseDto> accountResponseDtoList = accountMapper.toAccountUserDataAsList(accountRepository.findAllByUserModelIdAndAccountType(userId,accountType));
-
+        List<AccountResponseDto> accountResponseDtoList = accountMapper.toAccountUserDataAsList(accountRepository.findAllByUserModelIdAndAccountType(userId, accountType));
 
 
         ApiResponse<List<AccountResponseDto>> listApiResponse = ApiResponse.<List<AccountResponseDto>>builder()
@@ -122,5 +122,21 @@ public class AccountServiceImpl implements AccountService {
 //        Account
         List<AccountModel> accountModelList = accountRepository.findPiggyAccountsByUserId(userId);
         return accountMapper.toPiggyAccountResponseListDto(accountModelList);
+    }
+
+    @Override
+    public PiggyAccountResponseDto updatePiggyIsPublicByAccountNumberAndUserId(String accountNumber, UUID userId, PiggyAccountChangeIsPublic piggyAccountChangeIsPublic) {
+
+
+        AccountModel getAccountUpdate = accountRepository.findByAccountNumberAndUserModelId(accountNumber, userId)
+                .orElseThrow(() -> new AccountNotFoundException("Account not found or fetch failed"));
+
+        getAccountUpdate.setPublic(piggyAccountChangeIsPublic.isChangePiggyToIsPublic());
+
+        accountRepository.save(getAccountUpdate);
+
+        PiggyAccountResponseDto piggyAccountResponseDto = accountMapper.toPiggyAccountResponseDto(getAccountUpdate);
+
+        return piggyAccountResponseDto;
     }
 }

@@ -109,7 +109,7 @@ public class TransferServiceImpl implements TransferService {
         // 1️⃣ Create transaction with proper metadata
         TransactionModel transaction = TransactionModel.builder()
                 .initiatedByUserModel(ownerUser)
-                .transactionType(TransactionType.TRANSFER)
+                .transactionType(TransactionType.GOAL_CONTRIBUTION)
                 .status(TransactionStatus.PENDING)
                 .referenceId(UUID.randomUUID().toString())
                 .metadata(metadata)
@@ -255,8 +255,8 @@ public class TransferServiceImpl implements TransferService {
          * Find Recipient Account
          */
 
-        AccountModel recipientUserAccount = accountRepository.findByAccountNumberAndIsPublicTrue(transferRequestDto.getRecipientAccountNumber(), true)
-                .orElseThrow(() -> new AccountNotFoundException("Receiver Account number not found"));
+        AccountModel recipientUserAccount = accountRepository.findPublicMainAccountByAccountNumber(transferRequestDto.getRecipientAccountNumber())
+                .orElseThrow(() -> new AccountNotFoundException("Receiver Account number not found or Account number isn't correct."));
 
 
         /**
@@ -271,7 +271,7 @@ public class TransferServiceImpl implements TransferService {
         // 1️⃣ Create transaction with proper metadata
         TransactionModel transaction = TransactionModel.builder()
                 .initiatedByUserModel(user)
-                .transactionType(TransactionType.TRANSFER)
+                .transactionType(TransactionType.P2P_TRANSFER)
                 .status(TransactionStatus.PENDING)
                 .referenceId(UUID.randomUUID().toString())
                 .metadata(metadata)
@@ -435,7 +435,7 @@ public class TransferServiceImpl implements TransferService {
         // 1️⃣ Create transaction with proper metadata
         TransactionModel transaction = TransactionModel.builder()
                 .initiatedByUserModel(senderUser)
-                .transactionType(TransactionType.TRANSFER)
+                .transactionType(TransactionType.GOAL_CONTRIBUTION)
                 .status(TransactionStatus.PENDING)
                 .referenceId(UUID.randomUUID().toString())
                 .metadata(metadata)
@@ -518,7 +518,7 @@ public class TransferServiceImpl implements TransferService {
                     .goalOwner(recipientPiggyAccount.getUserModel().getName())
                     .description("Transfer Contribute to " + recipientPiggyAccount.getPiggyGoalModel().getName())
                     .newMainBalance(senderMainAccount.getBalance())
-                    .transactionType(TransactionType.CONTRIBUTION)
+                    .transactionType(TransactionType.GOAL_CONTRIBUTION)
                     .status(recipientPiggyAccount.getPiggyGoalModel().getStatus())
                     .completedAt(LocalDateTime.now())
                     .build();
@@ -593,7 +593,7 @@ public class TransferServiceImpl implements TransferService {
 
         TransactionModel mainTransaction = TransactionModel.builder()
                 .initiatedByUserModel(userOwner)
-                .transactionType(TransactionType.BREAK)
+                .transactionType(TransactionType.GOAL_WITHDRAWAL)
                 .status(TransactionStatus.PENDING)
                 .referenceId(UUID.randomUUID().toString())
                 .metadata(mainMetadata)

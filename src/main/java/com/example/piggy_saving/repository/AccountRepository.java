@@ -3,8 +3,10 @@ package com.example.piggy_saving.repository;
 import com.example.piggy_saving.models.AccountModel;
 import com.example.piggy_saving.models.enums.AccountType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,6 +42,13 @@ public interface AccountRepository extends JpaRepository<AccountModel, UUID> {
 
     Optional<AccountModel> findByAccountNumberAndIsPublicTrue(String accountNumber, boolean isPublic);
 
+    @Query("SELECT a FROM AccountModel a " +
+            "WHERE a.accountNumber = :accountNumber " +
+            "AND a.isPublic = true " +
+            "AND a.accountType = com.example.piggy_saving.models.enums.AccountType.MAIN")
+    Optional<AccountModel> findPublicMainAccountByAccountNumber(@Param("accountNumber") String accountNumber);
+
+
     Optional<AccountModel> findByAccountNumberAndUserModelId(String accountNumber, UUID userModelId);
 
     /**
@@ -55,4 +64,10 @@ public interface AccountRepository extends JpaRepository<AccountModel, UUID> {
             "LEFT JOIN FETCH a.userModel u " +
             "WHERE u.id = :userId AND a.accountType = 'PIGGY'")
     List<AccountModel> findPiggyAccountsByUserId(@Param("userId") UUID userId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE AccountModel a SET a.isPublic = :isPublic " +
+            "WHERE a.accountNumber = :accountNumber AND a.userModel.id = :userId")
+    int updateIsPublicByAccountNumberAndUserId(String accountNumber, UUID userId, boolean isPublic);
 }

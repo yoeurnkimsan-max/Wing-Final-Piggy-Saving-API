@@ -1,6 +1,7 @@
 package com.example.piggy_saving.controllers;
 
 import com.example.piggy_saving.dto.request.CreatePiggyRequestDto;
+import com.example.piggy_saving.dto.request.PiggyAccountChangeIsPublic;
 import com.example.piggy_saving.dto.response.*;
 import com.example.piggy_saving.models.enums.AccountType;
 import com.example.piggy_saving.security.CustomUserDetails;
@@ -97,6 +98,24 @@ public class AccountController {
                 .timestamp(LocalDateTime.now())
                 .build();
         return ResponseEntity.ok(apiResponse);
+    }
+
+    @PatchMapping("/{account_number}")
+    public ResponseEntity<ApiResponse<PiggyAccountResponseDto>> updatePiggyAccountIsPublic(
+            @PathVariable String account_number,
+            @Valid @RequestBody PiggyAccountChangeIsPublic requestDto,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ){
+        PiggyAccountResponseDto responseService = accountService.updatePiggyIsPublicByAccountNumberAndUserId(account_number, userDetails.getUserId(),requestDto);
+        ApiResponse<PiggyAccountResponseDto> apiResponse = ApiResponse.<PiggyAccountResponseDto>builder()
+                .message("PiggyAccount successfully updated!")
+                .statusCode(200)
+                .data(responseService)
+                .statusMessage("OK")
+                .success(true)
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.status(200).body(apiResponse);
     }
 
     /**

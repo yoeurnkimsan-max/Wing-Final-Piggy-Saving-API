@@ -47,4 +47,5 @@ public interface AccountMapper {
     PiggyAccountResponseDto toPiggyAccountResponseDto(AccountModel accountModel);
 
     List<PiggyAccountResponseDto> toPiggyAccountResponseListDto(List<AccountModel> accountModelList);
+//    PiggyAccountResponseDto toPiggyAccountResponseDto(AccountModel accountModel);
 }
