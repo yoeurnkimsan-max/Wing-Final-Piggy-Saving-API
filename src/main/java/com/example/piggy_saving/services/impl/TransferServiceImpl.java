@@ -93,7 +93,6 @@ public class TransferServiceImpl implements TransferService {
         AccountModel piggyAccount = accountRepository
                 .findByAccountNumberAndUserModelId(transferRequestDto.getAccountPiggyNumber(), ownerUser.getId())
                 .orElseThrow(() -> new AccountNotFoundException("Your Piggy Account not found"));
-
         /**
          * Validate piggy goal status
          */

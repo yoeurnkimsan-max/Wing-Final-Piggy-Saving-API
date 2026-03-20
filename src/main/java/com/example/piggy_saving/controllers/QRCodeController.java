@@ -1,7 +1,10 @@
 package com.example.piggy_saving.controllers;
 
+import com.example.piggy_saving.dto.request.QRContributeParserRequestDto;
+import com.example.piggy_saving.dto.response.QRContributeDataResponse;
 import com.example.piggy_saving.exception.UnauthorizedException;
 import com.example.piggy_saving.security.CustomUserDetails;
+import com.example.piggy_saving.services.QRCodeParserService;
 import com.example.piggy_saving.services.QRCodeService;
 import com.google.zxing.WriterException;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +16,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.UUID;
 
 @RestController
 @RequestMapping(QRCodeController.BASE_ROUTE)
@@ -21,6 +23,7 @@ import java.util.UUID;
 public class QRCodeController {
     public static final String BASE_ROUTE = "/api/v1/qr";
     private final QRCodeService qrCodeService;
+    private final QRCodeParserService qrCodeParserService;
 
     @Value("${app.base-url:http://localhost:8080}")  // Added default for safety
     private String baseUrl;
@@ -69,13 +72,9 @@ public class QRCodeController {
                 .body(qrImage);
     }
 
-    @GetMapping(value = "/goal", produces = MediaType.IMAGE_PNG_VALUE)
-    public byte[] generateGoalQRCode(@RequestParam UUID goalId) {
-        String url = baseUrl + "/contribute?goalId=" + goalId;
-        try {
-            return qrCodeService.generateQRCode(url, 300, 300);
-        } catch (Exception e) {
-            throw new RuntimeException("QR code generation failed", e);
-        }
+
+    @PostMapping("/parse-qr")
+    public ResponseEntity<QRContributeDataResponse> parseQr(@RequestBody QRContributeParserRequestDto requestDto) {
+        return ResponseEntity.ok(qrCodeParserService.parseQrPayload(requestDto));
     }
 }

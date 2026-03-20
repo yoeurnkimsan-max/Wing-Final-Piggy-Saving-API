@@ -63,6 +63,9 @@ public class QRCodeServiceImpl implements QRCodeService {
                 piggyAccount.getPiggyGoalModel().getName()   // piggy goal name
         );
 
+
+
+
         // 3. Generate QR image bytes
         return generateQRCode(qrPayload, width, height);
     }
