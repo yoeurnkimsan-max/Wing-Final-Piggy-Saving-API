@@ -14,4 +14,15 @@ public interface QRCodeService {
 
     // Generate PNG image bytes for static QR (MAIN account)
     byte[] generateStaticQrImage(UUID userId, int width, int height) throws WriterException, IOException;
+
+    /**
+     * Piggy Account QR generate
+     * @param piggyGoalNumber
+     * @param width
+     * @param height
+     * @return
+     * @throws WriterException
+     * @throws IOException
+     */
+    byte[] generatePiggyQrImage(String piggyGoalNumber, UUID userId, int width, int height) throws WriterException, IOException;
 }

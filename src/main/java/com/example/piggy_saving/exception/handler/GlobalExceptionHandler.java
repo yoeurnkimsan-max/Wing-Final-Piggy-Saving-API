@@ -291,6 +291,7 @@ public class GlobalExceptionHandler {
 
     /**
      * Piggy Account has been Broken
+     *
      * @param ex
      * @return
      */
@@ -314,6 +315,7 @@ public class GlobalExceptionHandler {
 
     /**
      * Exception Piggy Goal Not Active
+     *
      * @param ex
      * @param request
      * @return
@@ -334,6 +336,19 @@ public class GlobalExceptionHandler {
                 .build();
 
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException ex) {
+        ErrorResponse response = ErrorResponse.builder()
+                .success(false)
+                .status(HttpStatus.UNAUTHORIZED.value())
+                .error(HttpStatus.UNAUTHORIZED.getReasonPhrase()) // <- fixed
+                .message(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 
 

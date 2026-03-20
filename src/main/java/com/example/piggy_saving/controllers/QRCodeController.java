@@ -1,5 +1,6 @@
 package com.example.piggy_saving.controllers;
 
+import com.example.piggy_saving.exception.UnauthorizedException;
 import com.example.piggy_saving.security.CustomUserDetails;
 import com.example.piggy_saving.services.QRCodeService;
 import com.google.zxing.WriterException;
@@ -38,6 +39,31 @@ public class QRCodeController {
     public ResponseEntity<byte[]> getStaticQr(@AuthenticationPrincipal CustomUserDetails userDetails) throws WriterException, IOException {
         byte[] qrImage = qrCodeService.generateStaticQrImage(userDetails.getUserId(), 300, 300);
 
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_TYPE, "image/png")
+                .body(qrImage);
+    }
+
+    @GetMapping("/piggy/{piggyGoalNumber}")
+    public ResponseEntity<byte[]> generateContributeQRCode(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable String piggyGoalNumber
+    ) throws WriterException, IOException {
+
+        // 1. Check if user is authenticated
+        if (userDetails == null) {
+            throw new UnauthorizedException("You must be logged in to generate QR code");
+        }
+
+        // 2. Generate QR image
+        byte[] qrImage = qrCodeService.generatePiggyQrImage(
+                piggyGoalNumber,
+                userDetails.getUserId(),
+                300,
+                300
+        );
+
+        // 3. Return the image as PNG
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_TYPE, "image/png")
                 .body(qrImage);

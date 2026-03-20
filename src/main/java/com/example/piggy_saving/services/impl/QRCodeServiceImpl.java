@@ -1,5 +1,6 @@
 package com.example.piggy_saving.services.impl;
 
+import com.example.piggy_saving.exception.AccountNotFoundException;
 import com.example.piggy_saving.models.AccountModel;
 import com.example.piggy_saving.models.enums.AccountType;
 import com.example.piggy_saving.repository.AccountRepository;
@@ -48,7 +49,29 @@ public class QRCodeServiceImpl implements QRCodeService {
         return generateQRCode(qrPayload, width, height);
     }
 
+    @Override
+    public byte[] generatePiggyQrImage(String piggyGoalNumber, UUID userId, int width, int height) throws WriterException, IOException {
+        // 1. Find the Piggy account by piggyGoalId
+        AccountModel piggyAccount = accountRepository
+                .findByAccountNumberAndUserModelId(piggyGoalNumber, userId)
+                .orElseThrow(() -> new AccountNotFoundException("Your Piggy Account not found"));
+
+        // 2. Build QR payload
+        String qrPayload = buildPiggyQrPayload(
+                piggyAccount.getAccountNumber(),
+                piggyAccount.getUserModel().getName(),       // user full name
+                piggyAccount.getPiggyGoalModel().getName()   // piggy goal name
+        );
+
+        // 3. Generate QR image bytes
+        return generateQRCode(qrPayload, width, height);
+    }
+
     private String buildQrPayload(String accountNumber, String fullName) {
         return String.format("PAY|ACC:%s|NAME:%s", accountNumber, fullName);
+    }
+    private String buildPiggyQrPayload(String accountNumber, String fullName, String goalName) {
+        // Standard format: PAY|ACC:<accountNumber>|NAME:<fullName>|GOAL:<goalName>
+        return String.format("PAY|ACC:%s|NAME:%s|GOAL:%s", accountNumber, fullName, goalName);
     }
 }
