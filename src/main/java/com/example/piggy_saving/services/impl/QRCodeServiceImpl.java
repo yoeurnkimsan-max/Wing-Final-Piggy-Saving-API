@@ -43,17 +43,36 @@ public class QRCodeServiceImpl implements QRCodeService {
         return buildQrPayload(account.getAccountNumber(), account.getUserModel().getName());
     }
 
+    /**
+     *
+     * @param userId
+     * @param width
+     * @param height
+     * @return
+     * @throws WriterException
+     * @throws IOException
+     */
     @Override
     public byte[] generateStaticQrImage(UUID userId, int width, int height) throws WriterException, IOException {
         String qrPayload = generateStaticQr(userId);
         return generateQRCode(qrPayload, width, height);
     }
 
+    /**
+     *
+     * @param piggyGoalNumber
+     * @param userId
+     * @param width
+     * @param height
+     * @return
+     * @throws WriterException
+     * @throws IOException
+     */
     @Override
     public byte[] generatePiggyQrImage(String piggyGoalNumber, UUID userId, int width, int height) throws WriterException, IOException {
         // 1. Find the Piggy account by piggyGoalId
         AccountModel piggyAccount = accountRepository
-                .findByAccountNumberAndUserModelId(piggyGoalNumber, userId)
+                .findByAccountNumberAndUserModelIdAndIsPublic(piggyGoalNumber, userId)
                 .orElseThrow(() -> new AccountNotFoundException("Your Piggy Account not found"));
 
         // 2. Build QR payload

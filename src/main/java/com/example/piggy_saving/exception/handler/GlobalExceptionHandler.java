@@ -14,10 +14,13 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.hibernate.boot.model.internal.BinderHelper.getPath;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -351,5 +354,60 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 
+
+
+    @ExceptionHandler(QRException.class)
+    public ResponseEntity<ErrorResponse> handleQRException(QRException e, WebRequest request) {
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .success(false)
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .message(e.getMessage())
+                .error(e.getErrorCode())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(QRExpiredException.class)
+    public ResponseEntity<ErrorResponse> handleQRExpiredException(QRExpiredException e, WebRequest request) {
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .success(false)
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .message(e.getMessage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(QRInvalidException.class)
+    public ResponseEntity<ErrorResponse> handleQRInvalidException(QRInvalidException e, WebRequest request) {
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .success(false)
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .message(e.getMessage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+
+    @ExceptionHandler(QRGoalInactiveException.class)
+    public ResponseEntity<ErrorResponse> handleQRInactiveException(QRGoalInactiveException e, WebRequest request) {
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .success(false)
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .message(e.getMessage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
 
 }

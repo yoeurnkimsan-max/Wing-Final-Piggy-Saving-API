@@ -49,6 +49,13 @@ public interface AccountRepository extends JpaRepository<AccountModel, UUID> {
     Optional<AccountModel> findPublicMainAccountByAccountNumber(@Param("accountNumber") String accountNumber);
 
 
+    @Query("SELECT a FROM AccountModel a " +
+            "WHERE a.accountNumber = :accountNumber " +
+            "AND a.isPublic = true " +
+            "AND a.userModel.id = :userModelId "+
+            "AND a.accountType = com.example.piggy_saving.models.enums.AccountType.PIGGY")
+    Optional<AccountModel> findByAccountNumberAndUserModelIdAndIsPublic(@Param("accountNumber") String accountNumber,@Param("userModelId") UUID userModelId);
+
     Optional<AccountModel> findByAccountNumberAndUserModelId(String accountNumber, UUID userModelId);
 
     /**
