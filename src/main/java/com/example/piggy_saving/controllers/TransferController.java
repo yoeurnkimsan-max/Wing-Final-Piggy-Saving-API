@@ -1,9 +1,6 @@
 package com.example.piggy_saving.controllers;
 
-import com.example.piggy_saving.dto.request.TransferBreakRequestDto;
-import com.example.piggy_saving.dto.request.TransferContributeRequestDto;
-import com.example.piggy_saving.dto.request.TransferP2PRequestDto;
-import com.example.piggy_saving.dto.request.TransferToPiggyRequestDto;
+import com.example.piggy_saving.dto.request.*;
 import com.example.piggy_saving.dto.response.*;
 import com.example.piggy_saving.security.CustomUserDetails;
 import com.example.piggy_saving.services.TransferService;
@@ -34,7 +31,7 @@ public class TransferController {
     @PostMapping("/main-to-piggy")
     public ResponseEntity<ApiResponse<TransferResponseDto>> transferToPiggy(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @Valid @RequestBody TransferToPiggyRequestDto transferRequestDto) {
+            @Valid @RequestBody TransferRequestDto transferRequestDto) {
 
         TransferResponseDto response = transferService.transferToPiggy(userDetails.getUserId(), transferRequestDto);
         ApiResponse<TransferResponseDto> apiResponse = ApiResponse.<TransferResponseDto>builder()
@@ -54,7 +51,7 @@ public class TransferController {
     @PostMapping("/p2p")
     public ResponseEntity<ApiResponse<TransferP2PResponseDto>> transferPeerToPeer(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @Valid @RequestBody TransferP2PRequestDto transferRequestDto
+            @Valid @RequestBody TransferRequestDto transferRequestDto
     ) {
         TransferP2PResponseDto transferP2PRequestDto = transferService.transferP2P(customUserDetails.getUserId(), transferRequestDto);
         ApiResponse<TransferP2PResponseDto> apiResponse = ApiResponse.<TransferP2PResponseDto>builder()
@@ -72,9 +69,9 @@ public class TransferController {
      * Transfer Contribute
      */
     @PostMapping("/contribute")
-    public ResponseEntity<ApiResponse<TransferContributeResponseDto>> transferToPiggy(
+    public ResponseEntity<ApiResponse<TransferContributeResponseDto>> transferToPiggyController(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @Valid @RequestBody TransferContributeRequestDto transferRequestDto
+            @Valid @RequestBody TransferRequestDto transferRequestDto
     ) {
 
         TransferContributeResponseDto transferResponse = transferService.transferContribute(customUserDetails.getUserId(), transferRequestDto);

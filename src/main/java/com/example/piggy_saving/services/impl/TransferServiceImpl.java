@@ -1,9 +1,8 @@
 package com.example.piggy_saving.services.impl;
 
 import com.example.piggy_saving.dto.request.TransferBreakRequestDto;
-import com.example.piggy_saving.dto.request.TransferContributeRequestDto;
 import com.example.piggy_saving.dto.request.TransferP2PRequestDto;
-import com.example.piggy_saving.dto.request.TransferToPiggyRequestDto;
+import com.example.piggy_saving.dto.request.TransferRequestDto;
 import com.example.piggy_saving.dto.response.TransferBreakPiggyResponseDto;
 import com.example.piggy_saving.dto.response.TransferContributeResponseDto;
 import com.example.piggy_saving.dto.response.TransferP2PResponseDto;
@@ -56,7 +55,7 @@ public class TransferServiceImpl implements TransferService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public TransferResponseDto transferToPiggy(UUID userId, TransferToPiggyRequestDto transferRequestDto) {
+    public TransferResponseDto transferToPiggy(UUID userId, TransferRequestDto transferRequestDto) {
 
         /**
          * Find Existing User
@@ -71,7 +70,10 @@ public class TransferServiceImpl implements TransferService {
                 .findAccountModelsByUserModelIdAndAccountType(userId, AccountType.MAIN)
                 .orElseThrow(() -> new AccountNotFoundException("User main account not found"));
 
-        BigDecimal transferAmount = transferRequestDto.getTransferAmount();
+        /**
+         * Get Transfer amount
+         */
+        BigDecimal transferAmount = transferRequestDto.getAmount();
 
         /**
          * Validate transfer amount
@@ -91,7 +93,7 @@ public class TransferServiceImpl implements TransferService {
          * Find PiggyGoal with correct parameter order
          */
         AccountModel piggyAccount = accountRepository
-                .findByAccountNumberAndUserModelId(transferRequestDto.getAccountPiggyNumber(), ownerUser.getId())
+                .findByAccountNumberAndUserModelId(transferRequestDto.getRecipientAccountNumber(), ownerUser.getId())
                 .orElseThrow(() -> new AccountNotFoundException("Your Piggy Account not found"));
         /**
          * Validate piggy goal status
@@ -219,7 +221,7 @@ public class TransferServiceImpl implements TransferService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public TransferP2PResponseDto transferP2P(UUID userId, TransferP2PRequestDto transferRequestDto) {
+    public TransferP2PResponseDto transferP2P(UUID userId, TransferRequestDto transferRequestDto) {
 
         /**
          * Find Existing User
@@ -388,7 +390,7 @@ public class TransferServiceImpl implements TransferService {
      */
     @Override
     @Transactional
-    public TransferContributeResponseDto transferContribute(UUID userId, TransferContributeRequestDto transferRequestDto) {
+    public TransferContributeResponseDto transferContribute(UUID userId, TransferRequestDto transferRequestDto) {
         /**
          * Find Existing User
          */
@@ -421,10 +423,10 @@ public class TransferServiceImpl implements TransferService {
          * Find Recipient piggy account public
          */
 
-        AccountModel recipientPiggyAccount = accountRepository.findByAccountNumberAndIsPublicTrue(transferRequestDto.getPiggyAccountNumber(), true)
+        AccountModel recipientPiggyAccount = accountRepository.findByAccountNumberAndIsPublicTrue(transferRequestDto.getRecipientAccountNumber(), true)
                 .orElseThrow(() -> new AccountNotFoundException("Piggy Account not found or Piggy account is private."));
 
-        if(recipientPiggyAccount.getPiggyGoalModel().getStatus() == GoalStatus.BROKEN){
+        if (recipientPiggyAccount.getPiggyGoalModel().getStatus() == GoalStatus.BROKEN) {
             throw new PiggyAccountBrokenException("Piggy goal " + recipientPiggyAccount.getPiggyGoalModel().getName() + " is already broken. Contribution is not allowed.");
         }
 

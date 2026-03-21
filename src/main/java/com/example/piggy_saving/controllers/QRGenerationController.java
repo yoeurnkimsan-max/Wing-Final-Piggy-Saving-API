@@ -51,25 +51,7 @@ public class QRGenerationController {
         return qrCodeService.generateQRCode(encodedPayload, 300, 300);
     }
 
-    /**
-     * Generate QR for P2P Transfer
-     * GET /api/v1/qr/generate/p2p?recipientAccountNumber=118211012246
-     */
-    @GetMapping(value = "/generate/p2p", produces = MediaType.IMAGE_PNG_VALUE)
-    public byte[] generateP2PQR(
-            @RequestParam String recipientAccountNumber) throws Exception {
 
-        QRPaymentPayload payload = QRPaymentPayload.builder()
-                .type(TransferType.P2P)
-                .recipientAccountNumber(recipientAccountNumber)
-                .expiresAt(LocalDateTime.now().plusMinutes(QR_EXPIRY_MINUTES)
-                        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
-                .version("1.0")
-                .build();
-
-        String encodedPayload = encodePayload(payload);
-        return qrCodeService.generateQRCode(encodedPayload, 300, 300);
-    }
     /**
      * Generate QR for Contribution to Piggy Goal
      * GET /api/v1/qr/generate/contribute?piggyAccountNumber=177152031515
@@ -96,17 +78,16 @@ public class QRGenerationController {
      * @return
      * @throws Exception
      */
-    @GetMapping(value = "/generate/main-account", produces = MediaType.IMAGE_PNG_VALUE)
+    @GetMapping(value = "/generate/p2p-transfer-qr", produces = MediaType.IMAGE_PNG_VALUE)
     public byte[] generateMainQR(
             @AuthenticationPrincipal CustomUserDetails userDetails) throws Exception {
 
         AccountModel accountModel = accountRepository.findAccountModelsByUserModelIdAndAccountType(userDetails.getUserId(), AccountType.MAIN)
                 .orElseThrow(() -> new Exception("Account not found"));
 
-
         QRPaymentPayload payload = QRPaymentPayload.builder()
-                .type(TransferType.OWN)
-                .piggyAccountNumber(accountModel.getAccountNumber())
+                .type(TransferType.P2P)
+                .recipientAccountNumber(accountModel.getAccountNumber())
                 .expiresAt(LocalDateTime.now().plusMinutes(QR_EXPIRY_MINUTES)
                         .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
                 .version("1.0")
