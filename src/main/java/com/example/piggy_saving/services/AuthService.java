@@ -8,7 +8,7 @@ import com.example.piggy_saving.dto.response.RegisterResponseDto;
 
 public interface AuthService {
 
-    ApiResponse<RegisterResponseDto> register(RegisterRequestDto registerRequestDto);
+    RegisterResponseDto register(RegisterRequestDto registerRequestDto);
 
     LoginResponseDto login(LoginRequestDto loginRequestDto);
 

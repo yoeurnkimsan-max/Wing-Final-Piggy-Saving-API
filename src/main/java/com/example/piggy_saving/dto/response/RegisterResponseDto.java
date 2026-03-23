@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -14,12 +15,25 @@ import java.util.UUID;
 @AllArgsConstructor
 public class RegisterResponseDto {
 
-    @JsonProperty("user_id")
-    private UUID userId;
+    private String status;
 
-    @JsonProperty("email")
-    private String email;
+    private RegisterData data;
 
-    @JsonProperty("OTP_expires_in")
-    private int otpExpiresIn;
+    private String message;
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class RegisterData {
+
+        @JsonProperty("user_id")
+        private UUID userId;
+
+        @JsonProperty("email")
+        private String email;
+
+        @JsonProperty("OTP_expires_in")
+        private int otpExpiresIn;
+    }
 }

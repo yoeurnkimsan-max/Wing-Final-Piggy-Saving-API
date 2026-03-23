@@ -2,7 +2,6 @@ package com.example.piggy_saving.services.impl;
 
 import com.example.piggy_saving.dto.request.LoginRequestDto;
 import com.example.piggy_saving.dto.request.RegisterRequestDto;
-import com.example.piggy_saving.dto.response.ApiResponse;
 import com.example.piggy_saving.dto.response.LoginResponseDto;
 import com.example.piggy_saving.dto.response.RegisterResponseDto;
 import com.example.piggy_saving.exception.OtpFailedToSentExceptionHandler;
@@ -49,7 +48,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ApiResponse<RegisterResponseDto> register(RegisterRequestDto registerRequestDto) {
+    public RegisterResponseDto register(RegisterRequestDto registerRequestDto) {
 
         log.info("Attempting to register user with email: {}", registerRequestDto.getEmail());
 
@@ -110,21 +109,20 @@ public class AuthServiceImpl implements AuthService {
             throw new OtpFailedToSentExceptionHandler(savedUser.getEmail());
         }
 
-        RegisterResponseDto registerResponseDto = authMapper.toRegisterResponseDto(savedUser);
+//        RegisterResponseDto registerResponseDto = authMapper.toRegisterResponseDto(savedUser);
 
         int otpExpiresIn = emailOtpService.getOtpInSeconds(LocalDateTime.now().plusMinutes(5));
-
-        registerResponseDto.setOtpExpiresIn(otpExpiresIn);
-
-        ApiResponse<RegisterResponseDto> responseData = ApiResponse.<RegisterResponseDto>builder()
-                .success(true)
-                .statusCode(HttpStatus.OK.value())
-                .statusMessage(HttpStatus.OK.name())
-                .message("Registration successful. Please verify your email " + savedUser.getEmail() + " using the OTP sent. OTP will be expired in " + otpExpiresIn + "s.")
-                .timestamp(LocalDateTime.now())
-                .data(registerResponseDto)
+        RegisterResponseDto.RegisterData registerData = RegisterResponseDto.RegisterData.builder()
+                .email(savedUser.getEmail())
+                .otpExpiresIn(otpExpiresIn)
                 .build();
 
+
+        RegisterResponseDto responseData = RegisterResponseDto.builder()
+                .status("PENDING")
+                .message("Registration successful. Please verify your email " + savedUser.getEmail() + " using the OTP sent. OTP will be expired in " + otpExpiresIn + "s.")
+                .data(registerData)
+                .build();
 
         return responseData;
     }
