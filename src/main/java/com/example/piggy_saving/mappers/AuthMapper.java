@@ -9,6 +9,6 @@ import org.mapstruct.MappingConstants;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface AuthMapper {
-    @Mapping(source = "id", target = "userId")
-    RegisterResponseDto toRegisterResponseDto(UserModel userModel);
+//    @Mapping(source = "id", target = "userId")
+//    RegisterResponseDto toRegisterResponseDto(UserModel userModel);
 }

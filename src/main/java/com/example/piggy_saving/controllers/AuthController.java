@@ -26,8 +26,8 @@ public class AuthController {
     public static final String BASE_ROUTE = "/api/v1/auth"; // made public for reuse
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<RegisterResponseDto>> register(@Valid @RequestBody RegisterRequestDto request) {
-        ApiResponse<RegisterResponseDto> response = authService.register(request);
+    public ResponseEntity<RegisterResponseDto> register(@Valid @RequestBody RegisterRequestDto request) {
+        RegisterResponseDto response = authService.register(request);
         return ResponseEntity.ok(response);
     }
 
