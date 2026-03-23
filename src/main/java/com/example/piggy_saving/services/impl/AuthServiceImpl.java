@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -52,13 +53,39 @@ public class AuthServiceImpl implements AuthService {
 
         log.info("Attempting to register user with email: {}", registerRequestDto.getEmail());
 
-        // Check if email exists
-        if (userRepository.existsUserModelByEmail(registerRequestDto.getEmail())) {
+
+        // Check if email exists verify user
+        if (userRepository.findUserModelByEmailAndEmailVerified(registerRequestDto.getEmail(), true).isPresent()) {
             log.warn("Email already exists: {}", registerRequestDto.getEmail());
             throw new UserAlreadyExistsException(
                     HttpStatus.BAD_REQUEST,
-                    "User with email " + registerRequestDto.getEmail() + " already exists"
+                    "User with this verify email " + registerRequestDto.getEmail() + " already exists"
             );
+        }
+
+        //check if email exists but not verify yet
+        Optional<UserModel> existingUnverifiedUserEmail = userRepository.findUserModelByEmailAndEmailVerified(registerRequestDto.getEmail(), false);
+
+        if (existingUnverifiedUserEmail.isPresent()) {
+            UserModel user = existingUnverifiedUserEmail.get();
+            // Send OTP email for verification
+            boolean otpSent = emailOtpService.sendOtp(user.getEmail(), user.getName());
+            if (!otpSent) {
+                log.warn("Failed to send OTP email to: {}", user.getEmail());
+                // Maybe throw exception or handle
+                throw new OtpFailedToSentExceptionHandler(user.getEmail());
+            }
+            int otpExpiresIn = emailOtpService.getOtpInSeconds(LocalDateTime.now().plusMinutes(5));
+            return RegisterResponseDto.builder()
+                    .status("PENDING")
+                    .message("Email already registered but not verified. New OTP sent.")
+                    .data(
+                            RegisterResponseDto.RegisterData.builder()
+                                    .email(user.getEmail())
+                                    .otpExpiresIn(otpExpiresIn)
+                                    .build()
+                    )
+                    .build();
         }
 
         // Check if phone exists
