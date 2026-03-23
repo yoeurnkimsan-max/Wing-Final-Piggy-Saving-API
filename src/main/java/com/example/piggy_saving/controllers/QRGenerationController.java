@@ -41,7 +41,7 @@ public class QRGenerationController {
 
         QRPaymentPayload payload = QRPaymentPayload.builder()
                 .type(TransferType.OWN)
-                .accountPiggyNumber(accountPiggyNumber)
+                .recipientAccountNumber(accountPiggyNumber)
                 .expiresAt(LocalDateTime.now().plusMinutes(QR_EXPIRY_MINUTES)
                         .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
                 .version("1.0")
@@ -62,7 +62,7 @@ public class QRGenerationController {
 
         QRPaymentPayload payload = QRPaymentPayload.builder()
                 .type(TransferType.CONTRIBUTION)
-                .piggyAccountNumber(piggyAccountNumber)
+                .recipientAccountNumber(piggyAccountNumber)
                 .expiresAt(LocalDateTime.now().plusMinutes(QR_EXPIRY_MINUTES)
                         .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
                 .version("1.0")

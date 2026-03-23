@@ -8,7 +8,6 @@ import com.example.piggy_saving.dto.response.RegisterResponseDto;
 import com.example.piggy_saving.exception.OtpFailedToSentExceptionHandler;
 import com.example.piggy_saving.exception.UserAlreadyExistsException;
 import com.example.piggy_saving.mappers.AuthMapper;
-import com.example.piggy_saving.models.AccountModel;
 import com.example.piggy_saving.models.RoleModel;
 import com.example.piggy_saving.models.UserModel;
 import com.example.piggy_saving.models.UserRoleModel;
@@ -121,7 +120,7 @@ public class AuthServiceImpl implements AuthService {
                 .success(true)
                 .statusCode(HttpStatus.OK.value())
                 .statusMessage(HttpStatus.OK.name())
-                .message("Registration successful. Please verify your email "+ savedUser.getEmail() +" using the OTP sent. OTP will be expired in "+otpExpiresIn+"s.")
+                .message("Registration successful. Please verify your email " + savedUser.getEmail() + " using the OTP sent. OTP will be expired in " + otpExpiresIn + "s.")
                 .timestamp(LocalDateTime.now())
                 .data(registerResponseDto)
                 .build();
@@ -190,6 +189,8 @@ public class AuthServiceImpl implements AuthService {
                         .email(user.getEmail())
                         .accessToken(tokenPair.accessToken)
                         .refreshToken(tokenPair.refreshToken)
+                        .roles(roles)
+                        .accessTokenExpiresIn(jwtService.getAccessTokenExpirationSeconds())
                         .tokenType("Bearer")
                         .build())
                 .message("Login successful")
@@ -242,6 +243,8 @@ public class AuthServiceImpl implements AuthService {
                         .email(user.getEmail())
                         .accessToken(tokenPair.accessToken)
                         .refreshToken(tokenPair.refreshToken)
+                        .roles(roles)
+                        .accessTokenExpiresIn(jwtService.getAccessTokenExpirationSeconds())
                         .tokenType("Bearer")
                         .build())
                 .message("OTP verified successfully. Login token generated.")
@@ -300,6 +303,8 @@ public class AuthServiceImpl implements AuthService {
                             .email(user.getEmail())
                             .accessToken(tokenPair.accessToken)
                             .refreshToken(tokenPair.refreshToken)
+                            .roles(roles)
+                            .accessTokenExpiresIn(jwtService.getAccessTokenExpirationSeconds())
                             .tokenType("Bearer")
                             .build())
                     .message("Token refreshed successfully")

@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -19,6 +20,9 @@ public class LoginResponseDto {
     private LoginData data;
 
     private String message;
+
+
+
 
     @Data
     @Builder
@@ -39,5 +43,11 @@ public class LoginResponseDto {
 
         @JsonProperty("token_type")
         private String tokenType = "Bearer";
+
+        @JsonProperty("role")
+        private List<String> roles;
+
+        @JsonProperty("access_token_expires_in")
+        private int accessTokenExpiresIn;
     }
 }
