@@ -1,10 +1,7 @@
 package com.example.piggy_saving.services;
 
 import com.example.piggy_saving.dto.request.PiggyAccountChangeIsPublic;
-import com.example.piggy_saving.dto.response.AccountPiggyResponseDto;
-import com.example.piggy_saving.dto.response.AccountResponseDto;
-import com.example.piggy_saving.dto.response.ApiResponse;
-import com.example.piggy_saving.dto.response.PiggyAccountResponseDto;
+import com.example.piggy_saving.dto.response.*;
 import com.example.piggy_saving.models.UserModel;
 import com.example.piggy_saving.models.enums.AccountType;
 
@@ -20,4 +17,5 @@ public interface AccountService {
 
     List<PiggyAccountResponseDto> getPiggyAccountByUserId(UUID userId);
     PiggyAccountResponseDto updatePiggyIsPublicByAccountNumberAndUserId(String accountNumber, UUID userId, PiggyAccountChangeIsPublic piggyAccountChangeIsPublic);
+    SummarizeAccountResponseDto summarizeAccountByUserId(UUID userId);
 }

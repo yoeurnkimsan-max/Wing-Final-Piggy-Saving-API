@@ -4,6 +4,7 @@ import com.example.piggy_saving.dto.request.PiggyAccountChangeIsPublic;
 import com.example.piggy_saving.dto.response.AccountResponseDto;
 import com.example.piggy_saving.dto.response.ApiResponse;
 import com.example.piggy_saving.dto.response.PiggyAccountResponseDto;
+import com.example.piggy_saving.dto.response.SummarizeAccountResponseDto;
 import com.example.piggy_saving.exception.AccountNotFoundException;
 import com.example.piggy_saving.exception.UserNotFoundException;
 import com.example.piggy_saving.mappers.AccountMapper;
@@ -138,5 +139,11 @@ public class AccountServiceImpl implements AccountService {
         PiggyAccountResponseDto piggyAccountResponseDto = accountMapper.toPiggyAccountResponseDto(getAccountUpdate);
 
         return piggyAccountResponseDto;
+    }
+
+    @Override
+    public SummarizeAccountResponseDto summarizeAccountByUserId(UUID userId) {
+
+        return null;
     }
 }

@@ -25,4 +25,6 @@ public class QRPaymentPayload {
 
     @JsonProperty("version")
     private String version;
+
+    private String signature;
 }
