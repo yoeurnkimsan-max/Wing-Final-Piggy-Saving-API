@@ -41,12 +41,11 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
 
     @Override
     public Page<TransactionHistoryResponseDto> getUserTransactionHistoryByType(
-            UUID userId, String type, int page, int size) {
+            UUID userId, TransactionType type, int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size);
         Page<TransactionModel> transactions = transactionRepository
-                .findTransactionsByUserIdAndType(userId,
-                        TransactionType.valueOf(type.toUpperCase()), pageable);
+                .findTransactionsByUserIdAndType(userId,type, pageable);
 
         return transactions.map(transaction -> mapToDto(transaction, userId));
     }
