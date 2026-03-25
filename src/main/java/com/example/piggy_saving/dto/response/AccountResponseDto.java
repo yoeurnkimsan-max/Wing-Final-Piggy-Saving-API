@@ -20,6 +20,9 @@ public class AccountResponseDto {
     @JsonProperty("account_number")
     private String accountNumber;
 
+    @JsonProperty("username")
+    private String username;
+
     @JsonProperty("id")
     private UUID id;
 

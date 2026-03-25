@@ -1,10 +1,15 @@
 package com.example.piggy_saving.controllers;
 
 import com.example.piggy_saving.dto.request.CreatePiggyRequestDto;
+import com.example.piggy_saving.dto.request.PiggyAccountChangeIsPublic;
 import com.example.piggy_saving.dto.response.ApiResponse;
+import com.example.piggy_saving.dto.response.PiggyAccountResponseDto;
 import com.example.piggy_saving.dto.response.PiggyGoalDetailResponseDto;
 import com.example.piggy_saving.security.CustomUserDetails;
+import com.example.piggy_saving.services.AccountService;
+import com.example.piggy_saving.services.PiggyAccountService;
 import com.example.piggy_saving.services.PiggyGoalService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +26,7 @@ import java.util.UUID;
 public class PiggyGoalController {
 
     private final PiggyGoalService piggyGoalService;
-
+    private final AccountService accountService;
     // GET /api/v1/piggy
     @GetMapping
     public ResponseEntity<ApiResponse<List<PiggyGoalDetailResponseDto>>> getAllPiggyGoals(
@@ -84,5 +89,24 @@ public class PiggyGoalController {
                 .build();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+
+    @PatchMapping("/{account_number}")
+    public ResponseEntity<ApiResponse<PiggyAccountResponseDto>> updatePiggyAccountIsPublic(
+            @PathVariable String account_number,
+            @Valid @RequestBody PiggyAccountChangeIsPublic requestDto,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ){
+        PiggyAccountResponseDto responseService = accountService.updatePiggyIsPublicByAccountNumberAndUserId(account_number, userDetails.getUserId(),requestDto);
+        ApiResponse<PiggyAccountResponseDto> apiResponse = ApiResponse.<PiggyAccountResponseDto>builder()
+                .message("PiggyAccount successfully updated!")
+                .statusCode(200)
+                .data(responseService)
+                .statusMessage("OK")
+                .success(true)
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.status(200).body(apiResponse);
     }
 }

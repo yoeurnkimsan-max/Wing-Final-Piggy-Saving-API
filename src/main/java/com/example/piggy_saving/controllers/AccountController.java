@@ -36,6 +36,24 @@ public class AccountController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/main")
+    public ResponseEntity<ApiResponse<AccountResponseDto>> getMainAccount(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+        AccountResponseDto serviceResponse = accountService.getMainAccountByUserId(customUserDetails.getUserId());
+
+        ApiResponse<AccountResponseDto> apiResponse = ApiResponse.<AccountResponseDto>builder()
+                .success(true)
+                .statusCode(200)
+                .message("Main account successfully fetched")
+                .statusMessage("OK")
+                .timestamp(LocalDateTime.now())
+                .data(serviceResponse)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
     @GetMapping("/{accountNumber}")
     public ResponseEntity<ApiResponse<AccountResponseDto>> getAccountById(
             @PathVariable String accountNumber,

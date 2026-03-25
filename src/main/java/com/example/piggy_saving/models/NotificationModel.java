@@ -29,6 +29,9 @@ public class NotificationModel {
     @Column(name = "message", nullable = false)
     private String message;
 
+    @Column(name = "notification_title")
+    private String title;
+
     @Column(name = "is_read", nullable = false)
     private boolean isRead;
 

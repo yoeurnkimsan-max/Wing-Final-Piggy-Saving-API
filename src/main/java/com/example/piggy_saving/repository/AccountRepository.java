@@ -79,4 +79,8 @@ public interface AccountRepository extends JpaRepository<AccountModel, UUID> {
     @Query("UPDATE AccountModel a SET a.isPublic = :isPublic " +
             "WHERE a.accountNumber = :accountNumber AND a.userModel.id = :userId")
     int updateIsPublicByAccountNumberAndUserId(String accountNumber, UUID userId, boolean isPublic);
+
+    Optional<AccountModel> getByUserModelIdAndAccountTypeIs(UUID userModelId, AccountType accountType);
+
+    Optional<AccountModel> findByUserModelId(UUID userModelId);
 }

@@ -73,7 +73,7 @@ public class AccountServiceImpl implements AccountService {
         AccountModel account = accountRepository.findByAccountNumberAndAccountType(accountNumber, accountType)
                 .orElseThrow(() -> new AccountNotFoundException("Account with Account number: " + accountNumber + " not found"));
 
-        if(!account.isPublic()){
+        if (!account.isPublic()) {
             throw new AccountNotFoundException("Account with Account number: " + accountNumber + " id private.");
         }
 
@@ -154,6 +154,28 @@ public class AccountServiceImpl implements AccountService {
         PiggyAccountResponseDto piggyAccountResponseDto = accountMapper.toPiggyAccountResponseDto(getAccountUpdate);
 
         return piggyAccountResponseDto;
+    }
+
+    @Override
+    public AccountResponseDto getMainAccountByUserId(UUID userId) {
+
+        AccountModel accountMain = accountRepository.getByUserModelIdAndAccountTypeIs(userId, AccountType.MAIN).orElseThrow(
+                () -> new AccountNotFoundException("Account not found or fetch failed")
+        );
+
+        AccountResponseDto accountResponseDto = AccountResponseDto.builder()
+                .userId(accountMain.getUserModel().getId())
+                .accountType(accountMain.getAccountType())
+                .createdAt(accountMain.getCreatedAt())
+                .currency(accountMain.getCurrency())
+                .id(accountMain.getId())
+                .isPublic(accountMain.isPublic())
+                .balance(accountMain.getBalance())
+                .username(accountMain.getUserModel().getName())
+                .accountNumber(accountMain.getAccountNumber())
+                .build();
+
+        return accountResponseDto;
     }
 
     @Override

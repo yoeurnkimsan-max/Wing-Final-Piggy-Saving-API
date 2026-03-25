@@ -17,5 +17,8 @@ public interface AccountService {
 
     List<PiggyAccountResponseDto> getPiggyAccountByUserId(UUID userId);
     PiggyAccountResponseDto updatePiggyIsPublicByAccountNumberAndUserId(String accountNumber, UUID userId, PiggyAccountChangeIsPublic piggyAccountChangeIsPublic);
+
+    AccountResponseDto getMainAccountByUserId(UUID userId);
+
     SummarizeAccountResponseDto summarizeAccountByUserId(UUID userId);
 }
