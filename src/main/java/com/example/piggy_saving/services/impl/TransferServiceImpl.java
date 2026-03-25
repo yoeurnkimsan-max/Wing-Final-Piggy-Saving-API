@@ -1,7 +1,6 @@
 package com.example.piggy_saving.services.impl;
 
 import com.example.piggy_saving.dto.request.TransferBreakRequestDto;
-import com.example.piggy_saving.dto.request.TransferP2PRequestDto;
 import com.example.piggy_saving.dto.request.TransferRequestDto;
 import com.example.piggy_saving.dto.response.TransferBreakPiggyResponseDto;
 import com.example.piggy_saving.dto.response.TransferContributeResponseDto;
@@ -268,7 +267,12 @@ public class TransferServiceImpl implements TransferService {
         }
 
         Map<String, Object> metadata = new HashMap<>();
-        metadata.put("description", "Transfer to Account: " + recipientUserAccount.getUserModel().getName());
+        metadata.put("description", String.format(
+                "Transfer to %s (%s) - P2P Transfer",
+                recipientUserAccount.getUserModel().getName(),
+                recipientUserAccount.getAccountNumber()
+        ));
+// Result: "Transfer to John Doe (1234567890) - P2P Transfer"
         // 1️⃣ Create transaction with proper metadata
         TransactionModel transaction = TransactionModel.builder()
                 .initiatedByUserModel(user)
@@ -423,7 +427,7 @@ public class TransferServiceImpl implements TransferService {
          * Find Recipient piggy account public
          */
 
-        AccountModel recipientPiggyAccount = accountRepository.findByAccountNumberAndIsPublicTrue(transferRequestDto.getRecipientAccountNumber(), true)
+        AccountModel recipientPiggyAccount = accountRepository.findByAccountNumberAndIsPublic(transferRequestDto.getRecipientAccountNumber(), true)
                 .orElseThrow(() -> new AccountNotFoundException("Piggy Account not found or Piggy account is private."));
 
         if (recipientPiggyAccount.getPiggyGoalModel().getStatus() == GoalStatus.BROKEN) {

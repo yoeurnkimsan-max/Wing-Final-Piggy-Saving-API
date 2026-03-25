@@ -9,6 +9,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 
 @Data
@@ -53,4 +54,6 @@ public class TransactionHistoryResponseDto {
 
     @JsonProperty("balance_after")
     private BigDecimal balanceAfter;
+
+    private Map<String, Object> metadata;
 }

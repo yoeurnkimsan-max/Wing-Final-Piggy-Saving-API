@@ -40,7 +40,8 @@ public interface AccountRepository extends JpaRepository<AccountModel, UUID> {
     Optional<AccountModel> findByUserModelIdAndAccountType(UUID userModelId, AccountType accountType);
 
 
-    Optional<AccountModel> findByAccountNumberAndIsPublicTrue(String accountNumber, boolean isPublic);
+    Optional<AccountModel> findByAccountNumberAndIsPublic(String accountNumber, boolean isPublic);
+
 
     @Query("SELECT a FROM AccountModel a " +
             "WHERE a.accountNumber = :accountNumber " +
@@ -65,6 +66,7 @@ public interface AccountRepository extends JpaRepository<AccountModel, UUID> {
      */
     Optional<AccountModel> findByAccountNumber(String accountNumber);
 
+    Optional<AccountModel> findByAccountNumberAndAccountType(String accountNumber, AccountType accountType);
 
     @Query("SELECT a FROM AccountModel a " +
             "LEFT JOIN FETCH a.piggyGoalModel g " +

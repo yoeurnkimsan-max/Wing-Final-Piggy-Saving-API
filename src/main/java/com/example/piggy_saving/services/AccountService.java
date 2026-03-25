@@ -11,7 +11,7 @@ import java.util.UUID;
 public interface AccountService {
     ApiResponse<List<AccountResponseDto>> getAllAccount();
     ApiResponse<List<AccountResponseDto>> getAccountByUserId(UUID userId);
-    ApiResponse<AccountResponseDto> getAccountByAccountNumber(String accountNumber);
+    ApiResponse<AccountResponseDto> getAccountByAccountNumberAndAccountType(String accountNumber, AccountType accountType);
     void createMainAccount(UserModel user);
     ApiResponse<List<AccountResponseDto>> getAllAccountByUserIdAndType(UUID userId,AccountType accountType);
 

@@ -20,11 +20,12 @@ public interface AccountMapper {
     @Mapping(target = "currency", source = "currency")
     @Mapping(target = "piggyGoalId", source = "piggyGoalModel.id")
     @Mapping(target = "createdAt", source = "createdAt")
+//    @Mapping(target = "isPublic", source = "is_public")
 //    @Mapping(target = "updatedAt", source = "updatedAt")
     AccountResponseDto toAccountUserData(AccountModel accountModel);
 
     @Mapping(target = "accountNumber", source = "accountNumber")
-    @Mapping(target = "isPublic", source = "isPublic")
+    @Mapping(target = "isPublic", source = "is_public")
     List<AccountResponseDto> toAccountUserDataAsList(List<AccountModel> accountModels);
 
 

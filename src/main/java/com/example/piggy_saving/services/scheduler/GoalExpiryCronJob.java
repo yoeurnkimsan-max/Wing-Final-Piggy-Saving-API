@@ -22,7 +22,6 @@ public class GoalExpiryCronJob {
     @Scheduled(cron = "0 0 * * * *") // runs at the top of every hour
     public void checkGoalExpiry() {
         LocalDateTime now = LocalDateTime.now();
-
         List<PiggyGoalModel> expiredGoals = piggyGoalRepository.findByEndAtBeforeAndStatusNot(now, GoalStatus.BROKEN);
 
         if (!expiredGoals.isEmpty()) {

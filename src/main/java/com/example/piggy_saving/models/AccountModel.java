@@ -36,8 +36,11 @@ public class AccountModel {
     private String accountNumber;
 
 
-    @Column(name = "is_public")
-    private boolean isPublic ; // default: private
+    @Column(name = "is_public", columnDefinition = "boolean default false")
+    private boolean isPublic = false; // default: private
+
+    @Column(name = "hide_balance", nullable = false, columnDefinition = "boolean default false")
+    private boolean isHideBalance = false; // Controls whether owner sees balance
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "piggy_goal_id", unique = true)

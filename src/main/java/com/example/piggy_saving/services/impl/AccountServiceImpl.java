@@ -68,17 +68,32 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public ApiResponse<AccountResponseDto> getAccountByAccountNumber(String accountNumber) {
+    public ApiResponse<AccountResponseDto> getAccountByAccountNumberAndAccountType(String accountNumber, AccountType accountType) {
 
-        AccountModel account = accountRepository.findByAccountNumberAndIsPublicTrue(accountNumber, true)
-                .orElseThrow(() -> new AccountNotFoundException("Account with Account number: " + accountNumber + " not found or Account is private."));
+        AccountModel account = accountRepository.findByAccountNumberAndAccountType(accountNumber, accountType)
+                .orElseThrow(() -> new AccountNotFoundException("Account with Account number: " + accountNumber + " not found"));
 
-        AccountResponseDto accountDataResponseMapper = accountMapper.toAccountUserData(account);
+        if(!account.isPublic()){
+            throw new AccountNotFoundException("Account with Account number: " + accountNumber + " id private.");
+        }
+
+//        AccountResponseDto accountDataResponseMapper = accountMapper.toAccountUserData(account);
+
+        AccountResponseDto accountResponseDto = AccountResponseDto.builder()
+                .accountNumber(account.getAccountNumber())
+                .accountType(account.getAccountType())
+                .createdAt(account.getCreatedAt())
+                .currency(account.getCurrency())
+                .id(account.getId())
+                .isPublic(account.isPublic())
+                .balance(account.getBalance())
+                .userId(account.getUserModel().getId())
+                .build();
 
         ApiResponse<AccountResponseDto> accountDataApiResponse = ApiResponse.<AccountResponseDto>builder()
                 .message("SUCCESS")
                 .success(true)
-                .data(accountDataResponseMapper)
+                .data(accountResponseDto)
                 .timestamp(LocalDateTime.now())
                 .build();
 

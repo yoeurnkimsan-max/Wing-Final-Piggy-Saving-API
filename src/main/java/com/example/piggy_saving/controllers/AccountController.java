@@ -37,14 +37,19 @@ public class AccountController {
     }
 
     @GetMapping("/{accountNumber}")
-    public ResponseEntity<ApiResponse<AccountResponseDto>> getAccountById(@PathVariable String accountNumber) {
+    public ResponseEntity<ApiResponse<AccountResponseDto>> getAccountById(
+            @PathVariable String accountNumber,
+            @RequestParam(required = true) AccountType type
+    ) {
 
         ApiResponse<AccountResponseDto> response =
-                accountService.getAccountByAccountNumber(accountNumber);
+                accountService.getAccountByAccountNumberAndAccountType(accountNumber, type);
 
 
         return ResponseEntity.ok(response);
     }
+
+
 
     @GetMapping("/my-accounts")
     public ResponseEntity<ApiResponse<List<AccountResponseDto>>> getMyAccounts(

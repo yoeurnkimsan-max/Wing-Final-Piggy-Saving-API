@@ -4,6 +4,7 @@ public enum TransactionType {
     // --- Transfers between users ---
     P2P_TRANSFER,           // User → User (like Zelle, Venmo, peer-to-peer)
     EXTERNAL_TRANSFER,      // To other bank accounts (ACH / wire)
+    INTEREST,
 
     // --- Sub-account / savings goal transactions ---
     GOAL_CONTRIBUTION,      // Main → Piggy Goal / Savings sub-account

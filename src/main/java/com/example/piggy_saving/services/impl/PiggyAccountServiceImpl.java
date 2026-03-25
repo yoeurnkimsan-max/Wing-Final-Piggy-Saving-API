@@ -66,6 +66,7 @@ public class PiggyAccountServiceImpl implements PiggyAccountService {
         AccountModel account = AccountModel.builder()
                 .accountType(AccountType.PIGGY)
                 .balance(BigDecimal.ZERO)
+                .isHideBalance(createPiggyRequestDto.isHideBalance())
                 .currency("USD")
                 .piggyGoalModel(piggyGoal) // only set piggyGoalModel, not userModel
                 .userModel(user)

@@ -1,6 +1,7 @@
 package com.example.piggy_saving.dto.response;
 
 import com.example.piggy_saving.dto.response.statusEnum.AccountStatus;
+import com.example.piggy_saving.models.enums.AccountType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,7 +27,7 @@ public class AccountResponseDto {
     private UUID userId;
 
     @JsonProperty("account_type")
-    private String accountType;
+    private AccountType accountType;
 
     @JsonProperty("current_balance")
     private BigDecimal balance;

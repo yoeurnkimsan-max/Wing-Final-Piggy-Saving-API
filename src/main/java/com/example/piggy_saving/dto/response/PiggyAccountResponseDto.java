@@ -31,6 +31,9 @@ public class PiggyAccountResponseDto {
     @JsonProperty("is_public")
     private boolean isPublic;
 
+    @JsonProperty("hide_balance")
+    private boolean hideBalance;
+
     // Piggy goal info
     @JsonProperty("piggy_goal_id")
     private UUID piggyGoalId;

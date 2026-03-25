@@ -41,6 +41,8 @@ public class QRGenerationController {
     private final DecodeBase64ToObject decodeBase64ToObject;
 
     private static final int QR_EXPIRY_MINUTES = 10;
+    private static final int QR_EXPIRY_YEARS = 365;
+    private static final int QR_EXPIRY_MONTHS = 12;
 
     /**
      * Generate QR for transferring Main → Piggy (Own Transfer)
@@ -95,8 +97,7 @@ public class QRGenerationController {
         QRPaymentPayload payload = QRPaymentPayload.builder()
                 .type(TransferType.P2P)
                 .recipientAccountNumber(accountModel.getAccountNumber())
-                .expiresAt(LocalDateTime.now().plusMinutes(QR_EXPIRY_MINUTES)
-                        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                .expiresAt(LocalDateTime.now().plusDays(QR_EXPIRY_YEARS).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
                 .version("1.0")
                 .build();
 
@@ -158,7 +159,7 @@ public class QRGenerationController {
 
                     ApiResponse.<QRValidationResponse>builder()
                             .success(false)
-                            .message("Invalid QR data")
+                            .message("Invalid QR data or Expired")
                             .timestamp(LocalDateTime.now())
                             .build()
             );

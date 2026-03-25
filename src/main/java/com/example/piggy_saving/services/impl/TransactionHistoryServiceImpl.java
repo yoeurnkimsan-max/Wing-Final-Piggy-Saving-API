@@ -45,7 +45,7 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
 
         Pageable pageable = PageRequest.of(page, size);
         Page<TransactionModel> transactions = transactionRepository
-                .findTransactionsByUserIdAndType(userId,type, pageable);
+                .findTransactionsByUserIdAndType(userId, type, pageable);
 
         return transactions.map(transaction -> mapToDto(transaction, userId));
     }
@@ -130,6 +130,7 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
                 .toAccountMask(toAccountMask)
                 .entryType(userEntry != null ? userEntry.getEntryType() : null)
                 .balanceAfter(userEntry != null ? userEntry.getAccountModel().getBalance() : null)
+                .metadata(transaction.getMetadata())   // <-- add this line
                 .build();
     }
 
