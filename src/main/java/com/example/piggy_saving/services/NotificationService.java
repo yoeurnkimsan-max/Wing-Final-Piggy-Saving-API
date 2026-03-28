@@ -8,7 +8,7 @@ import org.springframework.data.domain.Page;
 import java.util.UUID;
 
 public interface NotificationService {
-    void notify(UserModel user, String message);
+    void notify(UserModel user,String title, String message);
 
     /**
      * Get paginated notifications for a user.

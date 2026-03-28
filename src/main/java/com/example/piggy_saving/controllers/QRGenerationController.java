@@ -3,10 +3,12 @@ package com.example.piggy_saving.controllers;
 import com.example.piggy_saving.dto.request.QRPaymentPayload;
 import com.example.piggy_saving.dto.request.QRValidationResponse;
 import com.example.piggy_saving.dto.response.ApiResponse;
+import com.example.piggy_saving.dto.response.statusEnum.AccountStatus;
 import com.example.piggy_saving.exception.AccountNotFoundException;
 import com.example.piggy_saving.exception.BadRequestException;
 import com.example.piggy_saving.models.AccountModel;
 import com.example.piggy_saving.models.enums.AccountType;
+import com.example.piggy_saving.models.enums.GoalStatus;
 import com.example.piggy_saving.models.enums.TransferType;
 import com.example.piggy_saving.repository.AccountRepository;
 import com.example.piggy_saving.security.CustomUserDetails;
@@ -195,6 +197,14 @@ public class QRGenerationController {
                     // Check if the piggy account is public (for external contributions)
                     if (!recipientAccountModel.isPublic()) {
                         throw new BadRequestException("You cannot contribute to a private piggy account.");
+                    }
+
+                    if(recipientAccountModel.getPiggyGoalModel().getStatus().equals(GoalStatus.BROKEN)){
+                        throw new BadRequestException("This Piggy account has been broken.");
+                    }
+
+                    if(recipientAccountModel.getPiggyGoalModel().getStatus().equals(GoalStatus.COMPLETED)){
+                        throw new BadRequestException("This Piggy account has been complete.");
                     }
 
                     QRValidationResponse responseContribute = QRValidationResponse.builder()

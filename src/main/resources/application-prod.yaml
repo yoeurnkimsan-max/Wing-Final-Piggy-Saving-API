@@ -1,44 +1,29 @@
 spring:
   datasource:
-    url: jdbc:postgresql://nozomi.proxy.rlwy.net:27640/railway
-    username: postgres
-    password: ufvzIuZqqxejYnfRIHzvNqAtwQRfhusk
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: validate   # or update, but validate is safer for production
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
   servlet:
     multipart:
-      max-file-size: 10MB
-      max-request-size: 20MB
+      max-file-size: 100MB
+      max-request-size: 100MB
       enabled: true
-      location: ${java.io.tmpdir}
-      file-size-threshold: 0
 
 server:
   tomcat:
-    max-http-form-post-size: 20MB
-    max-swallow-size: 20MB
+    max-http-form-post-size: 104857600
+    max-swallow-size: 104857600
     max-connections: 200
     threads:
       max: 200
-    max-parameter-count: 10000
-    max-part-count: 50
-  max-http-request-header-size: 20MB
-
-logging:
-  level:
-    org.springframework.web.multipart: DEBUG
-    org.apache.commons.fileupload: DEBUG
-    org.apache.catalina: DEBUG
-    org.apache.tomcat: DEBUG
-    org.apache.coyote.http11: DEBUG
-
-cloudinary:
-  cloud-name: dkloakzs6
-  api-key: 162361396439147
-  api-secret: DVu7SNnY50pVCr7xxY1mRmsO4Os

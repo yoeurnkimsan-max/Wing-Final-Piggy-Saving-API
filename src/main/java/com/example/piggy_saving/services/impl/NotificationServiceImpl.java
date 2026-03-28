@@ -19,10 +19,11 @@ public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
     @Override
-    public void notify(UserModel user, String message) {
+    public void notify(UserModel user,String title, String message) {
         NotificationModel notificationModel = NotificationModel.builder()
                 .userModel(user)
                 .message(message)
+                .title(title)
                 .build();
         notificationRepository.save(notificationModel);
     }

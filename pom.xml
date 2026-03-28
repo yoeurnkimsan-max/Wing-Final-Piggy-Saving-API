@@ -142,6 +142,12 @@
             <version>3.5.2</version>
         </dependency>
 
+        <dependency>
+            <groupId>me.paulschwarz</groupId>
+            <artifactId>spring-dotenv</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+
 	</dependencies>
 
 	<build>
@@ -208,6 +214,29 @@
                             <version>7.2.1.Final</version>
                         </path>
                     </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>3.4.5</version>
+                <configuration>
+                    <to>
+                        <image>docker.io/kimsanyoern/piggy-saving</image>
+                        <tags>
+                            <tag>latest</tag>
+                            <tag>${project.version}</tag>
+                        </tags>
+                    </to>
+                    <container>
+                        <ports>
+                            <port>8080</port>
+                        </ports>
+                        <environment>
+                            <SPRING_PROFILES_ACTIVE>prod</SPRING_PROFILES_ACTIVE>
+                        </environment>
+                    </container>
                 </configuration>
             </plugin>
 		</plugins>

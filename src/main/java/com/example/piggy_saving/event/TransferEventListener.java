@@ -31,13 +31,17 @@ public class TransferEventListener {
         String formattedAmount = currencyFormat.format(event.getAmount());
 
         // Notifications
+        // Sender notification
         notificationService.notify(
                 event.getSender(),
-                "You sent " + formattedAmount + " to " + event.getReceiver().getEmail()
+                "Transfer Confirmation",
+                "You successfully sent " + formattedAmount + " to " + event.getReceiver().getEmail()
         );
 
+// Receiver notification
         notificationService.notify(
                 event.getReceiver(),
+                "Payment Received",
                 "You received " + formattedAmount + " from " + event.getSender().getEmail()
         );
 
@@ -91,13 +95,15 @@ public class TransferEventListener {
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.US);
         String formattedAmount = currencyFormat.format(event.getAmount());
 
-        // ================= CONTRIBUTOR =================
+        // ================= CONTRIBUTOR (Sender) =================
+        // In-app notification
         notificationService.notify(
                 event.getUser(),
-                String.format("You contributed %s to goal %s. %s Transaction ID: %s",
+                "Contribution Confirmation",
+                String.format("You contributed %s to %s's goal \"%s\". Transaction ID: %s",
                         formattedAmount,
+                        event.getPiggyGoal().getUserModel().getName(),
                         event.getPiggyGoal().getName(),
-                        event.getDescription() != null ? "Description: " + event.getDescription() + "." : "",
                         event.getTransactionId())
         );
 
@@ -105,14 +111,15 @@ public class TransferEventListener {
         emailService.sendContributeTransferEmail(event, true); // true = contributor
         emailService.sendContributeTransferEmail(event, false);
 
-        // ================= GOAL OWNER =================
+        // ================= GOAL OWNER (Recipient) =================
+        // In-app notification
         notificationService.notify(
                 event.getPiggyGoal().getUserModel(),
-                String.format("You received %s from %s for goal %s. %s Transaction ID: %s",
+                "Contribution Received",
+                String.format("You received %s from %s for your goal \"%s\". Transaction ID: %s",
                         formattedAmount,
                         event.getUser().getEmail(),
                         event.getPiggyGoal().getName(),
-                        event.getNotes() != null ? event.getNotes() : "",
                         event.getTransactionId())
         );
 
@@ -125,15 +132,17 @@ public class TransferEventListener {
     public void handleOwnTransfer(OwnTransferMainToPiggyCompletedEvent event) {
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.US);
         String formattedAmount = currencyFormat.format(event.getAmount());
+        String formattedNewBalance = currencyFormat.format(event.getNewPiggyBalance());
 
-        // Send in-app/push notification
+
+        // Send in-app notification
         notificationService.notify(
                 event.getOwner(),
-                String.format("You transferred %s to your goal '%s'. New balance: %s",
+                "Transfer to Savings Goal",
+                String.format("You transferred %s to your goal \"%s\". New balance: %s",
                         formattedAmount,
                         event.getPiggyGoal().getName(),
-                        currencyFormat.format(event.getNewPiggyBalance())
-                )
+                        formattedNewBalance)
         );
 
         // Send email
@@ -146,12 +155,14 @@ public class TransferEventListener {
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.US);
         String formattedAmount = currencyFormat.format(event.getAmountCredited());
         String formattedPenalty = currencyFormat.format(event.getPenaltyAmount());
+        String goalName = event.getPiggyGoal().getUserModel().getName();
 
         // In-app notification
         notificationService.notify(
                 event.getUser(),
-                String.format("Your piggy goal '%s' has been broken. You received %s after a penalty of %s.",
-                        event.getPiggyGoal().getName(),
+                "Piggy Goal Broken",
+                String.format("Your piggy goal \"%s\" has been broken. You received %s after a penalty of %s.",
+                        goalName,
                         formattedAmount,
                         formattedPenalty)
         );

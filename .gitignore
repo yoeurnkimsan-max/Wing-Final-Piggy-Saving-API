@@ -19,6 +19,8 @@ target/
 *.iml
 *.ipr
 
+
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
@@ -31,3 +33,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+#SECRET KEY
+secrets.properties
