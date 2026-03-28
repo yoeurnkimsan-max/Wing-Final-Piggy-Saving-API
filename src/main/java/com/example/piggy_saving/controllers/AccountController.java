@@ -107,6 +107,7 @@ public class AccountController {
         return ResponseEntity.ok(piggyAccountService.createPiggyAccount(userDetails.getUserId(), requestDto));
     }
 
+
     @GetMapping("/piggy-account")
     public ResponseEntity<ApiResponse<List<PiggyAccountResponseDto>>> getPiggyAccountById(
             @AuthenticationPrincipal CustomUserDetails userDetails
