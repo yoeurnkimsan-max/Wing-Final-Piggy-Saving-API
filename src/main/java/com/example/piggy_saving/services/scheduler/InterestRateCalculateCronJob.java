@@ -18,6 +18,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +35,6 @@ public class InterestRateCalculateCronJob {
     private final PlatformTransactionManager transactionManager;
 
     private static final int DAYS_IN_YEAR = 365;
-    private static final BigDecimal THRESHOLD = BigDecimal.valueOf(5000); // USD 5,000
 
     /**
      * Runs daily at midnight.
@@ -43,14 +43,12 @@ public class InterestRateCalculateCronJob {
     public void calculateAndApplyInterest() {
         log.info("Starting daily interest calculation");
 
-        // Fetch all active piggy goals
         List<PiggyGoalModel> activeGoals = piggyGoalRepository.findByStatus(GoalStatus.ACTIVE);
         if (activeGoals.isEmpty()) {
             log.info("No active piggy goals found. Exiting.");
             return;
         }
 
-        // Group by user to process each user in a separate transaction
         Map<UserModel, List<PiggyGoalModel>> goalsByUser = activeGoals.stream()
                 .collect(Collectors.groupingBy(PiggyGoalModel::getUserModel));
 
@@ -61,7 +59,6 @@ public class InterestRateCalculateCronJob {
             UserModel user = entry.getKey();
             List<PiggyGoalModel> userGoals = entry.getValue();
 
-            // Process each user in its own transaction
             try {
                 processUserInterest(user, userGoals);
                 successCount++;
@@ -75,59 +72,49 @@ public class InterestRateCalculateCronJob {
         log.info("Interest calculation completed. Success: {}, Failed: {}", successCount, failureCount);
     }
 
-    /**
-     * Process interest for a single user. This method runs in its own transaction.
-     */
     private void processUserInterest(UserModel user, List<PiggyGoalModel> userGoals) {
         TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
         transactionTemplate.execute((TransactionCallback<Void>) status -> {
             try {
-                // Get user's main account balance (within the transaction)
-                AccountModel mainAccount = accountRepository
-                        .findAccountModelsByUserModelIdAndAccountType(user.getId(), AccountType.MAIN)
-                        .orElse(null);
-                if (mainAccount == null) {
-                    log.warn("User {} has no main account, skipping interest calculation", user.getId());
-                    return null;
-                }
-
-                BigDecimal mainBalance = mainAccount.getBalance();
-                double rate = getInterestRate(mainBalance);
-                BigDecimal dailyRate = BigDecimal.valueOf(rate / DAYS_IN_YEAR);
-
                 for (PiggyGoalModel goal : userGoals) {
+                    // Skip if goal has matured
+                    if (goal.getLockExpiresAt() != null && LocalDateTime.now().isAfter(goal.getLockExpiresAt())) {
+                        handleMaturity(goal);
+                        continue;
+                    }
+
+                    // Prevent double calculation
+                    if (goal.getLastInterestCalculatedAt() != null &&
+                            goal.getLastInterestCalculatedAt().toLocalDate().equals(LocalDate.now())) {
+                        continue;
+                    }
+
                     AccountModel piggyAccount = goal.getAccountModel();
                     if (piggyAccount == null) {
                         log.warn("Piggy goal {} has no associated account, skipping", goal.getId());
                         continue;
                     }
 
-                    LocalDateTime lockExpiresAt = goal.getLockExpiresAt();
-                    if (lockExpiresAt != null && lockExpiresAt.isBefore(LocalDateTime.now())) {
-                        log.debug("Lock expired for goal {}, skipping interest", goal.getId());
-                        continue;
-                    }
-
                     BigDecimal balance = piggyAccount.getBalance();
-                    BigDecimal dailyInterest = balance.multiply(dailyRate)
-                            .setScale(4, RoundingMode.HALF_UP);
+                    BigDecimal rate = goal.getInterestRate(); // per-goal interest rate
+                    BigDecimal dailyRate = rate.divide(BigDecimal.valueOf(DAYS_IN_YEAR), 10, RoundingMode.HALF_UP);
+                    BigDecimal dailyInterest = balance.multiply(dailyRate).setScale(4, RoundingMode.HALF_UP);
 
-                    if (dailyInterest.compareTo(BigDecimal.ZERO) <= 0) {
-                        continue; // no interest to add
+                    if (dailyInterest.compareTo(BigDecimal.ZERO) > 0) {
+                        // Add to accrued interest, not balance
+                        goal.setAccruedInterest(goal.getAccruedInterest().add(dailyInterest));
+                        goal.setLastInterestCalculatedAt(LocalDateTime.now());
+
+                        piggyGoalRepository.save(goal); // save updated accrued interest
+
+                        // Optional: record transaction ledger
+                        transactionService.createInterestTransaction(piggyAccount, dailyInterest);
+
+                        log.debug("Added daily interest {} to goal {} (balance: {}, rate: {})",
+                                dailyInterest, goal.getId(), balance, rate);
                     }
-
-                    // Apply interest to piggy account
-                    piggyAccount.setBalance(balance.add(dailyInterest));
-                    accountRepository.save(piggyAccount);
-
-                    // Record transaction
-                    transactionService.createInterestTransaction(piggyAccount, dailyInterest);
-
-                    log.debug("Added interest of {} to piggy account {} (rate: {}%, balance: {})",
-                            dailyInterest, piggyAccount.getAccountNumber(), rate * 100, balance);
                 }
             } catch (Exception e) {
-                // Rollback the transaction for this user
                 status.setRollbackOnly();
                 throw new RuntimeException("Error processing interest for user: " + user.getId(), e);
             }
@@ -135,12 +122,26 @@ public class InterestRateCalculateCronJob {
         });
     }
 
-    private double getInterestRate(BigDecimal mainBalance) {
-        // Compare mainBalance with threshold (assuming USD)
-        if (mainBalance.compareTo(THRESHOLD) >= 0) {
-            return 0.03; // 3%
-        } else {
-            return 0.001; // 0.10%
+    private void handleMaturity(PiggyGoalModel goal) {
+        AccountModel piggyAccount = goal.getAccountModel();
+        if (piggyAccount == null) {
+            log.warn("Matured goal {} has no account. Skipping.", goal.getId());
+            return;
         }
+
+        BigDecimal interest = goal.getAccruedInterest();
+        BigDecimal balance = piggyAccount.getBalance();
+
+        // Add accrued interest to balance
+        piggyAccount.setBalance(balance.add(interest));
+        piggyAccount = accountRepository.save(piggyAccount);
+
+        // Reset accrued interest and mark goal as completed
+        goal.setAccruedInterest(BigDecimal.ZERO);
+        goal.setCompletedAt(LocalDateTime.now());
+        goal.setStatus(GoalStatus.COMPLETED);
+        piggyGoalRepository.save(goal);
+
+        log.info("Goal {} matured. Interest {} applied. Balance now {}", goal.getId(), interest, piggyAccount.getBalance());
     }
 }

@@ -64,6 +64,15 @@ public class PiggyGoalModel {
     @Column(name = "current_balance", nullable = false, precision = 19, scale = 4)
     private BigDecimal currentBalance;
 
+    @Column(name = "accrued_interest", nullable = false, precision = 19, scale = 4)
+    private BigDecimal accruedInterest = BigDecimal.ZERO;
+
+    @Column(name = "interest_rate", nullable = false, precision = 5, scale = 4)
+    private BigDecimal interestRate = BigDecimal.valueOf(0.03); // default 3% annual
+
+    @Column(name = "last_interest_calculated_at")
+    private LocalDateTime lastInterestCalculatedAt;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

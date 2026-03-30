@@ -551,17 +551,14 @@ public class TransferServiceImpl implements TransferService {
         UserModel userOwner = userRepository.findById(userId)
                 .orElseThrow(() -> new AccountNotFoundException("User Account not found."));
 
-        // 2. Validate PIN (implement your logic)
-        // if (!pinService.validatePin(userId, transferRequestDto.getPin())) {
-        //     throw new InvalidPinException("Invalid PIN");
-        // }
 
-        // 3. Find piggy account by account number
+
+        // 2. Find piggy account by account number
         AccountModel piggyAccount = accountRepository
                 .findByAccountNumberAndUserModelId(transferRequestDto.getPiggyAccountNumber(), userOwner.getId())
                 .orElseThrow(() -> new AccountNotFoundException("Piggy Account not found."));
 
-        // 4. Get associated piggy goal and verify it's active
+        // 3. Get associated piggy goal and verify it's active
         PiggyGoalModel piggyGoal = piggyAccount.getPiggyGoalModel();
         if (piggyGoal == null) {
             throw new IllegalStateException("Account is not a piggy goal account");
@@ -570,14 +567,14 @@ public class TransferServiceImpl implements TransferService {
             throw new PiggyGoalNotActiveException();
         }
 
-        // 5. Find main account
+        // 4. Find main account
         AccountModel mainAccount = accountRepository
                 .findAccountModelsByUserModelIdAndAccountType(userId, AccountType.MAIN)
                 .orElseThrow(() -> new AccountNotFoundException("Main account not found"));
 
         BigDecimal currentBalance = piggyAccount.getBalance();
 
-        // 6. Fetch penalty rate
+        // 5. Fetch penalty rate
         BigDecimal penaltyRate = getPenaltyRate(); // e.g., 0.10 for 10%
 
         BigDecimal penaltyAmount = currentBalance
@@ -590,7 +587,7 @@ public class TransferServiceImpl implements TransferService {
 
         BigDecimal amountToCredit = currentBalance.subtract(penaltyAmount);
 
-        // 7. Create main transaction
+        // 6. Create main transaction
         Map<String, Object> mainMetadata = new HashMap<>();
         mainMetadata.put("description", "Early break of piggy goal: " + piggyGoal.getName());
         mainMetadata.put("penaltyAmount", penaltyAmount);
@@ -605,7 +602,7 @@ public class TransferServiceImpl implements TransferService {
                 .build();
         mainTransaction = transactionRepository.save(mainTransaction);
 
-        // 8. Create ledger entries (debit piggy, credit main)
+        // 7. Create ledger entries (debit piggy, credit main)
         LedgerEntryModel debitPiggy = LedgerEntryModel.builder()
                 .transactionModel(mainTransaction)
                 .accountModel(piggyAccount)
@@ -623,16 +620,16 @@ public class TransferServiceImpl implements TransferService {
         mainTransaction.setLedgerEntries(new ArrayList<>(List.of(debitPiggy, creditMain)));
 
         try {
-            // 9. Update balances
+            // 8. Update balances
             mainAccount.setBalance(mainAccount.getBalance().add(amountToCredit));
             piggyAccount.setBalance(BigDecimal.ZERO);
 
-            // 10. Update piggy goal status
+            // 9. Update piggy goal status
             piggyGoal.setStatus(GoalStatus.BROKEN);
             piggyGoal.setBrokenAt(LocalDateTime.now());
             piggyGoal.setBrokenAt(mainTransaction.getCreatedAt());
 
-            // 11. Save all
+            // 10. Save all
             accountRepository.save(mainAccount);
             accountRepository.save(piggyAccount);
             piggyGoalRepository.save(piggyGoal);
@@ -643,8 +640,7 @@ public class TransferServiceImpl implements TransferService {
             mainTransaction.setStatus(TransactionStatus.COMPLETED);
             transactionRepository.save(mainTransaction);
 
-            // 12. Publish event
-            // 12. Publish event with full data
+            // 11. Publish event with full data
             applicationEventPublisher.publishEvent(new PiggyBrokenCompleteEvent(
                     this,
                     userOwner,
@@ -658,7 +654,7 @@ public class TransferServiceImpl implements TransferService {
                     penaltyRate                 // penaltyRate (fraction)
             ));
 
-            // 13. Build response matching TransferBreakPiggyResponseDto
+            // 12. Build response matching TransferBreakPiggyResponseDto
             return TransferBreakPiggyResponseDto.builder()
                     .transactionId(mainTransaction.getId())
                     .piggyGoalId(piggyGoal.getId())
@@ -683,6 +679,4 @@ public class TransferServiceImpl implements TransferService {
     public BigDecimal getPenaltyRate() {
         return new BigDecimal("0.10");
     }
-
-
 }
