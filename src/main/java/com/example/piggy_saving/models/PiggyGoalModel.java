@@ -64,9 +64,11 @@ public class PiggyGoalModel {
     @Column(name = "current_balance", nullable = false, precision = 19, scale = 4)
     private BigDecimal currentBalance;
 
+    @Builder.Default
     @Column(name = "accrued_interest", nullable = false, precision = 19, scale = 4)
     private BigDecimal accruedInterest = BigDecimal.ZERO;
 
+    @Builder.Default
     @Column(name = "interest_rate", nullable = false, precision = 5, scale = 4)
     private BigDecimal interestRate = BigDecimal.valueOf(0.03); // default 3% annual
 
