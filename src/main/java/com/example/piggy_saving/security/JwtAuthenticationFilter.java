@@ -1,21 +1,30 @@
 package com.example.piggy_saving.security;
+
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
@@ -26,51 +35,51 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(
-            @NonNull HttpServletRequest request,
-            @NonNull HttpServletResponse response,
-            @NonNull FilterChain chain
-    ) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain chain)
+            throws ServletException, IOException {
 
-        // 1. Get the Authorization header
         final String authHeader = request.getHeader("Authorization");
 
-        // 2. If no header or it doesn't start with "Bearer ", continue the chain without authentication
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             chain.doFilter(request, response);
             return;
         }
 
-        // 3. Extract the token (remove "Bearer " prefix)
         final String jwt = authHeader.substring(7);
+        try {
+            final String username = jwtService.extractUsername(jwt);
 
-        // 4. Extract username from the token
-        final String username = jwtService.extractUsername(jwt);
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-        // 5. If username is found and no authentication is already set in the context
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            // Load user details from database (or cache)
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+                if (jwtService.isTokenValid(jwt, userDetails)) {
+                    List<String> roles = jwtService.extractRoles(jwt);
+                    var authorities = roles.stream()
+                            .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                            .toList();
 
-            // 6. Validate the token
-            if (jwtService.isTokenValid(jwt, userDetails)) {
-                // Create an authentication token
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                // Add request details (like IP, session ID) to the token
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                // Set the authentication in the security context
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                    log.debug("Authenticated user: {} with roles: {}", username, roles);
+                } else {
+                    log.debug("Invalid token for user: {}", username);
+                }
             }
+        } catch (JwtException e) {
+            log.warn("JWT processing failed: {}", e.getMessage());
+            // do not authenticate – the request proceeds without authentication
+        } catch (UsernameNotFoundException e) {
+            log.warn("User not found for JWT subject: {}", e.getMessage());
+        } catch (Exception e) {
+            log.error("Unexpected error during JWT authentication", e);
         }
 
-        // 7. Continue the filter chain
         chain.doFilter(request, response);
     }
 }

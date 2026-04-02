@@ -74,6 +74,11 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public Page<TransactionHistoryResponseDto> getAllTransactionHistory(UUID userId, int page, int size) {
+        return null;
+    }
+
     private TransactionHistoryResponseDto mapToDto(TransactionModel transaction, UUID userId) {
         // Determine which ledger entry belongs to the current user
         LedgerEntryModel userEntry = transaction.getLedgerEntries().stream()

@@ -20,4 +20,6 @@ public interface TransactionHistoryService {
 
     List<TransactionHistoryResponseDto> getRecentTransactions(UUID userId, int limit);
 
+    Page<TransactionHistoryResponseDto> getAllTransactionHistory(UUID userId, int page, int size);
+
 }

@@ -51,6 +51,20 @@ public class TransactionController {
     }
 
     /**
+     * Admin Get all transactions
+     */
+    @GetMapping("/admin")
+    public ResponseEntity<ApiResponse<Page<TransactionHistoryResponseDto>>> getAllTransactionHistory(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<TransactionHistoryResponseDto> rs = transactionHistoryService.getAllTransactionHistory(userDetails.getUserId(), page, size);
+
+        return null;
+    }
+
+    /**
      * Get user transactions filtered by type (paginated)
      */
     @GetMapping("/history/type")
