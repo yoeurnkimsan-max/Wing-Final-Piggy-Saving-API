@@ -32,7 +32,7 @@ public class PiggyGoalServiceImpl implements PiggyGoalService {
     @Override
     @Transactional(readOnly = true)
     public List<PiggyGoalDetailResponseDto> getAllPiggyGoals(UUID userUUID) {
-        return piggyGoalRepository.findByUserModelIdAndStatusNot(userUUID, GoalStatus.BROKEN).stream()
+        return piggyGoalRepository.findByUserModelIdAndStatus(userUUID, GoalStatus.ACTIVE).stream()
                 .map(goal -> mapToDto(goal, goal.getAccountModel()))
                 .collect(Collectors.toList());
     }

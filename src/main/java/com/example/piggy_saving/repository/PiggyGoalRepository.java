@@ -26,6 +26,8 @@ public interface PiggyGoalRepository extends JpaRepository<PiggyGoalModel, UUID>
 
     List<PiggyGoalModel> findByUserModelIdAndStatusNot(UUID userModelId, GoalStatus status);
 
+    List<PiggyGoalModel> findByUserModelIdAndStatus(UUID userModelId, GoalStatus status);
+
     List<PiggyGoalModel> findByEndAtBeforeAndStatusNot(LocalDateTime endAtBefore, GoalStatus status);
 
     List<PiggyGoalModel> findByStatus(GoalStatus status);
