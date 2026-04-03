@@ -1,6 +1,7 @@
 package com.example.piggy_saving.services.impl;
 
 import com.example.piggy_saving.dto.response.TransactionHistoryResponseDto;
+import com.example.piggy_saving.mappers.TransactionMapper;
 import com.example.piggy_saving.models.AccountModel;
 import com.example.piggy_saving.models.LedgerEntryModel;
 import com.example.piggy_saving.models.TransactionModel;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 public class TransactionHistoryServiceImpl implements TransactionHistoryService {
     private final TransactionRepository transactionRepository;
     private final AccountRepository accountRepository;
+    private final TransactionMapper transactionMapper;
 
     @Override
     public Page<TransactionHistoryResponseDto> getUserTransactionHistory(
@@ -75,8 +78,13 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
     }
 
     @Override
-    public Page<TransactionHistoryResponseDto> getAllTransactionHistory(UUID userId, int page, int size) {
-        return null;
+    public Page<TransactionHistoryResponseDto> getAllTransactionsForAdmin(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<TransactionModel> transactionPage = transactionRepository.findAll(pageable);
+
+        // Use the mapper instead of this::mapToAdminDto
+        return transactionPage.map(transactionMapper::toAdminDto);
+
     }
 
     private TransactionHistoryResponseDto mapToDto(TransactionModel transaction, UUID userId) {

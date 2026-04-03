@@ -55,13 +55,20 @@ public class TransactionController {
      */
     @GetMapping("/admin")
     public ResponseEntity<ApiResponse<Page<TransactionHistoryResponseDto>>> getAllTransactionHistory(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Page<TransactionHistoryResponseDto> rs = transactionHistoryService.getAllTransactionHistory(userDetails.getUserId(), page, size);
+        Page<TransactionHistoryResponseDto> rs = transactionHistoryService.getAllTransactionsForAdmin( page, size);
 
-        return null;
+        ApiResponse<Page<TransactionHistoryResponseDto>> response = ApiResponse.<Page<TransactionHistoryResponseDto>>builder()
+                .success(true)
+                .statusCode(HttpStatus.OK.value())
+                .message("Transaction history retrieved")
+                .timestamp(LocalDateTime.now())
+                .data(rs)
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
     /**
