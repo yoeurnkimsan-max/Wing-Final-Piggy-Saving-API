@@ -1,5 +1,6 @@
 package com.example.piggy_saving.repository;
 
+import com.example.piggy_saving.models.AccountModel;
 import com.example.piggy_saving.models.PiggyGoalModel;
 import com.example.piggy_saving.models.enums.GoalStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,6 +23,8 @@ public interface PiggyGoalRepository extends JpaRepository<PiggyGoalModel, UUID>
     Optional<PiggyGoalModel> findPiggyGoalActiveById(@Param("id") UUID id);
 
     List<PiggyGoalModel> findByUserModelId(UUID userModelId);
+
+    List<PiggyGoalModel> findByUserModelIdAndStatusNot(UUID userModelId, GoalStatus status);
 
     List<PiggyGoalModel> findByEndAtBeforeAndStatusNot(LocalDateTime endAtBefore, GoalStatus status);
 
