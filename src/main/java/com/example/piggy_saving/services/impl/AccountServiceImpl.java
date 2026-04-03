@@ -74,10 +74,8 @@ public class AccountServiceImpl implements AccountService {
                 .orElseThrow(() -> new AccountNotFoundException("Account with Account number: " + accountNumber + " not found"));
 
         if (!account.isPublic()) {
-            throw new AccountNotFoundException("Account with Account number: " + accountNumber + " id private.");
+            throw new AccountNotFoundException("Account with Account number: " + accountNumber + " is private.");
         }
-
-//        AccountResponseDto accountDataResponseMapper = accountMapper.toAccountUserData(account);
 
         AccountResponseDto accountResponseDto = AccountResponseDto.builder()
                 .accountNumber(account.getAccountNumber())

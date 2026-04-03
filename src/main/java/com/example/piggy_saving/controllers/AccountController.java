@@ -63,7 +63,6 @@ public class AccountController {
         ApiResponse<AccountResponseDto> response =
                 accountService.getAccountByAccountNumberAndAccountType(accountNumber, type);
 
-
         return ResponseEntity.ok(response);
     }
 

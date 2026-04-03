@@ -66,7 +66,9 @@ public interface AccountRepository extends JpaRepository<AccountModel, UUID> {
      */
     Optional<AccountModel> findByAccountNumber(String accountNumber);
 
+
     Optional<AccountModel> findByAccountNumberAndAccountType(String accountNumber, AccountType accountType);
+
 
     @Query("SELECT a FROM AccountModel a " +
             "LEFT JOIN FETCH a.piggyGoalModel g " +
