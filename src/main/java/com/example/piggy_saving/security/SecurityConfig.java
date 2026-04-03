@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Configuration
-@EnableWebSecurity          // optional but recommended for clarity
+@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
