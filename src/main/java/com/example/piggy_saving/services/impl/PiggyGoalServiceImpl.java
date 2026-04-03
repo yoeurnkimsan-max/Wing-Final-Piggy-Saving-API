@@ -2,6 +2,7 @@ package com.example.piggy_saving.services.impl;
 
 import com.example.piggy_saving.dto.request.CreatePiggyRequestDto;
 import com.example.piggy_saving.dto.response.PiggyGoalDetailResponseDto;
+import com.example.piggy_saving.dto.response.PiggyGoalDetailedResponseDto;
 import com.example.piggy_saving.models.AccountModel;
 import com.example.piggy_saving.models.PiggyGoalModel;
 import com.example.piggy_saving.models.UserModel;
@@ -32,7 +33,14 @@ public class PiggyGoalServiceImpl implements PiggyGoalService {
     @Override
     @Transactional(readOnly = true)
     public List<PiggyGoalDetailResponseDto> getAllPiggyGoals(UUID userUUID) {
-        return piggyGoalRepository.findByUserModelIdAndStatus(userUUID, GoalStatus.ACTIVE).stream()
+        return piggyGoalRepository.findByUserModelId(userUUID).stream()
+                .map(goal -> mapToDto(goal, goal.getAccountModel()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PiggyGoalDetailResponseDto> getAllPiggyGoalsByUserIdAndStatus(UUID userUUID, GoalStatus status) {
+        return piggyGoalRepository.findByUserModelIdAndStatus(userUUID, status).stream()
                 .map(goal -> mapToDto(goal, goal.getAccountModel()))
                 .collect(Collectors.toList());
     }

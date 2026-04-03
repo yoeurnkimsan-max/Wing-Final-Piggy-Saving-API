@@ -5,6 +5,7 @@ import com.example.piggy_saving.dto.request.PiggyAccountChangeIsPublic;
 import com.example.piggy_saving.dto.response.ApiResponse;
 import com.example.piggy_saving.dto.response.PiggyAccountResponseDto;
 import com.example.piggy_saving.dto.response.PiggyGoalDetailResponseDto;
+import com.example.piggy_saving.models.enums.GoalStatus;
 import com.example.piggy_saving.security.CustomUserDetails;
 import com.example.piggy_saving.services.AccountService;
 import com.example.piggy_saving.services.PiggyAccountService;
@@ -33,6 +34,22 @@ public class PiggyGoalController {
             @AuthenticationPrincipal CustomUserDetails userDetails
             ) {
         List<PiggyGoalDetailResponseDto> goals = piggyGoalService.getAllPiggyGoals(userDetails.getUserId());
+        ApiResponse<List<PiggyGoalDetailResponseDto>> response = ApiResponse.<List<PiggyGoalDetailResponseDto>>builder()
+                .success(true)
+                .statusCode(HttpStatus.OK.value())
+                .message("Piggy goals retrieved successfully")
+                .timestamp(LocalDateTime.now())
+                .data(goals)
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/by-status/{status}")
+    public ResponseEntity<ApiResponse<List<PiggyGoalDetailResponseDto>>> getAllPiggyGoalsByUserIdAndStatus(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable GoalStatus status
+    ){
+        List<PiggyGoalDetailResponseDto> goals = piggyGoalService.getAllPiggyGoalsByUserIdAndStatus(userDetails.getUserId(), status);
         ApiResponse<List<PiggyGoalDetailResponseDto>> response = ApiResponse.<List<PiggyGoalDetailResponseDto>>builder()
                 .success(true)
                 .statusCode(HttpStatus.OK.value())
