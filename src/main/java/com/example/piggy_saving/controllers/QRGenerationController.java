@@ -111,6 +111,12 @@ public class QRGenerationController {
 
     // QRGenerationController.java (or a dedicated QRValidationController)
 
+    /**
+     * Validate QR
+     * @param qrBase64
+     * @param userDetails
+     * @return
+     */
     @GetMapping("/validate")
     public ResponseEntity<ApiResponse<QRValidationResponse>> validateQR(
             @RequestParam String qrBase64,
